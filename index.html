@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+		<link rel="icon" alt="logo" href="img/pencil2.svg">
+		<link rel="stylesheet" type="text/css" href="styles.css">
+		<script type="text/javascript" src="scripts/drawing.js"></script>
+		<title>Drawing symbols</title>
+	</head>
+	<body>
+		<div class="left">
+			<div class="topLeft">
+				<div class="topLeftLeft">
+					<img src="img/pencil2.svg" alt="logo" class="logo"/>
+				</div>
+				<div class="topLeftRight">
+					<i id="sitename">sitename</i>
+				</div>
+			</div>
+			<div class="bottomLeft">
+				<div class="sidenav">
+					<a href="#about">About</a>
+					<a href="#drawing" class="active">Drawing</a>
+					<a href="#inspect">Inspect</a>
+					<a href="#query">Query</a>
+				</div>
+			</div>
+		</div>
+		<div class="middle">
+			<div id="canvasArea">
+				<h3>Draw here:</h3>
+				<canvas id="myCanvas" class="canvas" width="300" height="300"></canvas>
+				<div id="buttonsArea">
+					<input type="button" class="button" id="saveButton" value="save">
+					<input type="button" class="button" id="clearButton" value="clear">
+					<input type="button" class="button" id="showSamplesButton" value="show samples">
+				</div>
+			</div>
+		</div>
+		<div class="right">
+		</div>
+	</body>
+</html>

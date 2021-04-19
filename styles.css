@@ -1,0 +1,139 @@
+*{margin: 0; padding: 0;}
+
+html, body {
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+	/*Causes issues:*/
+	/*background-color: #dddddd;*/
+	/*background-color: #eeeeee;*/
+}
+
+/*div {
+	display: block;
+}*/
+
+.left {
+	width: 15%;
+	height: 100%;
+	float: left;
+	overflow: hidden;
+	background-color: #222;
+}
+
+.middle {
+	width: 45%;
+	height: 100%;
+	float: left;
+}
+
+.right {
+	width: 40%;
+	height: 100%;
+	float: left;
+	/*background-color: orange;*/
+}
+
+.topLeft {
+	width: 100%;
+	height: 10%;
+	float: left;
+}
+
+.bottomLeft {
+	width: 100%;
+	height: 90%;
+	float: left;
+}
+
+.topLeftLeft {
+	width: 20%;
+	height: 100%;
+	float: left;
+}
+
+.topLeftRight {
+	margin-top: 4%;
+	width: 80%;
+	height: 100%;
+	float: left;
+}
+
+.logo {
+	margin-left: 15%;
+	margin-top: 10%;
+	height: 55%;
+	filter: invert(100%);
+}
+
+#sitename {
+	/*text-align: center;*/
+	/*margin-left: 10%;*/
+	/*margin-top: 10%;*/
+	font-size: 24px;
+	/*vertical-align: middle;*/
+	color: white;
+}
+
+#canvasArea {
+	margin-left: 5%;
+	margin-top: 2%;
+}
+
+.canvas {
+	border: 2px solid black;
+	margin-top: 2%;
+	/*Those break everything:*/
+	/*width: 300px;*/
+	/*height: 300px;*/
+	/*Causes drawings to disappear!*/
+	/*background-color: #ffffff;*/
+	/*background: #ffffff;*/
+}
+
+#buttonsArea {
+	margin-left: 2.5%;
+}
+
+.button {
+	margin-left: 5px;
+	margin-top: 1%;
+	font-size: 15px;
+}
+
+.sidenav {
+	/*height: 100%;*/
+}
+
+/* Style the sidenav links and the dropdown button */
+.sidenav a, .dropdown-btn {
+	padding: 6px 8px 6px 16px;
+	text-decoration: none;
+	font-size: 20px;
+	color: #818181;
+	display: block;
+	border: none;
+	background: none;
+	width:100%;
+	text-align: left;
+	cursor: pointer;
+	outline: none;
+}
+
+/* On mouse-over */
+.sidenav a:hover, .dropdown-btn:hover {
+	color: #f1f1f1;
+}
+
+/* Main content */
+.main {
+	margin-left: 200px; /* Same as the width of the sidenav */
+	font-size: 20px; /* Increased text to enable scrolling */
+	padding: 0px 10px;
+}
+
+/* Add an active class to the active dropdown button */
+.sidenav a.active {
+	background-color: #666;
+	color: white;
+}
