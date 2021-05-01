@@ -2,6 +2,8 @@
 // goes slightly beyond the border). However, samplings should be recentered,
 // and rescaled as to be homogeneous.
 
+"use strict";
+
 window.onload = function() {
 	// Settings:
 	const borderRatio = 0.05; // param which must be a metadata, as long with width / height (unless in unit square).
@@ -9,36 +11,53 @@ window.onload = function() {
 	var lineThickness = 6;
 	var samplesSize = 3;
 	var samplesOpacity = 0.5;
-	var drawingColor = 'orange';
-	var samplesColor = 'green';
+	var drawingColor = "orange";
+	var samplesColor = "green";
+	var rescaledSamplesColor = "red";
 
-	var strokes = [];
+	var inputSymbols = [];
+	var inputStrokes = [];
 	var currentStroke = [];
-	var currCoord = { x: 0, y: 0 };
+	var currCoord = [];
 
 	const canvas = document.getElementById("myCanvas");
 	const ctx = canvas.getContext("2d");
 
-	var saveButton = document.getElementById('saveButton');
-	saveButton.addEventListener("click", function(e) {
-		save();
-	});
-
-	var clearButton = document.getElementById('clearButton');
-	clearButton.addEventListener("click", function(e) {
-		clear();
-	});
-
-	var showSamplesButton = document.getElementById('showSamplesButton');
-	showSamplesButton.addEventListener("click", function(e) {
-		showSamples(strokes, samplesColor);
-		let strokesInFrame = shiftedAndRescaled(strokes);
-		showSamples(strokesInFrame, 'red');
-	});
-
 	// Starting from the canvas only, but drawing and samples
 	// acquisition must continue outside!
 	canvas.addEventListener("mousedown", start);
+
+	var exportButton = document.getElementById("exportButton");
+	exportButton.addEventListener("click", function(e) {
+		save();
+	});
+
+	var retryButton = document.getElementById("retryButton");
+	retryButton.addEventListener("click", function(e) {
+		clearInputs();
+	});
+
+	var nextButton = document.getElementById("nextButton");
+	nextButton.addEventListener("click", function(e) {
+		let resized = resize(inputStrokes);
+		let symbol = createSymbol("metadata", resized); // TODO: use real metadata.
+		if (symbol != null) {
+			inputSymbols.push(symbol);
+			clearInputs();
+			stats.textContent = "Saved symbols count: " + inputSymbols.length;
+		} // else, skipping this symbol.
+	});
+
+	var showSamplesButton = document.getElementById("showSamplesButton");
+	showSamplesButton.addEventListener("click", function(e) {
+		let resized = resize(inputStrokes);
+		showSamples(inputStrokes, samplesColor);
+		showSamples(resized, rescaledSamplesColor);
+	});
+
+	var stats = document.getElementById("stats");
+	stats.textContent = "";
+
 
 	function start(event) {
 		document.addEventListener("mouseup", stop);
@@ -51,9 +70,9 @@ window.onload = function() {
 	function stop() {
 		document.removeEventListener("mousemove", drawStroke);
 		if (currentStroke.length > 0) {
-			strokes.push(currentStroke);
+			inputStrokes.push(currentStroke);
 			currentStroke = [];
-			console.log("strokes:", strokes);
+			console.log("inputStrokes:", inputStrokes);
 		}
 	}
 
@@ -61,20 +80,20 @@ window.onload = function() {
 		// Using getBoundingClientRect() instead of canvas.offsetLeft/offsetTop,
 		// in case the page is scrolled down (e.g when zoomed).
 		let bounds = canvas.getBoundingClientRect();
-		currCoord.x = event.clientX - bounds.left;
-		currCoord.y = event.clientY - bounds.top;
+		currCoord[0] = event.clientX - bounds.left;
+		currCoord[1] = event.clientY - bounds.top;
 	}
 
 	function isInCanvas(coord) {
-		return coord.x >= 0 && coord.x <= canvas.width &&
-			coord.y >= 0 && coord.y <= canvas.height;
+		return coord[0] >= 0 && coord[0] <= canvas.width &&
+			coord[1] >= 0 && coord[1] <= canvas.height;
 	}
 
 	function saveCoord() {
-		currentStroke.push({
-			x: currCoord.x,
-			y: currCoord.y
-		});
+		currentStroke.push([
+			currCoord[0],
+			currCoord[1]
+		]);
 	}
 
 	function drawStroke(event) {
@@ -82,16 +101,16 @@ window.onload = function() {
 		ctx.lineWidth = lineThickness;
 		ctx.lineCap = "round";
 		ctx.strokeStyle = drawingColor;
-		ctx.moveTo(currCoord.x, currCoord.y);
+		ctx.moveTo(currCoord[0], currCoord[1]);
 		updateCurrentCoord(event);
-		ctx.lineTo(currCoord.x, currCoord.y);
+		ctx.lineTo(currCoord[0], currCoord[1]);
 		ctx.stroke();
 		saveCoord();
 	}
 
 	function drawDot(dot, size, color) {
 		ctx.beginPath();
-		ctx.arc(dot.x, dot.y, size, 0, 2. * Math.PI, false);
+		ctx.arc(dot[0], dot[1], size, 0, 2. * Math.PI, false);
 		ctx.fillStyle = color; // center
 		ctx.fill();
 		ctx.lineWidth = 1;
@@ -99,15 +118,16 @@ window.onload = function() {
 		ctx.stroke();
 	}
 
-	function clear() {
-		const ctx = canvas.getContext('2d');
+	function clearInputs() {
+		const ctx = canvas.getContext("2d");
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		strokes = [];
+		inputStrokes = [];
 		currentStroke = [];
+		currCoord = [];
 	}
 
 	function showSamples(strokes, color) {
-		// clear();
+		// clearInputs();
 		ctx.globalAlpha = samplesOpacity;
 		for (let i = 0; i < strokes.length; ++i) {
 			console.log("strokes["+i+"]:", strokes[i]);
@@ -124,53 +144,122 @@ window.onload = function() {
 			return null;
 		}
 
-		// Starting from the fit dot, which must exist:
-		let xMin = strokes[0][0].x, xMax = strokes[0][0].x;
-		let yMin = strokes[0][0].y, yMax = strokes[0][0].y;
+		// Starting from the first dot of the first stroke, which must exist:
+		let box = {
+			xMin: strokes[0][0][0], xMax: strokes[0][0][0],
+			yMin: strokes[0][0][1], yMax: strokes[0][0][1]
+		};
 
 		for (let i = 0; i < strokes.length; ++i) {
 			for (let j = 0; j < strokes[i].length; ++j) {
-				let x = strokes[i][j].x, y = strokes[i][j].y;
-				xMin = x < xMin ? x : xMin;
-				xMax = x > xMax ? x : xMax;
-				yMin = y < yMin ? y : yMin;
-				yMax = y > yMax ? y : yMax;
+				let x = strokes[i][j][0], y = strokes[i][j][1];
+				box.xMin = x < box.xMin ? x : box.xMin;
+				box.xMax = x > box.xMax ? x : box.xMax;
+				box.yMin = y < box.yMin ? y : box.yMin;
+				box.yMax = y > box.yMax ? y : box.yMax;
 			}
 		}
-
-		return [xMin, xMax, yMin, yMax];
+		return box;
 	}
 
-	// Works, but needs to be changed: the strokes should not be stretched...
-	// Careful: integer roundings necessary? If so use Math.round()
-	function shiftedAndRescaled(strokes) {
+	// Resizing and centering the strokes, with integer coords:
+	function resize(strokes) {
 		let box = boundingBox(strokes);
 		if (box == null) {
 			return [];
 		}
 
-		let xMin = box[0], xMax = box[1], yMin = box[2], yMax = box[3];
-		let boxWidth = xMax - xMin, boxHeight = yMax - yMin;
+		let boxWidth = box.xMax - box.xMin, boxHeight = box.yMax - box.yMin;
 		let canvasDim = Math.min(canvas.width, canvas.height), boxDim = Math.max(boxWidth, boxHeight);
 		let scale = (1. - 2. * borderRatio) * canvasDim / boxDim;
-		let offsetX = scale * ((boxDim -  boxWidth) / 2. - xMin) + (canvas.width  - canvasDim) / 2. + borderRatio * canvasDim;
-		let offsetY = scale * ((boxDim - boxHeight) / 2. - yMin) + (canvas.height - canvasDim) / 2. + borderRatio * canvasDim;
+		let offsetX = scale * ((boxDim - boxWidth) / 2. - box.xMin) + (canvas.width - canvasDim) / 2. + borderRatio * canvasDim;
+		let offsetY = scale * ((boxDim - boxHeight) / 2. - box.yMin) + (canvas.height - canvasDim) / 2. + borderRatio * canvasDim;
 		let newStrokes = [];
 
 		for (let i = 0; i < strokes.length; ++i) {
 			let stroke = [];
 			for (let j = 0; j < strokes[i].length; ++j) {
-				stroke.push({
-					x: scale * strokes[i][j].x + offsetX,
-					y: scale * strokes[i][j].y + offsetY
-				});
+				stroke.push([
+					Math.round(scale * strokes[i][j][0] + offsetX),
+					Math.round(scale * strokes[i][j][1] + offsetY)
+				]);
 			}
 			newStrokes.push(stroke);
 		}
 		return newStrokes;
 	}
 
+	function createSymbol(metadata, strokes) {
+		if (strokes.length == 0) {
+			return null;
+		}
+		let symbol = {};
+		symbol.metadata = "metadata";
+		symbol.totalSamplesNumber = 0;
+		symbol.strokes = strokes;
+		for (let i = 0; i < strokes.length; ++i) {
+			symbol.totalSamplesNumber += strokes[i].length;
+		}
+		return symbol;
+	}
+
+	// Note: canvas.width and canvas.height are saved in the output format. This done both to
+	// not hardcode the maximum precision of the input, and to be able to retrieve said precision
+	// in case it changes with each user. On the other hand, this implies that input must be resized
+	// (and centered) to fit well in the canvas.
 	function save() {
-		alert("TODO!");
+		if (inputSymbols.length == 0) {
+			console.log("Nothing to save.");
+			return;
+		}
+
+		let output = {};
+		output.version = "1.0.0";
+		output.description = "Each symbol is represented by its metadata, and a list of strokes."
+		output.description += " Each stroke is a list of [x, y] integer coordinates,"
+		output.description += " with 0 <= x <= frameWidth and 0 <= y <= frameHeight";
+		output.frameWidth = canvas.width; // used to save input precision, and for compatibility.
+		output.frameHeight = canvas.height; // same.
+		// output.maxStrokeSize = 128;
+		output.symbolsNumber = inputSymbols.length;
+		output.symbols = inputSymbols;
+
+		// let lastStrokes = inputSymbols[inputSymbols.length - 1].strokes;
+		// console.log("lastStrokes:", lastStrokes);
+		clearInputs();
+		// showSamples(lastStrokes, "lightgreen"); // for testing purposes.
+
+		let jsonOutput = JSON.stringify(output);
+		// console.log("jsonOutput:", jsonOutput);
+		let filename = "output-" + timestamp() + ".json";
+		download(jsonOutput, filename, "text/plain");
+
+		// Cleanup:
+		inputSymbols = [];
+		stats.textContent = "";
+	}
+
+	function download(content, filename, contentType) {
+		let a = document.createElement("a");
+		let file = new Blob([content], {type: contentType});
+		a.href = URL.createObjectURL(file);
+		a.download = filename;
+		a.click();
+	}
+
+	function addLeadingZeros(num, size) {
+		return num.toString().padStart(size, "0");
+	}
+
+	// Returns the locale date with format "yyyy-mm-dd-hh-mm-ss"
+	function timestamp() {
+		let d = new Date(), ts = "";
+		ts += d.getFullYear();
+		ts += "-" + addLeadingZeros(d.getMonth()+1, 2); // months start at 0.
+		ts += "-" + addLeadingZeros(d.getDate(), 2);
+		ts += "-" + addLeadingZeros(d.getHours(), 2);
+		ts += "-" + addLeadingZeros(d.getMinutes(), 2);
+		ts += "-" + addLeadingZeros(d.getSeconds(), 2);
+		return ts;
 	}
 }

@@ -20,7 +20,7 @@
 			<div class="bottomLeft">
 				<div class="sidenav">
 					<a href="#about">About</a>
-					<a href="#drawing" class="active">Drawing</a>
+					<a href="#drawing" class="active">Draw</a>
 					<a href="#inspect">Inspect</a>
 					<a href="#query">Query</a>
 				</div>
@@ -28,13 +28,17 @@
 		</div>
 		<div class="middle">
 			<div id="canvasArea">
-				<h3>Draw here:</h3>
+				<h3 id="Instruction">Draw here:</h3>
 				<canvas id="myCanvas" class="canvas" width="300" height="300"></canvas>
 				<div id="buttonsArea">
-					<input type="button" class="button" id="saveButton" value="save">
-					<input type="button" class="button" id="clearButton" value="clear">
+					<input type="button" class="button" id="exportButton" value="export">
+					<input type="button" class="button" id="retryButton" value="retry">
+					<input type="button" class="button" id="nextButton" value="next">
 					<input type="button" class="button" id="showSamplesButton" value="show samples">
 				</div>
+			</div>
+			<div>
+				<span id="stats"></span>
 			</div>
 		</div>
 		<div class="right">
