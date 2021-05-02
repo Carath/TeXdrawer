@@ -110,6 +110,7 @@ html, body {
 #stats {
 	margin-left: 5%;
 	/*margin-top: 10%;*/
+	margin-bottom: 10px;
 	font-size: 12pt;
 }
 
