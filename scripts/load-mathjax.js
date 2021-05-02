@@ -1,6 +1,5 @@
-"use strict";
-
 (function () {
+	"use strict";
 	if (document.body.querySelector('math') ||
 			document.body.textContent.match(/(?:\$|\\\(|\\\[|\\begin\{.*?})/)) {
 		if (!window.MathJax) {

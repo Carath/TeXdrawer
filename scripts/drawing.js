@@ -45,15 +45,26 @@ window.onload = function() {
 		} // else, skipping this symbol.
 	});
 
-	let showSamplesButton = document.getElementById("showSamplesButton");
+	let showSamplesButton = document.getElementById("showSamplesButton"); // for testing purposes
 	showSamplesButton.addEventListener("click", function(e) {
 		let resized = resize(inputStrokes);
 		showSamples(inputStrokes, samplesColor);
 		showSamples(resized, rescaledSamplesColor);
+
+		typeset("#mathjax-test", "$$\\frac{a^3}{1-a^2}$$");
 	});
 
 	var stats = document.getElementById("stats");
 	stats.textContent = "";
+}
+
+// Replaces the mathematics within the element:
+function typeset(selector, html) {
+	const node = document.querySelector(selector);
+	MathJax.typesetClear([node]);
+	node.innerHTML = html;
+	MathJax.typesetPromise([node]).then(() => {})
+	.catch((err) => console.log("Typeset failed:", err.message));
 }
 
 function boundingBox(strokes) {
