@@ -4,10 +4,13 @@
 		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 		<link rel="icon" alt="logo" href="img/pencil2.svg">
 		<link rel="stylesheet" type="text/css" href="styles.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 		<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-		<script type="text/javascript" src="scripts/load-mathjax.js" defer></script>
-		<script type="text/javascript" src="scripts/drawing.js"></script>
-		<script type="text/javascript" src="scripts/inputs.js"></script>
+		<script type="text/javascript" src="js/load-mathjax.js" defer></script>
+		<script type="text/javascript" src="js/main.js"></script>
+		<script type="text/javascript" src="js/datasets.js"></script>
+		<script type="text/javascript" src="js/inputs.js"></script>
+		<script type="text/javascript" src="js/requests.js"></script>
 		<title>TeXdrawer</title>
 	</head>
 	<body>
@@ -38,18 +41,20 @@
 					<input type="button" class="button" id="retryButton" value="retry">
 					<input type="button" class="button" id="submitButton" value="submit">
 					<input type="button" class="button" id="showSamplesButton" value="show samples">
+					<input type="button" class="button" id="testButton" value="test" hidden>
 				</div>
 			</div>
 			<div>
 				<p id="stats"></p>
 			</div>
-			<div>
+			<div id="tests">
+				<p id="test-zone" style="margin-left: 5%;"></p>
 				<p id="mathjax-test" style="margin-left: 5%;">
-					This is math:
+<!-- 					This is math:
 					$$\begin{align}
 					F : ~ & \mathbb{R} \longrightarrow \mathbb{R} \\
 					& x \longmapsto \frac{x+1}{x-1} \int_0^{+\infty}e^{-2\pi t}dt
-					\end{align}$$
+					\end{align}$$ -->
 				</p>
 			</div>
 		</div>

@@ -3,10 +3,13 @@
 html, body {
 	height: 100%;
 	width: 100%;
-	overflow: hidden;
 	/*Causes issues:*/
 	/*background-color: #dddddd;*/
 	/*background-color: #eeeeee;*/
+}
+
+body {
+	/*overflow-y: scroll;*/
 }
 
 /*div {
@@ -17,8 +20,9 @@ html, body {
 	width: 15%;
 	height: 100%;
 	float: left;
-	overflow: hidden;
+	overflow-x: hidden;
 	background-color: #222;
+	/*display: table;*/
 }
 
 .middle {

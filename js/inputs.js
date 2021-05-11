@@ -1,3 +1,7 @@
+// Note: drawing outside the frame should be permitted (in case the user
+// goes slightly beyond the border). However, samplings should be recentered,
+// and rescaled as to be homogeneous.
+
 "use strict";
 
 var inputSymbols = [];

@@ -1,71 +1,4 @@
-// Note: drawing outside the frame should be permitted (in case the user
-// goes slightly beyond the border). However, samplings should be recentered,
-// and rescaled as to be homogeneous.
-
 "use strict";
-
-// Settings:
-const frameMargin = 0.05;
-const lineThickness = 6;
-const samplesSize = 3;
-const samplesOpacity = 0.5;
-const drawingColor = "orange";
-const samplesColor = "green";
-const rescaledSamplesColor = "red";
-
-var canvas = null;
-var ctx = null;
-
-window.onload = function() {
-	canvas = document.getElementById("myCanvas");
-	ctx = canvas.getContext("2d");
-
-	// Starting from the canvas only, but drawing and samples
-	// acquisition must continue outside!
-	canvas.addEventListener("mousedown", startInputs);
-
-	let exportButton = document.getElementById("exportButton");
-	exportButton.addEventListener("click", function(e) {
-		save();
-	});
-
-	let retryButton = document.getElementById("retryButton");
-	retryButton.addEventListener("click", function(e) {
-		clearInputs();
-	});
-
-	let submitButton = document.getElementById("submitButton");
-	submitButton.addEventListener("click", function(e) {
-		let resized = resize(inputStrokes);
-		let symbol = createSymbol("metadata", resized); // TODO: use real metadata.
-		if (symbol != null) {
-			inputSymbols.push(symbol);
-			clearInputs();
-			stats.textContent = "Saved symbols count: " + inputSymbols.length;
-		} // else, skipping this symbol.
-	});
-
-	let showSamplesButton = document.getElementById("showSamplesButton"); // for testing purposes
-	showSamplesButton.addEventListener("click", function(e) {
-		let resized = resize(inputStrokes);
-		showSamples(inputStrokes, samplesColor);
-		showSamples(resized, rescaledSamplesColor);
-
-		typeset("#mathjax-test", "$$\\frac{a^3}{1-a^2}$$");
-	});
-
-	var stats = document.getElementById("stats");
-	stats.textContent = "";
-}
-
-// Replaces the mathematics within the element:
-function typeset(selector, html) {
-	const node = document.querySelector(selector);
-	MathJax.typesetClear([node]);
-	node.innerHTML = html;
-	MathJax.typesetPromise([node]).then(() => {})
-	.catch((err) => console.log("Typeset failed:", err.message));
-}
 
 function boundingBox(strokes) {
 	if (strokes.length == 0 || strokes[0].length == 0) {
@@ -94,7 +27,7 @@ function boundingBox(strokes) {
 // Resizing and centering the strokes, with integer coords:
 function resize(strokes) {
 	let box = boundingBox(strokes);
-	if (box == null) {
+	if (! box) {
 		return [];
 	}
 
@@ -132,6 +65,16 @@ function createSymbol(metadata, strokes) {
 	return symbol;
 }
 
+function submitSymbol() {
+	let resized = resize(inputStrokes);
+	let symbol = createSymbol("metadata", resized); // TODO: use real metadata.
+	if (symbol) {
+		inputSymbols.push(symbol);
+		clearInputs();
+		stats.textContent = "Saved symbols count: " + inputSymbols.length;
+	} // else, skipping this symbol.
+}
+
 function createOutput(symbols) {
 	let output = {};
 	output.version = "1.0.0";
@@ -163,6 +106,7 @@ function save() {
 	download(jsonOutput, filename, "text/plain");
 
 	// Cleanup:
+	let stats = document.getElementById("stats");
 	stats.textContent = "";
 	inputSymbols = [];
 	clearInputs();
