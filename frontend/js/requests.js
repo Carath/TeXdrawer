@@ -78,7 +78,7 @@ function requestTest() {
 			jQuery("#test-zone").html(response);
 		},
 		error: function(e) {
-			console.error("CORS issue or invalid URL for:", url);
+			console.error("CORS issue or invalid URL for:", this.url);
 		}
 	});
 }

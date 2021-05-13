@@ -1,12 +1,26 @@
 # TeXdrawer
 
-The goal of this small frontend is to help building balanced datasets of handwritten LaTeX symbols.
+The goal of this small tool is to help building balanced datasets of handwritten LaTeX symbols.
 
 
-## Install
+## Installation
+
+For now, the frontend requires no installation steps. The backend however, needs ``` python 3.6+ ``` and ``` pip3 ``` installed. Furthermore, the following command must be run:
+
+```
+pip3 install -r backend/requirements.txt
+```
 
 
 ## Usage
+
+To run the frontend without backend, simply open the ``` frontend/index.html ``` file with any (recent) web browser. To launch the backend, run:
+
+```
+python3 backend/server-flask.py
+```
+
+The frontend is then reachable at ``` http://localhost:5050/app ```.
 
 
 ## TODO
@@ -19,6 +33,8 @@ The goal of this small frontend is to help building balanced datasets of handwri
 
 
 ## Links
+
+Services to benchmark (locally):
 
 - hwrt:
   - [webpage](http://write-math.com/)
