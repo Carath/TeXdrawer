@@ -8,13 +8,13 @@ function boundingBox(strokes) {
 
 	// Starting from the first dot of the first stroke, which must exist:
 	let box = {
-		xMin: strokes[0][0][0], xMax: strokes[0][0][0],
-		yMin: strokes[0][0][1], yMax: strokes[0][0][1]
+		xMin: strokes[0][0].x, xMax: strokes[0][0].x,
+		yMin: strokes[0][0].y, yMax: strokes[0][0].y
 	};
 
 	for (let i = 0; i < strokes.length; ++i) {
 		for (let j = 0; j < strokes[i].length; ++j) {
-			let x = strokes[i][j][0], y = strokes[i][j][1];
+			let x = strokes[i][j].x, y = strokes[i][j].y;
 			box.xMin = x < box.xMin ? x : box.xMin;
 			box.xMax = x > box.xMax ? x : box.xMax;
 			box.yMin = y < box.yMin ? y : box.yMin;
@@ -24,7 +24,7 @@ function boundingBox(strokes) {
 	return box;
 }
 
-// Resizing and centering the strokes, with integer coords:
+// Returns new strokes, resized and recentered, with integer coords:
 function resize(strokes) {
 	let box = boundingBox(strokes);
 	if (! box) {
@@ -41,10 +41,11 @@ function resize(strokes) {
 	for (let i = 0; i < strokes.length; ++i) {
 		let stroke = [];
 		for (let j = 0; j < strokes[i].length; ++j) {
-			stroke.push([
-				Math.round(scale * strokes[i][j][0] + offsetX),
-				Math.round(scale * strokes[i][j][1] + offsetY)
-			]);
+			stroke.push({
+				x: Math.round(scale * strokes[i][j].x + offsetX),
+				y: Math.round(scale * strokes[i][j].y + offsetY),
+				time: strokes[i][j].time
+			});
 		}
 		newStrokes.push(stroke);
 	}
@@ -79,8 +80,8 @@ function createOutput(symbols) {
 	let output = {};
 	output.version = "1.0.0";
 	output.description = "Each symbol is represented by its metadata, and a list of strokes."
-	output.description += " Each stroke is a list of [x, y] integer coordinates,"
-	output.description += " with 0 <= x <= frameWidth and 0 <= y <= frameHeight";
+	output.description += " Each stroke is a list of dots, of the form {x: 50, y: 60, time: 1620256003707};"
+	output.description += " where 0 <= x <= frameWidth, 0 <= y <= frameHeight, and 'time' is the UNIX time.";
 	output.frameWidth = canvas.width; // used to save input precision, and for compatibility.
 	output.frameHeight = canvas.height; // same.
 	output.frameMargin = frameMargin;

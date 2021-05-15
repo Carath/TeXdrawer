@@ -7,7 +7,7 @@
 var inputSymbols = [];
 var inputStrokes = [];
 var currentStroke = [];
-var currCoord = [];
+var currCoord = {};
 
 function startInputs(event) {
 	document.addEventListener("mouseup", stopInputs);
@@ -30,20 +30,21 @@ function updateCurrentCoord(event) {
 	// Using getBoundingClientRect() instead of canvas.offsetLeft/offsetTop,
 	// in case the page is scrolled down (e.g when zoomed).
 	let bounds = canvas.getBoundingClientRect();
-	currCoord[0] = event.clientX - bounds.left;
-	currCoord[1] = event.clientY - bounds.top;
+	currCoord.x = event.clientX - bounds.left;
+	currCoord.y = event.clientY - bounds.top;
 }
 
 function isInCanvas(coord) {
-	return coord[0] >= 0 && coord[0] <= canvas.width &&
-		coord[1] >= 0 && coord[1] <= canvas.height;
+	return coord.x >= 0 && coord.x <= canvas.width &&
+		coord.y >= 0 && coord.y <= canvas.height;
 }
 
 function saveCoord() {
-	currentStroke.push([
-		currCoord[0],
-		currCoord[1]
-	]);
+	currentStroke.push({
+		x: currCoord.x,
+		y: currCoord.y,
+		time: new Date().getTime() // UNIX time
+	});
 }
 
 function drawStroke(event) {
@@ -51,16 +52,16 @@ function drawStroke(event) {
 	ctx.lineWidth = lineThickness;
 	ctx.lineCap = "round";
 	ctx.strokeStyle = drawingColor;
-	ctx.moveTo(currCoord[0], currCoord[1]);
+	ctx.moveTo(currCoord.x, currCoord.y);
 	updateCurrentCoord(event);
-	ctx.lineTo(currCoord[0], currCoord[1]);
+	ctx.lineTo(currCoord.x, currCoord.y);
 	ctx.stroke();
 	saveCoord();
 }
 
 function drawDot(dot, size, color) {
 	ctx.beginPath();
-	ctx.arc(dot[0], dot[1], size, 0, 2. * Math.PI, false);
+	ctx.arc(dot.x, dot.y, size, 0, 2. * Math.PI, false);
 	ctx.fillStyle = color; // center
 	ctx.fill();
 	ctx.lineWidth = 1;
