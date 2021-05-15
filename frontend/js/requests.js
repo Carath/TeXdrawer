@@ -27,55 +27,26 @@ function extractData(response) {
 	}
 }
 
-function fetchContent(url, options, onSuccess, onFailure) {
-	fetch(url, options)
-		.then(response => extractData(response))
-		.then(response => {
-			if (response) { // do something with the response!
-				onSuccess(response);
-			}
-		})
-		.catch(error => {
-			console.error("CORS issue or invalid URL for:", url);
-			// console.error("Error:", error);
-			onFailure();
-		});
-}
+// Requesting the classifying services, using JQuery:
+function classifyRequest(serviceName, strokes) {
+	if (strokes.length == 0) {
+		alert("Cannot send a request without any strokes!");
+		return;
+	}
 
-function requestTest() {
-	// --------------------------------------------------
-	// Requesting server-flask, using plain javascript:
-
-	// const options = {
-	// 	method: "POST",
-	// 	headers: {
-	// 		"Content-Type": "application/json",
-	// 		// "Accept": "application/json"
-	// 	},
-	// 	body: JSON.stringify({name: "tartampion"})
-	// };
-
-	// fetchContent("http://localhost:5050/post", options, defaultOnSuccess, defaultOnFailure);
-
-	// --------------------------------------------------
-	// Requesting the hwrt service (classify), using JQuery:
-
-	// let secret = "b2ce3b41-8e43-4c5b-ad97-90ca251aa9d7"; // does not seem to be required...
-	let secret = "";
-
-	let lines = [[{x: 50, y: 60, time: 123456}, {x: 150, y: 160, time: 123460}]];
-	let data = {"secret": secret, "classify": JSON.stringify(lines)};
+	let input = {serviceName: serviceName, strokes: strokes};
 
 	$.ajax({
 		type: "POST",
-		url: "http://localhost:5050/redirect-hwrt",
-		contentType: "application/x-www-form-urlencoded",
-		// Accept: "text/html; charset=utf-8",
-		data: JSON.stringify(data),
+		url: "http://localhost:5050/classify-request",
+		contentType: "application/x-www-form-urlencoded", // move this to the backend?
+		// Accept: "application/json; charset=utf-8",
+		data: JSON.stringify(input),
 
 		success: function(response) {
 			console.log("Response:", response);
-			jQuery("#test-zone").html(response);
+			// jQuery("#test-zone").html(JSON.stringify(response));
+			drawClassificationResults(response);
 		},
 		error: function(e) {
 			console.error("CORS issue or invalid URL for:", this.url);
@@ -83,8 +54,21 @@ function requestTest() {
 	});
 }
 
-function defaultOnSuccess(response) {
-	console.log("Response:", response);
-}
+function drawClassificationResults(response) {
+	$('#resultlink').removeClass('invisible'); // ???
+	let content = "<table class='table' role='table' name='resulttable' id='resulttable'>"
+		+ "<thead><tr><th>&alpha;</th><th>&alpha;</th><th>LaTeX</th><th>%</th></tr></thead><tbody>";
+	$.each(response, function(index, value) {
+		let latex_command = value['latex_command'];
+		let unicode_dec = value['unicode_dec'];
+		let symbolClass = value['class'];
+		let score = value['score'];
+		let system_id = "???";
 
-function defaultOnFailure() {}
+		content += "<tr><td>&#" + unicode_dec + ";</td><td>$$" + latex_command + "$$</td><td><input id=\"inptxt" + system_id
+			+ "\" class=\"form-control\" value='" + latex_command + "' disabled/></td><td style='text-align:right'>"
+			+ parseFloat(score * 100).toFixed(2) + "</td></tr>";
+	});
+	content += "</tbody></table>";
+	typeset("#classification-results", content);
+}

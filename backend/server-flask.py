@@ -3,11 +3,20 @@ from flask import Flask, request, Response, jsonify, send_from_directory, redire
 from flask_cors import CORS
 import requests
 
+# Backend code:
+import formatter
+
 filePath = os.path.dirname(os.path.realpath(__file__))
 # print('File path:', filePath, '\n')
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app) # enables CORS for all routes.
+
+
+def handleError(errorMessage):
+	''' Prints in the server logs the error message, and returns it as response. '''
+	print(errorMessage)
+	return Response(errorMessage, content_type='text/plain; charset=UTF-8', status=500)
 
 
 @app.route('/')
@@ -51,7 +60,7 @@ def testPOST():
 		jsonified = json.dumps({'foundName': foundName})
 		return Response(jsonified, content_type='application/json')
 	except Exception as e:
-		return Response(traceback.format_exc(), content_type='text/plain; charset=UTF-8', status=500)
+		return handleError('Unknown error in testPOST():\n' + traceback.format_exc())
 
 
 # Careful: all URL to which requests will be redirected _must_ be hardcoded (security issues).
@@ -64,10 +73,35 @@ def redirectionTest():
 	return redirect(url, code=307)
 
 
-@app.route('/redirect-hwrt', methods=['GET', 'POST'])
-def redirectionHWRT():
-	''' Redirects to the hwrt service. '''
-	return redirectCrossOrigin('http://localhost:5000/worker', request)
+@app.route('/classify-request', methods=['GET', 'POST'])
+def frontendClassifyRequest():
+	''' Sends the frontend's request to the chosen service: '''
+	try:
+		receivedInput = extractRequestData(request)
+		serviceName = receivedInput['serviceName']
+		strokes = receivedInput['strokes']
+		return classifyRequest(serviceName, strokes)
+	except Exception as e:
+		return handleError(traceback.format_exc())
+		return handleError('Unknown error in frontendClassifyRequest():\n' + traceback.format_exc())
+
+
+def classifyRequest(serviceName, strokes):
+	''' Send a classification request to the chosen service. '''
+	try:
+		if serviceName == 'hwrt':
+			formattedRequest = formatter.formatRequest_hwrt(strokes)
+			response = requests.post(url='http://localhost:5000/worker', headers=request.headers, data=formattedRequest)
+			result = formatter.extractAnswer_hwrt(response.json())
+		elif serviceName == 'detexify':
+			# formattedRequest = formatter.formatRequest_detexify(strokes)
+			# result = formatter.extractAnswer_detexify(response.json())
+			return handleError('detexify not supported yet.') # TODO: implement this
+		else:
+			return handleError('Unsupported service name: ' + serviceName)
+		return jsonify(result)
+	except Exception as e:
+		return handleError('Unknown error in classifyRequest():\n' + traceback.format_exc())
 
 
 def redirectCrossOrigin(url, request):
@@ -82,12 +116,10 @@ def redirectCrossOrigin(url, request):
 		elif request.method == 'HEAD':
 			response = requests.head(url=url)
 		else:
-			print('Unsupported HTTP method:', request.method)
-			return Response(traceback.format_exc(), content_type='text/plain; charset=UTF-8', status=500)
+			return handleError('Unsupported HTTP method: ' + request.method)
 		return Response(response)
 	except Exception as e:
-		print('Failed to send a HTTP request to:', url)
-		return Response(traceback.format_exc(), content_type='text/plain; charset=UTF-8', status=500)
+		return handleError('Failed to send a HTTP request to: ' + url)
 
 
 def extractRequestData(request):

@@ -38,10 +38,11 @@
 				<canvas id="myCanvas" class="canvas" width="300" height="300"></canvas>
 				<div id="buttonsArea">
 					<input type="button" class="button" id="exportButton" value="export">
-					<input type="button" class="button" id="retryButton" value="retry">
 					<input type="button" class="button" id="submitButton" value="submit">
+					<input type="button" class="button" id="retryButton" value="retry">
 					<input type="button" class="button" id="showSamplesButton" value="show samples">
 					<input type="button" class="button" id="testButton" value="test" hidden>
+					<input type="button" class="button" id="queryButton" value="query">
 				</div>
 			</div>
 			<div>
@@ -49,16 +50,11 @@
 			</div>
 			<div id="tests">
 				<p id="test-zone" style="margin-left: 5%;"></p>
-				<p id="mathjax-test" style="margin-left: 5%;">
-<!-- 					This is math:
-					$$\begin{align}
-					F : ~ & \mathbb{R} \longrightarrow \mathbb{R} \\
-					& x \longmapsto \frac{x+1}{x-1} \int_0^{+\infty}e^{-2\pi t}dt
-					\end{align}$$ -->
-				</p>
+				<p id="mathjax-test" style="margin-left: 5%;"></p>
 			</div>
 		</div>
 		<div class="right">
+			<div id="classification-results"></div>
 		</div>
 	</body>
 </html>

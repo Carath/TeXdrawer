@@ -45,10 +45,16 @@ window.onload = function() {
 		showSamples(resized, rescaledSamplesColor);
 	});
 
+	let queryButton = document.getElementById("queryButton");
+	queryButton.addEventListener("click", function(e) {
+		let serviceName = "hwrt"; // TODO: dehardcode this.
+		classifyRequest(serviceName, inputStrokes);
+		// TODO: apply some preprocessing like resize() here?
+	});
+
 	let testButton = document.getElementById("testButton");
 	testButton.addEventListener("click", function(e) {
 		typeset("#mathjax-test", "$$\\frac{a^3}{1-a^2}$$");
-		requestTest();
 	});
-	testButton.hidden = false;
+	// testButton.hidden = false;
 }
