@@ -9,12 +9,7 @@ html, body {
 }
 
 body {
-	/*overflow-y: scroll;*/
 }
-
-/*div {
-	display: block;
-}*/
 
 .left {
 	width: 15%;
@@ -27,16 +22,22 @@ body {
 }
 
 .middle {
-	width: 45%;
+	width: 40%;
 	height: 100%;
 	float: left;
 }
 
+.centerArea {
+	margin-left: 50px;
+	margin-top: 25px;
+}
+
 .right {
-	width: 40%;
+	width: 45%;
 	height: 100%;
 	float: right;
-	margin-top: 42px;
+	margin-top: 50px;
+	/*background-color: orange;*/
 }
 
 .topLeft {
@@ -58,26 +59,23 @@ body {
 }
 
 .topLeftRight {
-	margin-top: 4%;
+	margin-top: 5%;
 	width: 80%;
 	height: 100%;
 	float: left;
 }
 
 .logo {
-	margin-left: 20%;
-	margin-top: 15%;
+	margin-left: 5px;
+	margin-top: 5px;
 	/*height: 50%;*/
 	height: 32px;
 	filter: invert(100%);
 }
 
 #sitename {
-	/*text-align: center;*/
-	/*margin-left: 10%;*/
-	/*margin-top: 10%;*/
+	margin-left: 0px;
 	font-size: 24px;
-	/*vertical-align: middle;*/
 	color: white;
 }
 
@@ -86,13 +84,11 @@ body {
 }
 
 #canvasArea {
-	margin-left: 5%;
-	margin-top: 2%;
 }
 
 .canvas {
 	border: 2px solid black;
-	margin-top: 2%;
+	margin-top: 10px;
 	/*Those break everything:*/
 	/*width: 300px;*/
 	/*height: 300px;*/
@@ -102,19 +98,16 @@ body {
 }
 
 #buttonsArea {
-	margin-left: -1%;
 }
 
 .button {
-	margin-left: 5px;
-	margin-top: 1%;
+	margin-top: 5px;
 	margin-bottom: 20px;
 	font-size: 15px;
 }
 
 #stats {
-	margin-left: 5%;
-	/*margin-top: 10%;*/
+	/*margin-top: 10px;*/
 	margin-bottom: 10px;
 	font-size: 12pt;
 }
@@ -154,4 +147,17 @@ body {
 .sidenav a.active {
 	background-color: #666;
 	color: white;
+}
+
+.resultTable {
+	float: left;
+	text-align: center;
+	font-size: 13pt;
+	width: 90%;
+}
+
+.command-box {
+	width: 150px;
+	text-align: left;
+	font-size: 12pt;
 }

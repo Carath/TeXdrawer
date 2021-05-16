@@ -78,6 +78,7 @@ def frontendClassifyRequest():
 	''' Sends the frontend's request to the chosen service: '''
 	try:
 		receivedInput = extractRequestData(request)
+		# print('receivedInput:', receivedInput)
 		serviceName = receivedInput['serviceName']
 		strokes = receivedInput['strokes']
 		return classifyRequest(serviceName, strokes)

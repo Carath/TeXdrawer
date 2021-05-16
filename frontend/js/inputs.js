@@ -22,7 +22,7 @@ function stopInputs() {
 	if (currentStroke.length > 0) {
 		inputStrokes.push(currentStroke);
 		currentStroke = [];
-		console.log("inputStrokes:", inputStrokes);
+		// console.log("inputStrokes:", inputStrokes);
 	}
 }
 
@@ -81,7 +81,7 @@ function showSamples(strokes, color) {
 	// clearInputs();
 	ctx.globalAlpha = samplesOpacity;
 	for (let i = 0; i < strokes.length; ++i) {
-		console.log("strokes["+i+"]:", strokes[i]);
+		// console.log("strokes["+i+"]:", strokes[i]);
 		for (let j = 0; j < strokes[i].length; ++j) {
 			drawDot(strokes[i][j], samplesSize, color);
 		}

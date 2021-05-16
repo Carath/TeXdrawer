@@ -47,8 +47,7 @@ window.onload = function() {
 
 	let queryButton = document.getElementById("queryButton");
 	queryButton.addEventListener("click", function(e) {
-		let serviceName = "hwrt"; // TODO: dehardcode this.
-		classifyRequest(serviceName, inputStrokes);
+		classifyRequest(serviceChoice.value, inputStrokes);
 		// TODO: apply some preprocessing like resize() here?
 	});
 
@@ -57,4 +56,9 @@ window.onload = function() {
 		typeset("#mathjax-test", "$$\\frac{a^3}{1-a^2}$$");
 	});
 	// testButton.hidden = false;
+
+	let serviceChoice = document.getElementById("serviceChoice");
+	serviceChoice.addEventListener("change", function(e) {
+		// console.log("Chosen service:", serviceChoice.value);
+	});
 }

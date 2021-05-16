@@ -26,7 +26,7 @@ def extractAnswer_hwrt(hwrt_answer):
 # detexify:
 
 def formatRequest_detexify(strokes): # TODO: check if no further formatting is needed.
-	return "strokes=" + strokes
+	return "strokes=" + json.dumps(strokes)
 
 
 def extractAnswer_detexify(detexify_answer):
