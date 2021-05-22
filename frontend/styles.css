@@ -66,7 +66,7 @@ body {
 }
 
 .logo {
-	margin-left: 5px;
+	margin-left: 10px;
 	margin-top: 5px;
 	/*height: 50%;*/
 	height: 32px;
@@ -147,6 +147,11 @@ body {
 .sidenav a.active {
 	background-color: #666;
 	color: white;
+}
+
+.responseTime {
+	margin-left: 12px;
+	font-size: 13pt;
 }
 
 .resultTable {

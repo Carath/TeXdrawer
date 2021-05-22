@@ -90,14 +90,19 @@ def frontendClassifyRequest():
 def classifyRequest(serviceName, strokes):
 	''' Send a classification request to the chosen service. '''
 	try:
+		headers = {}
 		if serviceName == 'hwrt':
 			formattedRequest = formatter.formatRequest_hwrt(strokes)
-			response = requests.post(url='http://localhost:5000/worker', headers=request.headers, data=formattedRequest)
+			# url = 'http://write-math.com/worker' # website - fails
+			url = 'http://localhost:5000/worker' # local
+			response = requests.post(url=url, headers=headers, data=formattedRequest)
 			result = formatter.extractAnswer_hwrt(response.json())
 		elif serviceName == 'detexify':
-			# formattedRequest = formatter.formatRequest_detexify(strokes)
-			# result = formatter.extractAnswer_detexify(response.json())
-			return handleError('detexify not supported yet.') # TODO: implement this
+			formattedRequest = formatter.formatRequest_detexify(strokes)
+			# url = 'http://detexify.kirelabs.org/api/classify' # website - fails (old version)
+			url = 'http://localhost:3000/classify' # local (from branch 'stack')
+			response = requests.post(url=url, headers=headers, json=formattedRequest)
+			result = formatter.extractAnswer_detexify(response.json())
 		else:
 			return handleError('Unsupported service name: ' + serviceName)
 		return jsonify(result)

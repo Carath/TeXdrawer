@@ -82,6 +82,8 @@ function createOutput(symbols) {
 	output.description = "Each symbol is represented by its metadata, and a list of strokes."
 	output.description += " Each stroke is a list of dots, of the form {x: 50, y: 60, time: 1620256003707};"
 	output.description += " where 0 <= x <= frameWidth, 0 <= y <= frameHeight, and 'time' is the UNIX time.";
+	output.inputLib = "plain-js"; // library used in inputs.js
+	output.preprocessing = "resized";
 	output.frameWidth = canvas.width; // used to save input precision, and for compatibility.
 	output.frameHeight = canvas.height; // same.
 	output.frameMargin = frameMargin;
