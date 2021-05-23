@@ -11,10 +11,13 @@ html, body {
 body {
 }
 
+.main {
+}
+
 .left {
-	width: 15%;
-	/*height: 100%;*/
-	height: 1000px; /*hardcoded for now...*/
+	width: 200px;
+	height: 100%;
+	position: fixed;
 	float: left;
 	overflow-x: hidden;
 	background-color: #222;
@@ -22,19 +25,20 @@ body {
 }
 
 .middle {
-	width: 40%;
+	margin-left: 200px;
+	width: auto;
 	height: 100%;
 	float: left;
 }
 
-.centerArea {
+#centerArea {
 	margin-left: 50px;
 	margin-top: 25px;
 }
 
 .right {
 	width: 45%;
-	height: 100%;
+	height: auto;
 	float: right;
 	margin-top: 50px;
 	/*background-color: orange;*/
@@ -42,7 +46,7 @@ body {
 
 .topLeft {
 	width: 100%;
-	height: 50px;
+	height: 55px;
 	float: left;
 	/*margin-bottom: 10px;*/
 }
@@ -68,15 +72,26 @@ body {
 .logo {
 	margin-left: 10px;
 	margin-top: 5px;
-	/*height: 50%;*/
 	height: 32px;
+	position: fixed;
 	filter: invert(100%);
 }
 
 #sitename {
 	margin-left: 0px;
 	font-size: 24px;
+	position: fixed;
 	color: white;
+}
+
+#about {
+	margin-top: 20px;
+	margin-left: 20px;
+	margin-right: 50px;
+}
+
+#about li {
+	margin-left: 30px;
 }
 
 #Instruction {
@@ -113,7 +128,8 @@ body {
 }
 
 .sidenav {
-	/*height: 100%;*/
+	/*width: 175px;*/
+	/*position: fixed;*/
 }
 
 /* Style the sidenav links and the dropdown button */
@@ -125,7 +141,7 @@ body {
 	display: block;
 	border: none;
 	background: none;
-	width:100%;
+	width: 100%;
 	text-align: left;
 	cursor: pointer;
 	outline: none;
@@ -136,17 +152,17 @@ body {
 	color: #f1f1f1;
 }
 
-/* Main content */
-.main {
-	margin-left: 200px; /* Same as the width of the sidenav */
-	font-size: 20px; /* Increased text to enable scrolling */
-	padding: 0px 10px;
-}
-
 /* Add an active class to the active dropdown button */
 .sidenav a.active {
 	background-color: #666;
 	color: white;
+}
+
+.mathjaxLogo {
+	height: 25px;
+	margin-left: 1px;
+	bottom: 0;
+	position: fixed;
 }
 
 .responseTime {

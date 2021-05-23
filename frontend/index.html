@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-		<link rel="icon" alt="logo" href="img/sqrt-cropped.svg">
+		<link rel="icon" href="img/sqrt-cropped.svg">
 		<link rel="stylesheet" type="text/css" href="styles.css">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 		<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -25,15 +25,33 @@
 			</div>
 			<div class="bottomLeft">
 				<div class="sidenav">
-					<a href="#about">About</a>
-					<a href="#drawing" class="active">Draw</a>
-					<a href="#inspect">Inspect</a>
-					<a href="#query">Query</a>
+					<a id="sidenav-about" class="active">About</a>
+					<a id="sidenav-draw">Draw</a>
+					<a id="sidenav-inspect">Inspect</a>
+					<a id="sidenav-request">Request</a>
+				</div>
+				<div>
+					<a href="https://www.mathjax.org" target="_blank">
+						<img class="mathjaxLogo" title="Powered by MathJax"
+						src="https://www.mathjax.org/badge/badge.gif"
+						border="0" alt="Powered by MathJax"/>
+					</a>
 				</div>
 			</div>
 		</div>
 		<div class="middle">
-			<div class="centerArea">
+			<div id="about">
+				<p>The goal of this small project is (as of now) three-fold:</p>
+				<br>
+				<ul>
+					<li>Help building <em>balanced</em> datasets of handwritten symbols.</li>
+					<li>Benchmark existing open-source services allowing recognition of handwritten symbols, given as sequences of 2D points (called strokes). This is <em>not</em> an <a href="https://en.wikipedia.org/wiki/Optical_character_recognition" target="_blank">OCR</a> project.</li>
+					<li>Modify the tested services, or even build new ones, in order to be the most accurate possible for a specified task. The resulting service, should however be relatively lightweight and fast.</li>
+				</ul>
+				<br>
+				<p>Furthermore, even though any type of handwritten symbols could be relevant to this project, the main focus for now is math symbols. Specifically, appart for numbers, latin and greek alphabets, the system should recognized common math symbols and be able to output either their unicode or LaTeX command name.</p>
+			</div>
+			<div id="centerArea" hidden>
 				<div id="canvasArea">
 					<h3 id="Instruction">Draw here:</h3>
 					<canvas id="myCanvas" class="canvas" width="300" height="300"></canvas>
@@ -42,11 +60,11 @@
 						<input type="button" class="button" id="submitButton" value="submit">
 						<input type="button" class="button" id="showSamplesButton" value="show samples">
 						<input type="button" class="button" id="retryButton" value="retry">
-						<input type="button" class="button" id="queryButton" value="query">
+						<input type="button" class="button" id="requestButton" value="request">
 						<input type="button" class="button" id="testButton" value="test" hidden>
 					</div>
 				</div>
-				<div>
+				<div id="serviceArea">
 					<label for="serviceChoice">Classification service:</label>
 					<select name="serviceChoice" id="serviceChoice">
 						<option value="hwrt" selected>hwrt</option>
@@ -63,7 +81,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="right">
+		<div class="right" hidden>
 			<div id="classification-results"></div>
 		</div>
 	</body>

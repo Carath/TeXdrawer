@@ -1,5 +1,8 @@
 "use strict";
 
+const frameMargin = 0.05;
+var inputSymbols = [];
+
 function boundingBox(strokes) {
 	if (strokes.length == 0 || strokes[0].length == 0) {
 		console.log("Cannot find the bounding box without strokes!");
@@ -52,12 +55,14 @@ function resize(strokes) {
 	return newStrokes;
 }
 
-function createSymbol(metadata, strokes) {
+function createSymbol(id, unicode, latex_command, strokes) {
 	if (strokes.length == 0) {
 		return null;
 	}
 	let symbol = {};
-	symbol.metadata = "metadata";
+	symbol.id = id;
+	symbol.unicode = unicode;
+	symbol.latex_command = latex_command;
 	symbol.totalSamplesNumber = 0;
 	symbol.strokes = strokes;
 	for (let i = 0; i < strokes.length; ++i) {
@@ -67,8 +72,8 @@ function createSymbol(metadata, strokes) {
 }
 
 function submitSymbol() {
-	let resized = resize(inputStrokes);
-	let symbol = createSymbol("metadata", resized); // TODO: use real metadata.
+	// TODO: fetch symbol unicode and latex command:
+	let symbol = createSymbol(inputSymbols.length, "null", "null", resize(inputStrokes));
 	if (symbol) {
 		inputSymbols.push(symbol);
 		clearInputs();

@@ -4,10 +4,13 @@
 
 "use strict";
 
-var inputSymbols = [];
 var inputStrokes = [];
 var currentStroke = [];
 var currCoord = {};
+
+// Used to reduce files size, without data loss:
+const allowTimeReshifting = true;
+var timeOffset = 0;
 
 function startInputs(event) {
 	document.addEventListener("mouseup", stopInputs);
@@ -40,10 +43,13 @@ function isInCanvas(coord) {
 }
 
 function saveCoord() {
+	if (timeOffset == 0 && allowTimeReshifting) {
+		timeOffset = new Date().getTime(); // UNIX time
+	}
 	currentStroke.push({
-		x: currCoord.x,
-		y: currCoord.y,
-		time: new Date().getTime() // UNIX time
+		x: Math.round(currCoord.x),
+		y: Math.round(currCoord.y),
+		time: new Date().getTime() - timeOffset
 	});
 }
 
@@ -75,6 +81,7 @@ function clearInputs() {
 	inputStrokes = [];
 	currentStroke = [];
 	currCoord = [];
+	timeOffset = 0; // resetting the time for each symbol.
 }
 
 function showSamples(strokes, color) {

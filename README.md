@@ -4,8 +4,8 @@
 
 The goal of this small project is (as of now) three-fold:
 
-- Help building *balanced* datasets of handwritten symbols;
-- Benchmark existing (open-source) services allowing recognition of handwritten symbols;
+- Help building *balanced* datasets of handwritten symbols.
+- Benchmark existing open-source services allowing recognition of handwritten symbols, given as sequences of 2D points (called strokes). This is *not* an [OCR](https://en.wikipedia.org/wiki/Optical_character_recognition) project.
 - Modify the tested services, or even build new ones, in order to be the most accurate possible for a specified task. The resulting service, should however be relatively lightweight and fast.
 
 Furthermore, even though any type of handwritten symbols could be relevant to this project, the main focus for now is math symbols. Specifically, appart for numbers, latin and greek alphabets, the system should recognized common math symbols and be able to output either their unicode or LaTeX command name.
@@ -33,7 +33,7 @@ pip3 install hwrt==0.2.1
 
 * detexify
 
-The project backend needs to be cloned. However, the *master* branch seems to not work properly, so a slightly modified version of the *stack* branch is used:
+The project backend needs to be cloned. However, the *master* branch seems to not work properly, so a slightly modified version of the *stack* branch is used. For increased stability, the [docker](https://docs.docker.com/engine/install) build is used, be sure to have it installed.
 
 ```
 git clone https://github.com/kirel/detexify-hs-backend.git

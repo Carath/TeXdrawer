@@ -1,7 +1,6 @@
 "use strict";
 
 // Settings:
-const frameMargin = 0.05;
 const lineThickness = 6;
 const samplesSize = 3;
 const samplesOpacity = 0.5;
@@ -23,42 +22,58 @@ window.onload = function() {
 	let stats = document.getElementById("stats");
 	stats.textContent = "";
 
-	let exportButton = document.getElementById("exportButton");
-	exportButton.addEventListener("click", function(e) {
+	$("#exportButton").click(function(e) {
 		save();
 	});
 
-	let retryButton = document.getElementById("retryButton");
-	retryButton.addEventListener("click", function(e) {
+	$("#retryButton").click(function(e) {
 		clearInputs();
 	});
 
-	let submitButton = document.getElementById("submitButton");
-	submitButton.addEventListener("click", function(e) {
+	$("#submitButton").click(function(e) {
 		submitSymbol();
 	});
 
-	let showSamplesButton = document.getElementById("showSamplesButton"); // for testing purposes
-	showSamplesButton.addEventListener("click", function(e) {
+	$("#showSamplesButton").click(function(e) { // for testing purposes
 		let resized = resize(inputStrokes);
 		showSamples(inputStrokes, samplesColor);
 		showSamples(resized, rescaledSamplesColor);
 	});
 
-	let queryButton = document.getElementById("queryButton");
-	queryButton.addEventListener("click", function(e) {
-		classifyRequest(serviceChoice.value, inputStrokes);
-		// TODO: apply some preprocessing like resize() here?
+	$("#requestButton").click(function(e) {
+		classifyRequest(serviceChoice.value, inputStrokes); // sending raw inputs.
 	});
 
-	let testButton = document.getElementById("testButton");
-	testButton.addEventListener("click", function(e) {
+	$("#testButton").click(function(e) {
 		typeset("#mathjax-test", "$$\\frac{a^3}{1-a^2}$$");
 	});
 	// testButton.hidden = false;
 
-	let serviceChoice = document.getElementById("serviceChoice");
-	serviceChoice.addEventListener("change", function(e) {
-		// console.log("Chosen service:", serviceChoice.value);
+	$("#sidenav-about").click(function(e) {
+		$(this).addClass('active').siblings().removeClass('active');
+		$("#about").show();
+		$("#centerArea, .right").hide();
+		clearInputs();
+	});
+
+	$("#sidenav-draw").click(function(e) {
+		$(this).addClass('active').siblings().removeClass('active');
+		$("#about, #requestButton, #serviceArea").hide();
+		$("#centerArea, #exportButton, #submitButton, #showSamplesButton, .right").show();
+		clearInputs();
+	});
+
+	$("#sidenav-inspect").click(function(e) {
+		// $(this).addClass('active').siblings().removeClass('active');
+		// $("#about").hide();
+		// clearInputs();
+		alert("Note done yet!");
+	});
+
+	$("#sidenav-request").click(function(e) {
+		$(this).addClass('active').siblings().removeClass('active');
+		$("#about, #exportButton, #submitButton, #showSamplesButton").hide();
+		$("#centerArea, #requestButton, #serviceArea, .right").show();
+		clearInputs();
 	});
 }
