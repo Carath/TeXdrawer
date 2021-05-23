@@ -8,6 +8,6 @@
 - obtain frequencies of each symbol, in each dataset
 - create custom classes based on groups of symbols
 - get request for all supported symbols/classes
+- backend: type annotations?
 - allow to draw symbols from LaTeX packages with MathJax
-- add checks to make sure the backend and services are running
-- normalize detexify probabilities
+- compare MathJax with [KaTeX](https://katex.org/)

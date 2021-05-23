@@ -15,7 +15,7 @@ def extractAnswer_hwrt(hwrt_answer):
 		# First semantic only. Overall separator is ';;':
 		guess["unicode_dec"] = symbol["semantics"].split(";")[2]
 		guess["class"] = "null"
-		guess["score"] = symbol["probability"]
+		guess["score"] = "%.1f %%" % (100. * symbol["probability"])
 		formatted_answer.append(guess)
 	return formatted_answer
 
@@ -30,22 +30,19 @@ def formatRequest_detexify(strokes):
 def extractAnswer_detexify(detexify_answer):
 	if "results" in detexify_answer:
 		detexify_answer = detexify_answer["results"]
+	# print('\ndetexify_answer:', detexify_answer, '\n')
 	formatted_answer = []
 	for symbol in detexify_answer:
 		guess = {}
 		guess["latex_command"] = extractLatexCommand_detexify(symbol)
 		guess["unicode_dec"] = "null"
 		guess["class"] = "null"
-		guess["score"] = symbol["score"]
+		guess["score"] = "%.3f" % (symbol["score"])
 		formatted_answer.append(guess)
 	return formatted_answer
 
 # Supporting both old and new versions of detexify:
 def extractLatexCommand_detexify(symbol):
-	# result = symbol["id"].split('-', maxsplit=2)[-1]
-	# if result[0] == '_' and len(result) > 1:
-	# 	return '\\' + result[1:]
-	# return result
 	if "symbol" in symbol:
 		return symbol["command"]
 	return symbol["id"].split('-', maxsplit=2)[-1]

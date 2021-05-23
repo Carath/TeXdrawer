@@ -13,10 +13,10 @@ app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app) # enables CORS for all routes.
 
 
-def handleError(errorMessage):
+def handleError(errorMessage, statusCode):
 	''' Prints in the server logs the error message, and returns it as response. '''
 	print(errorMessage)
-	return Response(errorMessage, content_type='text/plain; charset=UTF-8', status=500)
+	return Response(errorMessage, content_type='text/plain; charset=UTF-8', status=statusCode)
 
 
 @app.route('/')
@@ -60,7 +60,7 @@ def testPOST():
 		jsonified = json.dumps({'foundName': foundName})
 		return Response(jsonified, content_type='application/json')
 	except Exception as e:
-		return handleError('Unknown error in testPOST():\n' + traceback.format_exc())
+		return handleError('Unknown error in testPOST():\n' + traceback.format_exc(), 500)
 
 
 # Careful: all URL to which requests will be redirected _must_ be hardcoded (security issues).
@@ -83,8 +83,7 @@ def frontendClassifyRequest():
 		strokes = receivedInput['strokes']
 		return classifyRequest(serviceName, strokes)
 	except Exception as e:
-		return handleError(traceback.format_exc())
-		return handleError('Unknown error in frontendClassifyRequest():\n' + traceback.format_exc())
+		return handleError('Unknown error in frontendClassifyRequest():\n' + traceback.format_exc(), 500)
 
 
 def classifyRequest(serviceName, strokes):
@@ -104,10 +103,10 @@ def classifyRequest(serviceName, strokes):
 			response = requests.post(url=url, headers=headers, json=formattedRequest)
 			result = formatter.extractAnswer_detexify(response.json())
 		else:
-			return handleError('Unsupported service name: ' + serviceName)
+			return handleError('Unsupported service name: ' + serviceName, 404)
 		return jsonify(result)
 	except Exception as e:
-		return handleError('Unknown error in classifyRequest():\n' + traceback.format_exc())
+		return handleError('Unknown error in classifyRequest():\n' + traceback.format_exc(), 500)
 
 
 def redirectCrossOrigin(url, request):
@@ -122,10 +121,10 @@ def redirectCrossOrigin(url, request):
 		elif request.method == 'HEAD':
 			response = requests.head(url=url)
 		else:
-			return handleError('Unsupported HTTP method: ' + request.method)
+			return handleError('Unsupported HTTP method: ' + request.method, 405)
 		return Response(response)
 	except Exception as e:
-		return handleError('Failed to send a HTTP request to: ' + url)
+		return handleError('Failed to send a HTTP request to: ' + url, 404)
 
 
 def extractRequestData(request):

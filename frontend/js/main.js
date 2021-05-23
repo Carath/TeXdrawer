@@ -53,6 +53,7 @@ window.onload = function() {
 		$(this).addClass('active').siblings().removeClass('active');
 		$("#about").show();
 		$("#centerArea, .right").hide();
+		$('#classification-results').empty();
 		clearInputs();
 	});
 
@@ -60,12 +61,14 @@ window.onload = function() {
 		$(this).addClass('active').siblings().removeClass('active');
 		$("#about, #requestButton, #serviceArea").hide();
 		$("#centerArea, #exportButton, #submitButton, #showSamplesButton, .right").show();
+		$('#classification-results').empty();
 		clearInputs();
 	});
 
 	$("#sidenav-inspect").click(function(e) {
 		// $(this).addClass('active').siblings().removeClass('active');
 		// $("#about").hide();
+		// $('#classification-results').empty();
 		// clearInputs();
 		alert("Note done yet!");
 	});
@@ -74,6 +77,7 @@ window.onload = function() {
 		$(this).addClass('active').siblings().removeClass('active');
 		$("#about, #exportButton, #submitButton, #showSamplesButton").hide();
 		$("#centerArea, #requestButton, #serviceArea, .right").show();
+		$('#classification-results').empty();
 		clearInputs();
 	});
 }

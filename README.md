@@ -8,7 +8,7 @@ The goal of this small project is (as of now) three-fold:
 - Benchmark existing open-source services allowing recognition of handwritten symbols, given as sequences of 2D points (called strokes). This is *not* an [OCR](https://en.wikipedia.org/wiki/Optical_character_recognition) project.
 - Modify the tested services, or even build new ones, in order to be the most accurate possible for a specified task. The resulting service, should however be relatively lightweight and fast.
 
-Furthermore, even though any type of handwritten symbols could be relevant to this project, the main focus for now is math symbols. Specifically, appart for numbers, latin and greek alphabets, the system should recognized common math symbols and be able to output either their unicode or LaTeX command name.
+Furthermore, even though any type of handwritten symbols could be relevant to this project, the main focus for now is math symbols. Specifically, appart for numbers, latin and greek alphabets, the system should recognize common math symbols and be able to output either their unicode or LaTeX command name.
 
 
 ## Installation
