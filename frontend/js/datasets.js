@@ -77,7 +77,7 @@ function submitSymbol() {
 	if (symbol) {
 		inputSymbols.push(symbol);
 		clearInputs();
-		stats.textContent = "Saved symbols count: " + inputSymbols.length;
+		$('#stats').html("Saved symbols count: " + inputSymbols.length);
 	} // else, skipping this symbol.
 }
 
@@ -112,11 +112,7 @@ function save() {
 	// console.log("jsonOutput:", jsonOutput);
 	let filename = "output-" + timestamp() + ".json";
 	download(jsonOutput, filename, "text/plain");
-
-	// Cleanup:
-	let stats = document.getElementById("stats");
-	stats.textContent = "";
-	inputSymbols = [];
+	// Cleanup, without emptying 'inputSymbols':
 	clearInputs();
 }
 

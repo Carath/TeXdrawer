@@ -47,8 +47,8 @@ function classifyRequest(serviceName, strokes) {
 }
 
 function drawClassificationResults(response, responseTime) {
-	let content = "<p class='responseTime'>Response time: " + responseTime + " ms</p><br>"
-		+ "<table class='resultTable' role='table' name='resultTable' id='resultTable'>"
+	let content = "<p class='responseTime'>Response time: " + responseTime + " ms, drawing time: <span id='drawingTime'>"
+		+ "</span> ms</p><br><table class='resultTable' role='table' name='resultTable' id='resultTable'>"
 		+ "<thead><tr><th>Symbol</th><th>Unicode</th><th>LaTeX</th><th>Score</th></tr></thead><tbody>";
 
 	$.each(response, function(index, value) {
@@ -64,5 +64,8 @@ function drawClassificationResults(response, responseTime) {
 		}
 	});
 	content += "</tbody></table>";
+	let start = performance.now();
 	typeset("#classification-results", content);
+	let drawingTime = performance.now() - start;
+	$('#drawingTime').html(drawingTime);
 }

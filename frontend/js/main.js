@@ -19,9 +19,6 @@ window.onload = function() {
 	// acquisition must continue outside!
 	canvas.addEventListener("mousedown", startInputs);
 
-	let stats = document.getElementById("stats");
-	stats.textContent = "";
-
 	$("#exportButton").click(function(e) {
 		save();
 	});
@@ -57,11 +54,23 @@ window.onload = function() {
 		clearInputs();
 	});
 
+	$("#sidenav-request").click(function(e) {
+		$(this).addClass('active').siblings().removeClass('active');
+		$("#about, #exportButton, #submitButton, #showSamplesButton").hide();
+		$("#centerArea, #requestButton, #serviceArea, .right").show();
+		$('#classification-results').empty();
+		$('#usage').html("Trying out some classification services:");
+		$('#stats').html("");
+		clearInputs();
+	});
+
 	$("#sidenav-draw").click(function(e) {
 		$(this).addClass('active').siblings().removeClass('active');
 		$("#about, #requestButton, #serviceArea").hide();
 		$("#centerArea, #exportButton, #submitButton, #showSamplesButton, .right").show();
 		$('#classification-results').empty();
+		$('#usage').html("Dataset creation tool:");
+		$('#stats').html("");
 		clearInputs();
 	});
 
@@ -71,13 +80,5 @@ window.onload = function() {
 		// $('#classification-results').empty();
 		// clearInputs();
 		alert("Note done yet!");
-	});
-
-	$("#sidenav-request").click(function(e) {
-		$(this).addClass('active').siblings().removeClass('active');
-		$("#about, #exportButton, #submitButton, #showSamplesButton").hide();
-		$("#centerArea, #requestButton, #serviceArea, .right").show();
-		$('#classification-results').empty();
-		clearInputs();
 	});
 }
