@@ -44,5 +44,6 @@ def extractAnswer_detexify(detexify_answer):
 # Supporting both old and new versions of detexify:
 def extractLatexCommand_detexify(symbol):
 	if "symbol" in symbol:
-		return symbol["command"]
+		return symbol["symbol"]["command"]
+	# Careful! Some symbols e.g '[' may not start with '\\':
 	return symbol["id"].split('-', maxsplit=2)[-1]

@@ -8,6 +8,7 @@
 - obtain frequencies of each symbol, in each dataset
 - create custom classes based on groups of symbols
 - get request for all supported symbols/classes
-- backend: type annotations?
+- backend: type annotations? => typing + {Mypy vs Pytype vs Pyre}
 - allow to draw symbols from LaTeX packages with MathJax
 - compare MathJax with [KaTeX](https://katex.org/)
+- compare Flask with FastAPI (?)

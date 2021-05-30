@@ -13,11 +13,9 @@ Furthermore, even though any type of handwritten symbols could be relevant to th
 
 ## Installation
 
-Only Linux is supported as of now. Moreover, ``` python 3.6+ ``` and ``` pip3 ``` must be installed.
-
 * TeXdrawer
 
-For now, the frontend requires no installation steps. The backend however, needs the following command to be run:
+The dataset creation tool from TeXdrawer's frontend has no installation steps (beside getting the code). To try out some classification services or benchmark them, the backend must however be used. It requires ``` python 3.6+ ``` and ``` pip3 ``` installed, and the command below to be run. Note that TeXdrawer has only been tested on Linux at this time.
 
 ```
 pip3 install -r backend/requirements.txt
@@ -121,6 +119,7 @@ Services to benchmark (locally):
   - [documentation](https://pythonhosted.org/hwrt)
   - [source code](https://github.com/MartinThoma/hwrt)
   - [by same author](https://github.com/MartinThoma/write-math)
+  - [dataset](http://www.martin-thoma.de/write-math/data/)
 
 - Detexify:
   - [webpage](http://detexify.kirelabs.org/classify.html)

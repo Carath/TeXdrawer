@@ -55,12 +55,12 @@ function resize(strokes) {
 	return newStrokes;
 }
 
-function createSymbol(id, unicode, latex_command, strokes) {
+function createSymbol(rank, unicode, latex_command, strokes) {
 	if (strokes.length == 0) {
 		return null;
 	}
 	let symbol = {};
-	symbol.id = id;
+	symbol.rank = rank;
 	symbol.unicode = unicode;
 	symbol.latex_command = latex_command;
 	symbol.totalSamplesNumber = 0;
