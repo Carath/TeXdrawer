@@ -81,7 +81,10 @@ def frontendClassifyRequest():
 		# print('receivedInput:', receivedInput)
 		serviceName = receivedInput['serviceName']
 		strokes = receivedInput['strokes']
-		return classifyRequest(serviceName, strokes)
+		result, status = classifyRequest(serviceName, strokes)
+		if status != 200:
+			return handleError('Failure from classifyRequest()', status)
+		return jsonify(result)
 	except Exception as e:
 		return handleError('Unknown error in frontendClassifyRequest():\n' + traceback.format_exc(), 500)
 
@@ -103,10 +106,12 @@ def classifyRequest(serviceName, strokes):
 			response = requests.post(url=url, headers=headers, json=formattedRequest)
 			result = formatter.extractAnswer_detexify(response.json())
 		else:
-			return handleError('Unsupported service name: ' + serviceName, 404)
-		return jsonify(result)
+			print('Unsupported service name: ', serviceName)
+			return ([], 404)
+		return (result, 200)
 	except Exception as e:
-		return handleError('Unknown error in classifyRequest():\n' + traceback.format_exc(), 500)
+		print('Unknown error in classifyRequest()')
+		return ([], 500)
 
 
 def redirectCrossOrigin(url, request):

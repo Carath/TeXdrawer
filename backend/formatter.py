@@ -1,22 +1,34 @@
 import json
 
+def createGuess(dataset_id, latex_command, unicode_dec, package, symbol_class, score):
+	guess = {}
+	guess["dataset_id"] = dataset_id
+	guess["latex_command"] = latex_command
+	guess["unicode_dec"] = unicode_dec
+	guess["package"] = package
+	guess["symbol_class"] = symbol_class
+	guess["score"] = score
+	return guess
+
 ##################################################
 # hwrt:
 
 def formatRequest_hwrt(strokes):
 	return {"secret": "", "classify": json.dumps(strokes)}
 
-
 def extractAnswer_hwrt(hwrt_answer):
 	formatted_answer = []
 	for symbol in hwrt_answer:
-		guess = {}
-		guess["latex_command"] = symbol["complete_latex"]
 		# First semantic only. Overall separator is ';;':
-		guess["unicode_dec"] = symbol["semantics"].split(";")[2]
-		guess["class"] = "null"
-		guess["score"] = "%.1f %%" % (100. * symbol["probability"])
-		formatted_answer.append(guess)
+		semantic = symbol["semantics"].split(";")
+		formatted_answer.append(createGuess(
+			dataset_id = semantic[0],
+			latex_command = semantic[1],
+			unicode_dec = semantic[2],
+			package = "null",
+			symbol_class = "null",
+			score = "%.1f %%" % (100. * symbol["probability"])
+		))
 	return formatted_answer
 
 ##################################################
@@ -33,12 +45,14 @@ def extractAnswer_detexify(detexify_answer):
 	# print('\ndetexify_answer:', detexify_answer, '\n')
 	formatted_answer = []
 	for symbol in detexify_answer:
-		guess = {}
-		guess["latex_command"] = extractLatexCommand_detexify(symbol)
-		guess["unicode_dec"] = "null"
-		guess["class"] = "null"
-		guess["score"] = "%.3f" % (symbol["score"])
-		formatted_answer.append(guess)
+		formatted_answer.append(createGuess(
+			dataset_id = 0,
+			latex_command = extractLatexCommand_detexify(symbol),
+			unicode_dec = "null",
+			package = "null",
+			symbol_class = "null",
+			score = "%.3f" % (symbol["score"])
+		))
 	return formatted_answer
 
 # Supporting both old and new versions of detexify:

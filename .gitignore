@@ -1,1 +1,6 @@
+datasets/
+
+# Standard Python gitignore:
 __pycache__/
+*.py[cod]
+*$py.class

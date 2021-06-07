@@ -55,7 +55,7 @@ function drawClassificationResults(response, responseTime) {
 		if (index < maxPrintedResults) {
 			let latex_command = value['latex_command'];
 			let unicode_dec = value['unicode_dec'];
-			let symbolClass = value['class'];
+			let symbolClass = value['symbol_class'];
 			let score = value['score']; // already formatted string.
 
 			content += "<tr><td>$" + latex_command + "$</td><td>" + unicode_dec + "</td><td><input id=\"latex-"

@@ -119,7 +119,7 @@ Services to benchmark (locally):
   - [documentation](https://pythonhosted.org/hwrt)
   - [source code](https://github.com/MartinThoma/hwrt)
   - [by same author](https://github.com/MartinThoma/write-math)
-  - [dataset](http://www.martin-thoma.de/write-math/data/)
+  - [dataset](http://www.martin-thoma.de/write-math/data)
 
 - Detexify:
   - [webpage](http://detexify.kirelabs.org/classify.html)
