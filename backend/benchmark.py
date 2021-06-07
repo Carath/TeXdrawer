@@ -59,33 +59,39 @@ def format_detexify_strokes(strokes):
 	return newstrokes
 
 
+# Will replace the one in formatter:
+
+def extract_detexify_symbol(string):
+	symbol = string.split('-', maxsplit=2)[-1]
+	if symbol[0] == '_' and len(symbol) > 1:
+		return '\\' + symbol[1:]
+	return symbol
+
+
 # Dataset entries loaded as string. Heavy parsing will only be done during the benchmark,
 # to enable reading quickly only parts of a dataset:
 def loadDataset(service, datasetPath):
 	print('Loading the dataset from:', datasetPath)
 	lines = getLines(datasetPath)
-	classes, dataset = set(), []
+	classes, dataset = set(), [] # dataset will be a list of (latex_command, strokes)
 	if service == 'hwrt':
+		symbolMap = getSymbolMap(service)
 		for line in lines[1:]:
 			splitted = line.split(';')
-			classes.add(splitted[0]) # TODO: replace with the latex_command ?
-			dataset.append((splitted[0], splitted[2]))
+			latex_command = getSymbolName(symbolMap, splitted[0])
+			classes.add(latex_command)
+			dataset.append((latex_command, splitted[2]))
 	elif service == 'detexify':
 		for start in range(len(lines)):
 			if 'COPY samples' in lines[start]:
 				break
 		for rank in range(start+1, len(lines)):
-			if '\\.' in lines[rank]:
+			if '\\.' in lines[rank]: # reached the end.
 				break
-			sample = lines[rank].split('\t')
-			# print('sample:', sample)
-
-			latex_command = sample[1].split('-', maxsplit=2)[-1] # TODO: verify this!
-			if len(latex_command) > 1:
-				latex_command = '\\' + latex_command[1:]
-
+			splitted = lines[rank].split('\t')
+			latex_command = extract_detexify_symbol(splitted[1])
 			classes.add(latex_command)
-			dataset.append((latex_command, sample[2]))
+			dataset.append((latex_command, splitted[2]))
 	else:
 		print('Unsupported service:', service)
 	print('Loaded %d samples.' % len(dataset))
@@ -103,10 +109,8 @@ def benchmark(service, dataset, top_k):
 	for rank in range(samplesNumber):
 		key, strokes = dataset[rank]
 		strokes = json.loads(strokes)
-
 		if service == 'detexify':
 			strokes = format_detexify_strokes(strokes)
-
 		# print(key, strokes)
 		result, status = server.classifyRequest(service, strokes)
 		# print('result:', result)
@@ -117,13 +121,8 @@ def benchmark(service, dataset, top_k):
 			accuracyMap[key] = [0] * (top_k+1) # sample and top_k success number
 		accuracyMap[key][0] += 1
 		max_results = min(top_k, len(result))
-
-		responseKey = 'dataset_id'
-		if service == 'detexify':
-			responseKey = 'latex_command'
-
 		for i in range(max_results):
-			if key == result[i][responseKey]:
+			if key == result[i]['latex_command']:
 				accuracyMap[key][i+1] += 1
 				break
 	aggregateStats(service, top_k, samplesNumber, accuracyMap)
@@ -131,7 +130,7 @@ def benchmark(service, dataset, top_k):
 
 def aggregateStats(service, top_k, samplesNumber, accuracyMap):
 	classesNumber = len(accuracyMap)
-	if samplesNumber == 0 or classesNumber == 0:
+	if samplesNumber <= 0 or classesNumber <= 0:
 		print('Not stats to aggregate.')
 		return
 	accuracies = [0.] * top_k
@@ -158,7 +157,6 @@ formatPercent = lambda x : '%5.1f %%' % x
 formatPercentList = lambda percents : list(map(formatPercent, percents))
 
 def saveResults(service, top_k, samplesNumber, accuracies, meanAccuracies, accuracyMap):
-	symbolMap = getSymbolMap(service)
 	outputFilename = 'logs/%s_top%d.txt' % (service, top_k)
 	file = open(outputFilename, 'w')
 	file.write('Service: %s\nNumber of symbols: %d\nAccuracies:\n\n' % (service, len(accuracyMap)))
@@ -166,8 +164,7 @@ def saveResults(service, top_k, samplesNumber, accuracies, meanAccuracies, accur
 	table = [['MEAN (dataset)', samplesNumber] + formatPercentList(accuracies)]
 	table += [['MEAN (classes)', samplesNumber] + formatPercentList(meanAccuracies)]
 	for key in accuracyMap:
-		latex_command = getSymbolName(symbolMap, key)
-		table.append([latex_command, accuracyMap[key][0]] + formatPercentList(accuracyMap[key][1:]))
+		table.append([key, accuracyMap[key][0]] + formatPercentList(accuracyMap[key][1:]))
 	table.sort(key=lambda row : row[1], reverse=True)
 	stringTable = tabulate(table, headers=headers, tablefmt="github", colalign=("left", *["right"] * (top_k+1)))
 	file.write(stringTable + '\n')
@@ -190,18 +187,12 @@ if __name__ == '__main__':
 
 
 # TODO:
-# - support detexify
 # - support custom classes
 # > frontend > datasets : symbol metadata
 # recall / precision / F1 ?
-# issue: incompatible dataset keys
 
 # "Trying out some classification services:" -> locally
 # new buttons layout - https://www.w3schools.com/csS/css3_buttons.asp
-
-# N.B: detexify benchmark is biased for now: test already known (?)
-
-# divide by given dataset size -> crop dataset!
 
 # - add curl requests examples
 # - shield the benchmark against unsupported symbols/classes from a dataset
