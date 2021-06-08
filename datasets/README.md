@@ -12,6 +12,6 @@ Link: http://www.martin-thoma.de/write-math/data
 * detexify/
 
 - detexify.sql (1,0G)
-- symbols.json
+- symbols.txt
 
 Link: https://github.com/kirel/detexify-data

@@ -141,7 +141,6 @@
 \alpha
 \amalg
 \angle
-\angle
 \approx
 \approxeq
 \aquarius
@@ -306,7 +305,6 @@
 \guilsinglright
 \gvertneqq
 \hbar
-\hbar
 \heartsuit
 \hookleftarrow
 \hookrightarrow
@@ -314,10 +312,7 @@
 \iddots
 \idotsint
 \iiiint
-\iiiint
 \iiint
-\iiint
-\iint
 \iint
 \imath
 \in
@@ -368,7 +363,6 @@
 \lfloor
 \lhd
 \libra
-\lightning
 \lightning
 \ll
 \llbracket
@@ -653,7 +647,6 @@
 \rightharpoonup
 \rightleftarrows
 \rightleftharpoons
-\rightleftharpoons
 \rightmoon
 \rightrightarrows
 \rightsquigarrow
@@ -729,7 +722,6 @@
 \textasciicircum
 \textasciitilde
 \textasteriskcentered
-\textasteriskcentered
 \textbabygamma
 \textbackslash
 \textbaht
@@ -754,7 +746,6 @@
 \textbraceright
 \textbrokenbar
 \textbullet
-\textbullet
 \textbullseye
 \textceltpal
 \textcent
@@ -767,7 +758,6 @@
 \textcolonmonetary
 \textcommatailz
 \textcopyleft
-\textcopyright
 \textcopyright
 \textcorner
 \textcrb
@@ -789,8 +779,6 @@
 \textctz
 \textcurrency
 \textdagger
-\textdagger
-\textdaggerdbl
 \textdaggerdbl
 \textdblhyphen
 \textdblhyphenchar
@@ -798,7 +786,6 @@
 \textdegree
 \textdiscount
 \textdiv
-\textdollar
 \textdollar
 \textdollaroldstyle
 \textdong
@@ -881,13 +868,9 @@
 \textopencorner
 \textopeno
 \textordfeminine
-\textordfeminine
-\textordmasculine
 \textordmasculine
 \textpalhook
 \textparagraph
-\textparagraph
-\textperiodcentered
 \textperiodcentered
 \textpertenthousand
 \textperthousand
@@ -913,7 +896,6 @@
 \textrbrackdbl
 \textrecipe
 \textreferencemark
-\textregistered
 \textregistered
 \textrevapostrophe
 \textreve
@@ -954,10 +936,8 @@
 \textscy
 \textsecstress
 \textsection
-\textsection
 \textservicemark
 \textsoftsign
-\textsterling
 \textsterling
 \textstretchc
 \textsurd
@@ -971,7 +951,6 @@
 \texttildelow
 \texttimes
 \texttoneletterstem
-\texttrademark
 \texttrademark
 \texttslig
 \textturna

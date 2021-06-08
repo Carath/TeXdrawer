@@ -15,6 +15,13 @@ symbolsMap_detexify = datasetDir_detexify + 'symbols.json'
 datasetPath_detexify = datasetDir_detexify + 'detexify.sql' # train & test from same file...
 
 
+def getFileContent(filename):
+	file = open(filename, 'r')
+	content = file.read()
+	file.close()
+	# print(content)
+	return content
+
 # Note: for .csv files, getLines() is 2 times faster than using csv.reader()!
 def getLines(filename):
 	file = open(filename, 'r')
@@ -22,6 +29,14 @@ def getLines(filename):
 	file.close()
 	# print(lines)
 	return lines
+
+
+# content: string
+def writeContent(filename, content):
+	file = open(filename, 'w')
+	file.write(content)
+	file.close()
+	print('Done writing to:', filename)
 
 
 def getSymbolMap(service):
@@ -33,7 +48,13 @@ def getSymbolMap(service):
 			symbolMap[splitted[0]] = splitted[1]
 		return symbolMap
 	elif service == 'detexify':
-		return {} # not map needed!
+		# lines = getLines(symbolsMap_detexify)
+		# content = getFileContent(symbolsMap_detexify)
+		# print(content[:100])
+		# print('lines:', *lines, sep='\n')
+		# content = json.loads(content)
+		# print(len(content))
+		return {} # no map needed!
 	else:
 		print('Unsupported service:', service)
 		return {}
@@ -68,12 +89,12 @@ def extract_detexify_symbol(string):
 	return symbol
 
 
-# Dataset entries loaded as string. Heavy parsing will only be done during the benchmark,
-# to enable reading quickly only parts of a dataset:
+# Dataset entries loaded as string. Heavy parsing will only be done during
+# the benchmark, to enable reading quickly only parts of a dataset:
 def loadDataset(service, datasetPath):
 	print('Loading the dataset from:', datasetPath)
 	lines = getLines(datasetPath)
-	classes, dataset = set(), [] # dataset will be a list of (latex_command, strokes)
+	classes, dataset = set(), [] # dataset will be a list of (latex_command, strokes string)
 	if service == 'hwrt':
 		symbolMap = getSymbolMap(service)
 		for line in lines[1:]:
@@ -169,36 +190,36 @@ def saveResults(service, top_k, samplesNumber, accuracies, meanAccuracies, accur
 	stringTable = tabulate(table, headers=headers, tablefmt="github", colalign=("left", *["right"] * (top_k+1)))
 	file.write(stringTable + '\n')
 	file.close()
-	print('Writing done to:', outputFilename)
+	print('Done writing to:', outputFilename)
 
 
 if __name__ == '__main__':
 
 	# hwrt: train: 151160 samples, test: 17074 (split 90% / 10%). 369 classes.
 	# This takes ~ 3m 30s to run:
-	classes_hwrt, testDataset_hwrt = loadDataset('hwrt', testDatasetPath_hwrt)
+	classes_hwrt, testDataset_hwrt = loadDataset('hwrt', datasetPath=testDatasetPath_hwrt)
 	benchmark('hwrt', dataset=testDataset_hwrt, top_k=5)
 
 	# # detexify: 210454 samples, 1077 classes.
 	# # This takes ~ 35m to run:
-	# classes_detexify, testDataset_detexify = loadDataset('detexify', datasetPath_detexify)
+	# classes_detexify, testDataset_detexify = loadDataset('detexify', datasetPath=datasetPath_detexify)
 	# benchmark('detexify', dataset=testDataset_detexify[-20000:], top_k=5)
 
 
 
 # TODO:
+
+# Frontend:
+# - frontend > datasets : symbol metadata
+# - new buttons layout - https://www.w3schools.com/csS/css3_buttons.asp
+
+# Backend:
 # - support custom classes
-# > frontend > datasets : symbol metadata
-# recall / precision / F1 ?
-
-# "Trying out some classification services:" -> locally
-# new buttons layout - https://www.w3schools.com/csS/css3_buttons.asp
-
+# - recall / precision / F1 ?
 # - add curl requests examples
-# - shield the benchmark against unsupported symbols/classes from a dataset
-# - Detexify: final number of symbols? 1072 vs ? vs 1077 ???
-# - split this files: formatter / loader / benchmark
-# - int vs string keys, strokes as string -> optimization?
+# - verify found keys vs symbols map (inclusion needed)
+# - split this files: formatter / loader / benchmark (& update formatter)
+# - cleanup logs/ directory
 
 # Benchmark issues:
 # - MEAN (classes) stats probably wrong: many classes with too few samples.

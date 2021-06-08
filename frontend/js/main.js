@@ -59,7 +59,7 @@ window.onload = function() {
 		$("#about, #exportButton, #submitButton, #showSamplesButton").hide();
 		$("#centerArea, #requestButton, #serviceArea, .right").show();
 		$('#classification-results').empty();
-		$('#usage').html("Trying out some classification services:");
+		$('#usage').html("Trying out some classification services (locally):");
 		$('#stats').html("");
 		clearInputs();
 	});
