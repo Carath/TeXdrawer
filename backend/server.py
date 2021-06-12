@@ -110,7 +110,7 @@ def classifyRequest(serviceName, strokes):
 			return ([], 404)
 		return (result, 200)
 	except Exception as e:
-		print('Unknown error in classifyRequest()')
+		print('%s service not available.' % serviceName)
 		return ([], 500)
 
 

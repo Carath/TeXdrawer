@@ -11,7 +11,7 @@ trainDatasetPath_hwrt = datasetDir_hwrt + 'train-data.csv'
 testDatasetPath_hwrt = datasetDir_hwrt + 'test-data.csv'
 
 datasetDir_detexify = '../datasets/detexify/'
-symbolsMap_detexify = datasetDir_detexify + 'symbols.json'
+symbolsMap_detexify = datasetDir_detexify + 'symbols.txt'
 datasetPath_detexify = datasetDir_detexify + 'detexify.sql' # train & test from same file...
 
 
@@ -45,19 +45,16 @@ def getSymbolMap(service):
 		lines = getLines(symbolsMap_hwrt)
 		for line in lines[1:]:
 			splitted = line.split(';')
-			symbolMap[splitted[0]] = splitted[1]
-		return symbolMap
+			symbolMap[splitted[0]] = splitted[1] # id -> latex_command
+		# return symbolMap
 	elif service == 'detexify':
-		# lines = getLines(symbolsMap_detexify)
-		# content = getFileContent(symbolsMap_detexify)
-		# print(content[:100])
-		# print('lines:', *lines, sep='\n')
-		# content = json.loads(content)
-		# print(len(content))
-		return {} # no map needed!
+		lines = getLines(symbolsMap_detexify)
+		for line in lines:
+			symbolMap[line] = line # latex_command -> latex_command
 	else:
 		print('Unsupported service:', service)
 		return {}
+	return symbolMap
 
 
 def getSymbolName(symbolMap, key):
@@ -81,26 +78,26 @@ def format_detexify_strokes(strokes):
 
 
 # Will replace the one in formatter:
-
 def extract_detexify_symbol(string):
 	symbol = string.split('-', maxsplit=2)[-1]
-	if symbol[0] == '_' and len(symbol) > 1:
-		return '\\' + symbol[1:]
+	symbol = symbol.replace('_', '\\')
+	if symbol == '\\\\':
+		return '\\_'
 	return symbol
 
 
-# Dataset entries loaded as string. Heavy parsing will only be done during
-# the benchmark, to enable reading quickly only parts of a dataset:
+# Dataset partially loaded: strokes kept as string. Heavy parsing will only be done
+# during the benchmark, to enable reading quickly only parts of a dataset:
 def loadDataset(service, datasetPath):
 	print('Loading the dataset from:', datasetPath)
+	symbolMap = getSymbolMap(service)
 	lines = getLines(datasetPath)
-	classes, dataset = set(), [] # dataset will be a list of (latex_command, strokes string)
+	foundClasses, dataset = set(), [] # dataset will be a list of (latex_command, strokes string)
 	if service == 'hwrt':
-		symbolMap = getSymbolMap(service)
 		for line in lines[1:]:
 			splitted = line.split(';')
 			latex_command = getSymbolName(symbolMap, splitted[0])
-			classes.add(latex_command)
+			foundClasses.add(latex_command)
 			dataset.append((latex_command, splitted[2]))
 	elif service == 'detexify':
 		for start in range(len(lines)):
@@ -111,15 +108,23 @@ def loadDataset(service, datasetPath):
 				break
 			splitted = lines[rank].split('\t')
 			latex_command = extract_detexify_symbol(splitted[1])
-			classes.add(latex_command)
+			foundClasses.add(latex_command)
 			dataset.append((latex_command, splitted[2]))
 	else:
 		print('Unsupported service:', service)
+
+	# Checking all dataset symbols are supported:
+	serviceClasses = set(symbolMap.values())
+	unknownSymbols = foundClasses.difference(serviceClasses)
+	if unknownSymbols != set():
+		print("%d unsupported symbols by service '%s' found in the dataset:"
+			% (len(unknownSymbols), service), '', *unknownSymbols, '', sep='\n')
+
 	print('Loaded %d samples.' % len(dataset))
-	print('Found %d classes.' % len(classes))
+	print('Found %d classes.' % len(foundClasses))
 	# print('Dataset preview:', *dataset[:10], sep="\n\n")
-	# print('Classes:', *classes, sep='\n')
-	return classes, dataset
+	# print('Classes:', *foundClasses, sep='\n')
+	return foundClasses, dataset
 
 
 # Benchmarks the classification capabilities of the given service:
@@ -206,7 +211,6 @@ if __name__ == '__main__':
 	# benchmark('detexify', dataset=testDataset_detexify[-20000:], top_k=5)
 
 
-
 # TODO:
 
 # Frontend:
@@ -220,8 +224,32 @@ if __name__ == '__main__':
 # - verify found keys vs symbols map (inclusion needed)
 # - split this files: formatter / loader / benchmark (& update formatter)
 # - cleanup logs/ directory
+# - complete loading of datasets?
 
 # Benchmark issues:
 # - MEAN (classes) stats probably wrong: many classes with too few samples.
 # - Detexify: training supposed to be the first 20k samples, not sure about that...
 # New samples need to be created to have a more robust validation.
+# Detail methodology! (detex 20K last, #notAllSymbols...)
+
+# TODO:
+# - re-generate detexify stats!
+# - Detail detexify failings...
+
+# Fixed with new version of extract_detexify_symbol():
+
+	# 4 unsupported symbols by service 'detexify' found in the whole dataset:
+	# \not_sim
+	# \not_approx
+	# \not_equiv
+	# \not_simeq
+	# Loaded 210454 samples.
+	# Found 1077 classes.
+
+	# vs
+	# \not\approx
+	# \not\equiv
+	# \not\sim
+	# \not\simeq
+
+	# Also, the old symbol '\_' (probably correct) has been replaced by '\\' in the new version...
