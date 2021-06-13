@@ -47,7 +47,7 @@ def extractAnswer_detexify(detexify_answer):
 	for symbol in detexify_answer:
 		formatted_answer.append(createGuess(
 			dataset_id = 0,
-			latex_command = extractLatexCommand_detexify(symbol),
+			latex_command = extractLatexCommand_detexify(symbol["id"]),
 			unicode_dec = "null",
 			package = "null",
 			symbol_class = "null",
@@ -56,8 +56,9 @@ def extractAnswer_detexify(detexify_answer):
 	return formatted_answer
 
 # Supporting both old and new versions of detexify:
-def extractLatexCommand_detexify(symbol):
-	if "symbol" in symbol:
-		return symbol["symbol"]["command"]
-	# Careful! Some symbols e.g '[' may not start with '\\':
-	return symbol["id"].split('-', maxsplit=2)[-1]
+def extractLatexCommand_detexify(string):
+	symbol = string.split('-', maxsplit=2)[-1]
+	symbol = symbol.replace('_', '\\')
+	if symbol == '\\\\':
+		return '\\_'
+	return symbol
