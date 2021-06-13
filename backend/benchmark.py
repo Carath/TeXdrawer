@@ -2,7 +2,7 @@ import json
 from tabulate import tabulate
 
 # Backend code:
-import server, loader
+import server, loader, formatter
 
 
 # Benchmarks the classification capabilities of the given service:
@@ -14,7 +14,7 @@ def benchmark(service, dataset, top_k):
 		key, strokes = dataset[rank]
 		strokes = json.loads(strokes)
 		if service == 'detexify':
-			strokes = loader.format_detexify_datasetStrokes(strokes)
+			strokes = formatter.format_detexify_datasetStrokes(strokes)
 		# print(key, strokes)
 		result, status = server.classifyRequest(service, strokes)
 		# print('result:', result)

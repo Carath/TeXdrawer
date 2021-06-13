@@ -114,6 +114,15 @@ html, body {
 	margin-top: 5px;
 	margin-bottom: 20px;
 	font-size: 15px;
+	padding: 4px 8px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+}
+
+#serviceChoice {
+	font-size: 14px;
+	padding: 4px 8px;
 }
 
 #stats {
@@ -174,7 +183,7 @@ html, body {
 }
 
 .command-box {
-	width: 150px;
+	width: 155px;
 	text-align: left;
 	font-size: 12pt;
 }

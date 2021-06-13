@@ -16,6 +16,7 @@ def createGuess(dataset_id, latex_command, unicode_dec, package, symbol_class, s
 def formatRequest_hwrt(strokes):
 	return {"secret": "", "classify": json.dumps(strokes)}
 
+
 def extractAnswer_hwrt(hwrt_answer):
 	formatted_answer = []
 	for symbol in hwrt_answer:
@@ -38,6 +39,7 @@ def extractAnswer_hwrt(hwrt_answer):
 def formatRequest_detexify(strokes):
 	return {"strokes": strokes}
 
+
 # Supporting both old and new versions of detexify:
 def extractAnswer_detexify(detexify_answer):
 	if "results" in detexify_answer:
@@ -55,6 +57,7 @@ def extractAnswer_detexify(detexify_answer):
 		))
 	return formatted_answer
 
+
 # Supporting both old and new versions of detexify:
 def extractLatexCommand_detexify(string):
 	symbol = string.split('-', maxsplit=2)[-1]
@@ -62,3 +65,14 @@ def extractLatexCommand_detexify(string):
 	if symbol == '\\\\':
 		return '\\_'
 	return symbol
+
+
+# Translate [x, y, t] points to {'x': x, 'y': y, 'z': z} format:
+def format_detexify_datasetStrokes(datasetStrokes):
+	newStrokes = []
+	for stroke in datasetStrokes:
+		newStroke = []
+		for point in stroke:
+			newStroke.append({'x' : point[0], 'y': point[1], 't': point[2]}) # N.B: t/time unused here.
+		newStrokes.append(newStroke)
+	return newStrokes

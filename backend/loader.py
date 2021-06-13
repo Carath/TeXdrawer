@@ -33,11 +33,18 @@ def writeContent(filename, content):
 	print('Done writing to:', filename)
 
 
-def getSymbols(service):
-	return set(getSymbolMap(service).values())
+# Returns a sorted list of the supported symbols:
+def getSymbolsSorted(service):
+	return sorted(getSymbolsSet(service))
 
 
-def getSymbolMap(service):
+# Returns a set of the supported symbols:
+def getSymbolsSet(service):
+	return set(getSymbolsMap(service).values())
+
+
+# Returns a map of the supported symbols. Used for parsing datasets:
+def getSymbolsMap(service):
 	symbolMap = {}
 	if service == 'hwrt':
 		lines = getLines(symbolsMap_hwrt)
@@ -63,22 +70,11 @@ def getSymbolName(symbolMap, key):
 		return '???'
 
 
-# Translate [x, y, t] points to {'x': x, 'y': y, 'z': z} format:
-def format_detexify_datasetStrokes(datasetStrokes):
-	newStrokes = []
-	for stroke in datasetStrokes:
-		newStroke = []
-		for point in stroke:
-			newStroke.append({'x' : point[0], 'y': point[1], 't': point[2]}) # N.B: t/time unused here.
-		newStrokes.append(newStroke)
-	return newStrokes
-
-
 # Dataset partially loaded: strokes kept as string; use json.loads() to fully get them. Heavy parsing
 # will only be done during the benchmark, to enable reading quickly only parts of a dataset:
 def loadDataset(service, datasetPath):
 	print('Loading the dataset from:', datasetPath)
-	symbolMap = getSymbolMap(service)
+	symbolMap = getSymbolsMap(service)
 	lines = getLines(datasetPath)
 	foundClasses, dataset = set(), [] # dataset will be a list of (latex_command, strokes string)
 	if service == 'hwrt':

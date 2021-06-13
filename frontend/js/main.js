@@ -37,8 +37,13 @@ window.onload = function() {
 		showSamples(resized, rescaledSamplesColor);
 	});
 
-	$("#requestButton").click(function(e) {
+	$("#classifyButton").click(function(e) {
 		classifyRequest(serviceChoice.value, inputStrokes); // sending raw inputs.
+	});
+
+	$("#symbolsButton").click(function(e) {
+		symbolsRequest(serviceChoice.value);
+		clearInputs();
 	});
 
 	$("#testButton").click(function(e) {
@@ -54,10 +59,10 @@ window.onload = function() {
 		clearInputs();
 	});
 
-	$("#sidenav-request").click(function(e) {
+	$("#sidenav-classify").click(function(e) {
 		$(this).addClass('active').siblings().removeClass('active');
 		$("#about, #exportButton, #submitButton, #showSamplesButton").hide();
-		$("#centerArea, #requestButton, #serviceArea, .right").show();
+		$("#centerArea, #classifyButton, #symbolsButton, #serviceArea, .right").show();
 		$('#classification-results').empty();
 		$('#usage').html("Trying out some classification services (locally):");
 		$('#stats').html("");
@@ -66,7 +71,7 @@ window.onload = function() {
 
 	$("#sidenav-draw").click(function(e) {
 		$(this).addClass('active').siblings().removeClass('active');
-		$("#about, #requestButton, #serviceArea").hide();
+		$("#about, #classifyButton, #symbolsButton, #serviceArea").hide();
 		$("#centerArea, #exportButton, #submitButton, #showSamplesButton, .right").show();
 		$('#classification-results').empty();
 		$('#usage').html("Dataset creation tool:");

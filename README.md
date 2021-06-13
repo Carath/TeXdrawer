@@ -80,7 +80,7 @@ To run the frontend without backend, simply open the ``` frontend/index.html ```
 python3 backend/server.py
 ```
 
-The frontend is then reachable at ``` http://localhost:5050/app ```.
+The frontend is then reachable at ``` http://localhost:5050/app ```. Note that it cannot work offline as of now, for it needs to download external resources (e.g JQuery, MathJAx).
 
 * hwrt
 
@@ -108,6 +108,15 @@ sudo sh run.sh
   - service goal weighted by dataset balance
   - custom goal (to be defined)
 - Build the best service possible for the desired task.
+
+
+## Benchmarks
+
+Benchmarks of the classification capabilities of the previous services have been done, and their results are saved in ``` backend/logs/ ```. Note however that:
+- Many classes have too few samples, their recall score is probably highly inaccurate.
+- Detexify: training seems to have been done only on the first 20K of the 210454 samples. Here, testing has been done on the last 20K samples (this took ~ 35 minutes). Only 970 of the 1077 symbols are present in those test samples.
+
+For both services, new samples need to be created in order to have a more robust validation.
 
 
 ## Links

@@ -4,7 +4,7 @@ from flask_cors import CORS
 import requests
 
 # Backend code:
-import formatter
+import formatter, loader
 
 filePath = os.path.dirname(os.path.realpath(__file__))
 # print('File path:', filePath, '\n')
@@ -73,7 +73,17 @@ def redirectionTest():
 	return redirect(url, code=307)
 
 
-@app.route('/classify-request', methods=['GET', 'POST'])
+@app.route('/symbols/<serviceName>', methods=['GET'])
+def frontendGetSymbols(serviceName):
+	''' Returns a sorted list of supported symbols for the given service. '''
+	try:
+		symbols = loader.getSymbolsSorted(serviceName)
+		return jsonify(symbols)
+	except Exception as e:
+		return handleError('Unknown error in frontendGetSymbols():\n' + traceback.format_exc(), 500)
+
+
+@app.route('/classify', methods=['POST'])
 def frontendClassifyRequest():
 	''' Sends the frontend's request to the chosen service: '''
 	try:
