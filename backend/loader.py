@@ -73,7 +73,7 @@ def getSymbolName(symbolMap, key):
 # Dataset partially loaded: strokes kept as string; use json.loads() to fully get them. Heavy parsing
 # will only be done during the benchmark, to enable reading quickly only parts of a dataset:
 def loadDataset(service, datasetPath):
-	print('Loading the dataset from:', datasetPath)
+	print('-> Loading the dataset from:', datasetPath)
 	symbolMap = getSymbolsMap(service)
 	lines = getLines(datasetPath)
 	foundClasses, dataset = set(), [] # dataset will be a list of (latex_command, strokes string)
@@ -104,7 +104,7 @@ def loadDataset(service, datasetPath):
 		print("%d unsupported symbols by service '%s' found in the dataset:"
 			% (len(unknownSymbols), service), '', *unknownSymbols, '', sep='\n')
 	print('Loaded %d samples.' % len(dataset))
-	print('Found %d classes.' % len(foundClasses))
+	print('Found %d classes.\n' % len(foundClasses))
 	# print('Dataset preview:', *dataset[:10], sep="\n\n")
 	# print('Classes:', *foundClasses, sep='\n')
 	return foundClasses, dataset

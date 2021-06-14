@@ -23,7 +23,7 @@ def handleError(errorMessage, statusCode):
 @app.route('/hello')
 def helloWorld():
 	''' To check if the server is reachable: '''
-	return jsonify({'Hello': 'World'}) # shorter than json.dumps() + Response()
+	return jsonify({'TeXdrawer version': '1.0.0'}) # shorter than json.dumps() + Response()
 
 
 @app.route('/app')
@@ -73,11 +73,11 @@ def redirectionTest():
 	return redirect(url, code=307)
 
 
-@app.route('/symbols/<serviceName>', methods=['GET'])
-def frontendGetSymbols(serviceName):
+@app.route('/symbols/<service>', methods=['GET'])
+def frontendGetSymbols(service):
 	''' Returns a sorted list of supported symbols for the given service. '''
 	try:
-		symbols = loader.getSymbolsSorted(serviceName)
+		symbols = loader.getSymbolsSorted(service)
 		return jsonify(symbols)
 	except Exception as e:
 		return handleError('Unknown error in frontendGetSymbols():\n' + traceback.format_exc(), 500)
@@ -89,9 +89,9 @@ def frontendClassifyRequest():
 	try:
 		receivedInput = extractRequestData(request)
 		# print('receivedInput:', receivedInput)
-		serviceName = receivedInput['serviceName']
+		service = receivedInput['service']
 		strokes = receivedInput['strokes']
-		result, status = classifyRequest(serviceName, strokes)
+		result, status = classifyRequest(service, strokes)
 		if status != 200:
 			return handleError('Failure from classifyRequest()', status)
 		return jsonify(result)
@@ -99,28 +99,28 @@ def frontendClassifyRequest():
 		return handleError('Unknown error in frontendClassifyRequest():\n' + traceback.format_exc(), 500)
 
 
-def classifyRequest(serviceName, strokes):
+def classifyRequest(service, strokes):
 	''' Send a classification request to the chosen service. '''
 	try:
 		headers = {}
-		if serviceName == 'hwrt':
+		if service == 'hwrt':
 			formattedRequest = formatter.formatRequest_hwrt(strokes)
 			# url = 'http://write-math.com/worker' # website - fails
 			url = 'http://localhost:5000/worker' # local
 			response = requests.post(url=url, headers=headers, data=formattedRequest)
 			result = formatter.extractAnswer_hwrt(response.json())
-		elif serviceName == 'detexify':
+		elif service == 'detexify':
 			formattedRequest = formatter.formatRequest_detexify(strokes)
 			# url = 'http://detexify.kirelabs.org/api/classify' # website - fails (old version)
 			url = 'http://localhost:3000/classify' # local (from branch 'stack')
 			response = requests.post(url=url, headers=headers, json=formattedRequest)
 			result = formatter.extractAnswer_detexify(response.json())
 		else:
-			print('Unsupported service name: ', serviceName)
+			print('Unsupported service name: ', service)
 			return ([], 404)
 		return (result, 200)
 	except Exception as e:
-		print('-> %s service not available.' % serviceName)
+		print('-> %s service not available.' % service)
 		return ([], 500)
 
 

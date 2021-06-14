@@ -1,4 +1,4 @@
-import json
+import sys, json
 from tabulate import tabulate
 
 # Backend code:
@@ -7,7 +7,7 @@ import server, loader, formatter
 
 # Benchmarks the classification capabilities of the given service:
 def benchmark(service, dataset, top_k):
-	print('Starting the benchmark...')
+	print('-> Starting the benchmark of service:', service)
 	recallMap = {}
 	samplesNumber = len(dataset)
 	for rank in range(samplesNumber):
@@ -75,13 +75,23 @@ def saveResults(service, top_k, samplesNumber, microRecalls, macroRecalls, recal
 
 
 if __name__ == '__main__':
+	if len(sys.argv) < 2:
+		print('Please give as arg the name of the service to benchmark.\nSupported services: hwrt, detexify')
+		exit()
+	service = sys.argv[1]
 
-	# hwrt: train: 151160 samples, test: 17074 (split 90% / 10%). 369 classes.
-	# This takes ~ 3m 30s to run:
-	foundClasses_hwrt, testDataset_hwrt = loader.loadDataset('hwrt', loader.testDatasetPath_hwrt)
-	benchmark('hwrt', dataset=testDataset_hwrt, top_k=5)
+	if service == 'hwrt':
+		# hwrt: train: 151160 samples, test: 17074 (split 90% / 10%). 369 classes.
+		# This takes ~ 3m 30s to run:
+		foundClasses, testDataset = loader.loadDataset(service, loader.testDatasetPath_hwrt)
+		benchmark(service, dataset=testDataset, top_k=5)
 
-	# # detexify: 210454 samples, training done on first 20K, testing on last 20K. 1077 classes overall.
-	# # This takes ~ 35m to run:
-	# foundClasses_detexify, testDataset_detexify = loader.loadDataset('detexify', loader.datasetPath_detexify)
-	# benchmark('detexify', dataset=testDataset_detexify[-20000:], top_k=5)
+	elif service == 'detexify':
+		# detexify: 210454 samples, training done on first 20K, testing on last 20K. 1077 classes overall.
+		# This takes ~ 35m to run:
+		foundClasses, testDataset = loader.loadDataset(service, loader.datasetPath_detexify)
+		benchmark(service, dataset=testDataset[-20000:], top_k=5)
+
+	else:
+		print('Unsupported service:', service)
+		exit()

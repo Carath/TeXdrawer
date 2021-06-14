@@ -17,4 +17,3 @@ Backend:
 - compare Flask with [FastAPI](https://fastapi.tiangolo.com/)
 - support custom classes
 - obtain frequencies of each symbol, in each dataset
-- add curl requests examples for hwrt, detexify & TeXdrawer (in backend's own README)

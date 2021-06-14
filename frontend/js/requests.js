@@ -34,7 +34,7 @@ function classifyRequest(serviceName, strokes) {
 		preprocessing: "none",
 		frameWidth: canvas.width,
 		frameHeight: canvas.height,
-		serviceName: serviceName,
+		service: serviceName,
 		strokes: strokes
 	};
 
