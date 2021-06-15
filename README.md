@@ -13,7 +13,7 @@ Furthermore, even though any type of handwritten symbols could be relevant to th
 
 ## Installation
 
-* TeXdrawer
+#### TeXdrawer
 
 The dataset creation tool from TeXdrawer's frontend has no installation steps (beside getting the code). To try out some classification services or benchmark them, the backend must however be used. It requires ``` python 3.6+ ``` and ``` pip3 ``` installed, and the command below to be run. Note that TeXdrawer has only been tested on Linux at this time.
 
@@ -23,13 +23,13 @@ pip3 install -r backend/requirements.txt
 
 For TeXdrawer to be able to test/benchmark other services, further installation steps are required:
 
-* hwrt
+#### hwrt
 
 ```
 pip3 install hwrt==0.2.1
 ```
 
-* detexify
+#### detexify
 
 The project backend needs to be cloned. However, the *master* branch seems to not work properly, so a slightly modified version of the *stack* branch is used. For increased stability, the [docker](https://docs.docker.com/engine/install) build is used, be sure to have it installed.
 
@@ -72,7 +72,7 @@ Note that detexify docker image roughlty weights 3.6 Gb, be sure to have enough 
 
 ## Usage
 
-* TeXdrawer
+#### TeXdrawer
 
 To run the frontend without backend, simply open the ``` frontend/index.html ``` file with any (recent) web browser. To launch the backend, run:
 
@@ -82,17 +82,20 @@ python3 backend/server.py
 
 The frontend is then reachable at ``` http://localhost:5050/app ```. Note that it cannot work offline as of now, for it needs to download external resources (e.g JQuery, MathJAx).
 
-* hwrt
+#### hwrt
 
-Run the command below. The service should be usable at ``` http://localhost:5000 ```:
+This service supports 369 symbols, most of which are also supported by detexify. Most notable exceptions are numbers and the latin alphabet, along with ``` < ``` and ``` > ```.
+
+To run it, use the command below. The service should be usable at ``` http://localhost:5000 ```:
 
 ```
 hwrt serve
 ```
 
-* detexify
 
-Run the command below. To make sure the service is running, check ``` http://localhost:3000 ```.
+#### detexify
+
+This service supports 1077 math symbols. To run it, use the command below. To make sure the service is running, check ``` http://localhost:3000 ```.
 
 ```
 sudo sh run.sh

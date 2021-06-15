@@ -6,24 +6,24 @@ const backendIP = "http://" + (location.host === "" ? "localhost:5050" : locatio
 // console.log("Backend IP:", backendIP);
 
 // Get a sorted list of supported symbols for the given service:
-function symbolsRequest(serviceName) {
+function symbolsRequest(service) {
 	let startTime = performance.now();
 	$.ajax({
 		type: "GET",
-		url: backendIP + "/symbols/" + serviceName,
+		url: backendIP + "/symbols/" + service,
 		// Accept: "application/json; charset=utf-8",
 
 		success: function(response) {
 			drawResultsTable(response, startTime, "symbols");
 		},
 		error: function(xhr) {
-			errorHandling(xhr);
+			errorHandling(xhr, service);
 		}
 	});
 }
 
 // Requesting the classifying services, using JQuery:
-function classifyRequest(serviceName, strokes) {
+function classifyRequest(service, strokes) {
 	if (strokes.length == 0) {
 		alert("Cannot send a request without any strokes!");
 		return;
@@ -34,7 +34,7 @@ function classifyRequest(serviceName, strokes) {
 		preprocessing: "none",
 		frameWidth: canvas.width,
 		frameHeight: canvas.height,
-		service: serviceName,
+		service: service,
 		strokes: strokes
 	};
 
@@ -50,17 +50,17 @@ function classifyRequest(serviceName, strokes) {
 			drawResultsTable(response, startTime, "classify");
 		},
 		error: function(xhr) {
-			errorHandling(xhr);
+			errorHandling(xhr, service);
 		}
 	});
 }
 
-function errorHandling(xhr) {
+function errorHandling(xhr, service) {
 	if (xhr.status == 0) {
 		alert("Error. Are you sure the backend is running? Please check: " + backendIP);
 	}
 	else {
-		alert("Request failed. Make sure the service '" + serviceName + "' is running...");
+		alert("Request failed. Make sure the service '" + service + "' is running...");
 	}
 }
 

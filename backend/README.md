@@ -18,7 +18,7 @@ To benchmark a supported service, run the following command with the service nam
 Here are listed examples of requests, using *curl*, to the supported services:
 
 
-* TeXdrawer
+#### TeXdrawer
 
 - Check if the service is running, and get its version:
 
@@ -41,7 +41,7 @@ curl -X POST http://localhost:5050/classify -H 'Content-Type:application/json' -
 The last two requests are also available for detexify, by just replacing the service name.
 
 
-* hwrt
+#### hwrt
 
 - Check if the service is running, and get its version:
 
@@ -56,7 +56,7 @@ curl -X POST http://localhost:5000/worker -H 'Content-Type:application/x-www-for
 ```
 
 
-* Detexify (version from *stack* branch):
+#### Detexify (version from *stack* branch):
 
 - Check if the service is running, and get its version:
 

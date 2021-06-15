@@ -1,13 +1,24 @@
+import os
+
 # Backend code:
 import formatter
 
 
-datasetDir_hwrt = '../datasets/hwrt/'
+fullPath = os.getcwd() # from where the script is run.
+workingDir = fullPath.split('/')[-1]
+
+# Useful for getting the correct files path when running
+# the server from backend/ or from the root directory:
+targetDir = './'
+if workingDir == 'backend':
+	targetDir = '../'
+
+datasetDir_hwrt = targetDir + 'datasets/hwrt/'
 symbolsMap_hwrt = datasetDir_hwrt + 'symbols.csv'
 trainDatasetPath_hwrt = datasetDir_hwrt + 'train-data.csv'
 testDatasetPath_hwrt = datasetDir_hwrt + 'test-data.csv'
 
-datasetDir_detexify = '../datasets/detexify/'
+datasetDir_detexify = targetDir + 'datasets/detexify/'
 symbolsMap_detexify = datasetDir_detexify + 'symbols.txt'
 datasetPath_detexify = datasetDir_detexify + 'detexify.sql' # train & test from same file...
 
