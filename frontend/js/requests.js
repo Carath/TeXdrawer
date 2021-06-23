@@ -14,13 +14,19 @@ function symbolsRequest(service) {
 		// Accept: "application/json; charset=utf-8",
 
 		success: function(response) {
-			drawResultsTable(response, startTime, "symbols");
+			drawResultsTable(service, response, startTime, "symbols");
 		},
 		error: function(xhr) {
 			errorHandling(xhr, service);
 		}
 	});
 }
+
+
+// TODO: make this selectable from the UI:
+const MAPP = "none";
+// const MAPP = "map1";
+
 
 // Requesting the classifying services, using JQuery:
 function classifyRequest(service, strokes) {
@@ -35,6 +41,7 @@ function classifyRequest(service, strokes) {
 		frameWidth: canvas.width,
 		frameHeight: canvas.height,
 		service: service,
+		mapping: MAPP,
 		strokes: strokes
 	};
 
@@ -47,7 +54,7 @@ function classifyRequest(service, strokes) {
 		data: JSON.stringify(input),
 
 		success: function(response) {
-			drawResultsTable(response, startTime, "classify");
+			drawResultsTable(service, response, startTime, "classify");
 		},
 		error: function(xhr) {
 			errorHandling(xhr, service);
@@ -64,7 +71,7 @@ function errorHandling(xhr, service) {
 	}
 }
 
-function drawResultsTable(response, startTime, mode) {
+function drawResultsTable(service, response, startTime, mode) {
 	let responseTime = performance.now() - startTime; // in ms
 
 	// // For testing:
@@ -94,10 +101,14 @@ function drawResultsTable(response, startTime, mode) {
 			let scoreHTML = "";
 
 			if (mode == "classify") {
-				latex_command = value['latex_command'];
-				unicode_dec = value['unicode_dec'];
-				symbolClass = value['symbol_class']; // unused for now.
-				scoreHTML = "<td>" + value['score'] + "</td>"; // score already a formatted string.
+				let score = (100. * value["score"]).toFixed(1) + " %";
+				if (service == "detexify") {
+					score = value["score"].toFixed(3);
+				}
+				latex_command = value["latex_command"];
+				unicode_dec = value["unicode_dec"];
+				symbolClass = value["symbol_class"]; // unused for now.
+				scoreHTML = "<td>" + score + "</td>";
 			}
 
 			content += "<tr><td>$" + latex_command + "$</td><td>" + unicode_dec + "</td><td><input id=\"latex-"

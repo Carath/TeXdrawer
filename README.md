@@ -116,7 +116,7 @@ sudo sh run.sh
 ## Benchmarks
 
 Benchmarks of the classification capabilities of the previous services have been done, and their results are saved in ``` backend/logs/ ```. Note however that:
-- Some symbols (e.g ``` \sum ``` and ``` \Sigma ```) look exactly the same, other are very similar. Regrouping such symbols in classes will greatly help the classifiers.
+- Some symbols (e.g ``` \sum ``` and ``` \Sigma ```) look exactly the same, other are very similar. To solve this issue, an optional symbol mapping mechanism has been implemented. It allows to regroup such symbols in same classes, thus helping the classifiers.
 - Many classes have too few samples, their recall score is probably highly inaccurate.
 - Detexify: training seems to have been done only on the first 20K of the 210454 samples. Here, testing has been done on the last 20K samples (this took ~ 35 minutes). Only 970 of the 1077 symbols are present in those test samples.
 

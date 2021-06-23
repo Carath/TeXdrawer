@@ -4,7 +4,7 @@ from flask_cors import CORS
 import requests
 
 # Backend code:
-import formatter, loader
+import loader, formatter, mappings
 
 filePath = os.path.dirname(os.path.realpath(__file__))
 # print('File path:', filePath, '\n')
@@ -81,6 +81,7 @@ def frontendGetSymbols(service):
 		return jsonify(symbols)
 	except Exception as e:
 		return handleError('Unknown error in frontendGetSymbols():\n' + traceback.format_exc(), 500)
+# TODO: support custom classes here too?
 
 
 @app.route('/classify', methods=['POST'])
@@ -90,8 +91,9 @@ def frontendClassifyRequest():
 		receivedInput = extractRequestData(request)
 		# print('receivedInput:', receivedInput)
 		service = receivedInput['service']
+		mapping = receivedInput['mapping']
 		strokes = receivedInput['strokes']
-		result, status = classifyRequest(service, strokes)
+		result, status = classifyRequest(service, mapping, strokes)
 		if status != 200:
 			return handleError('Failure from classifyRequest()', status)
 		return jsonify(result)
@@ -99,26 +101,26 @@ def frontendClassifyRequest():
 		return handleError('Unknown error in frontendClassifyRequest():\n' + traceback.format_exc(), 500)
 
 
-def classifyRequest(service, strokes):
+def classifyRequest(service, mapping, strokes):
 	''' Send a classification request to the chosen service. '''
 	try:
-		headers = {}
 		if service == 'hwrt':
 			formattedRequest = formatter.formatRequest_hwrt(strokes)
 			# url = 'http://write-math.com/worker' # website - fails
 			url = 'http://localhost:5000/worker' # local
-			response = requests.post(url=url, headers=headers, data=formattedRequest)
-			result = formatter.extractAnswer_hwrt(response.json())
+			response = requests.post(url=url, headers={}, data=formattedRequest)
+			answers = formatter.extractAnswer_hwrt(response.json())
 		elif service == 'detexify':
 			formattedRequest = formatter.formatRequest_detexify(strokes)
 			# url = 'http://detexify.kirelabs.org/api/classify' # website - fails (old version)
 			url = 'http://localhost:3000/classify' # local (from branch 'stack')
-			response = requests.post(url=url, headers=headers, json=formattedRequest)
-			result = formatter.extractAnswer_detexify(response.json())
+			response = requests.post(url=url, headers={}, json=formattedRequest)
+			answers = formatter.extractAnswer_detexify(response.json())
 		else:
-			print('Unsupported service name: ', service)
+			print('Unsupported service:', service)
 			return ([], 404)
-		return (result, 200)
+		answers = formatter.aggregateAnswers(service, mapping, answers)
+		return (answers, 200)
 	except Exception as e:
 		print('-> %s service not available.' % service)
 		return ([], 500)
