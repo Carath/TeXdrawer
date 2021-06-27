@@ -3,8 +3,6 @@ import json
 # Backend code:
 import loader
 
-mappingsLoader = {}
-
 
 # This is agnostic of any service.
 # 'classes' contains the equivalence classes of the given mapping;
@@ -12,17 +10,20 @@ mappingsLoader = {}
 class Mapping:
 	def __init__(self, name, classes, projection):
 		self.name = name
-		self.classes = classes
-		self.projection = projection
+		self.classes = classes # dict
+		self.projection = projection # dict
+
+
+mappingsLoader = {'none': Mapping('none', {}, {})} # default mapping
 
 
 def getMapping(mappingName):
 	try:
 		if mappingName in mappingsLoader:
 			return mappingsLoader[mappingName]
-		mappingPath = '../symbols/mappings/%s.json' % mappingName
-		print('Loading:', mappingPath)
+		mappingPath = loader.mappingsDir + '%s.json' % mappingName
 		equivClasses = getEquivalenceClasses(mappingPath)
+		print('Loaded:', mappingPath)
 		projectionMap = buildProjectionMap(equivClasses)
 		mappingsLoader[mappingName] = Mapping(mappingName, equivClasses, projectionMap)
 	except:

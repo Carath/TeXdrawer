@@ -10,11 +10,11 @@ Run the Flask server with ``` python3 server.py ```
 
 To benchmark a supported service, run the command below with the service name as arg (here ``` hwrt ```).
 
-``` python3 benchmark.py hwrt```
+``` python3 benchmark.py hwrt ```
 
 Furthermore, an optional symbol mapping can also be given (default to ``` none ```):
 
-``` python3 benchmark.py hwrt map1```
+``` python3 benchmark.py hwrt map1 ```
 
 
 ## Requests

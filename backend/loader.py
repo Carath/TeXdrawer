@@ -4,23 +4,37 @@ import os
 import formatter
 
 
+# Useful for getting the correct files path when running
+# the server from backend/ or from the root directory:
+
 fullPath = os.getcwd() # from where the script is run.
 workingDir = fullPath.split('/')[-1]
 
-# Useful for getting the correct files path when running
-# the server from backend/ or from the root directory:
-targetDir = './'
+rootDir = './'
 if workingDir == 'backend':
-	targetDir = '../'
+	rootDir = '../'
 
-datasetDir_hwrt = targetDir + 'datasets/hwrt/'
+# Enables Linux paths to work in Windows:
+def realPath(path):
+	return (rootDir + path).replace('/', os.sep)
+
+
+symbolsDir = realPath('symbols/')
+mappingsDir = realPath('symbols/mappings/')
+datasetDir_hwrt = realPath('datasets/hwrt/')
+datasetDir_detexify = realPath('datasets/detexify/')
+
+symbolsList_hwrt = symbolsDir + 'hwrt.txt'
+symbolsList_detexify = symbolsDir + 'detexify.txt'
+
 symbolsMap_hwrt = datasetDir_hwrt + 'symbols.csv'
 trainDatasetPath_hwrt = datasetDir_hwrt + 'train-data.csv'
 testDatasetPath_hwrt = datasetDir_hwrt + 'test-data.csv'
 
-datasetDir_detexify = targetDir + 'datasets/detexify/'
 symbolsMap_detexify = datasetDir_detexify + 'symbols.txt'
 datasetPath_detexify = datasetDir_detexify + 'detexify.sql' # train & test from same file...
+
+# TODO: differentiate between symbols maps for loading the datasets, and symbols lists...
 
 
 def getFileContent(filename):
@@ -31,7 +45,7 @@ def getFileContent(filename):
 	return content
 
 
-# Note: for .csv files, getLines() is 2 times faster than using csv.reader()!
+# Note: for .csv files, getLines() + splitting is 2 times faster than using csv.reader()!
 def getLines(filename):
 	return getFileContent(filename).splitlines()
 
@@ -42,6 +56,13 @@ def writeContent(filename, content):
 	file.write(content)
 	file.close()
 	print('Done writing to:', filename)
+
+
+def getSupportedMappings():
+	mappingFiles = os.listdir(mappingsDir)
+	mappingFiles = list(filter(lambda file : '.json' in file, mappingFiles))
+	mappingFiles = list(map(lambda file : file.split('.json')[0], mappingFiles))
+	return ['none'] + list(filter(lambda file : file != '', mappingFiles))
 
 
 # Returns a sorted list of the supported symbols:

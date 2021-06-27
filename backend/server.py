@@ -81,7 +81,16 @@ def frontendGetSymbols(service):
 		return jsonify(symbols)
 	except Exception as e:
 		return handleError('Unknown error in frontendGetSymbols():\n' + traceback.format_exc(), 500)
-# TODO: support custom classes here too?
+
+
+@app.route('/mappings', methods=['GET'])
+def frontendGetMappings():
+	''' Returns the list of available mappings. '''
+	try:
+		mappingList = loader.getSupportedMappings()
+		return jsonify(mappingList)
+	except Exception as e:
+		return handleError('Unknown error in frontendGetMappings():\n' + traceback.format_exc(), 500)
 
 
 @app.route('/classify', methods=['POST'])
@@ -104,21 +113,19 @@ def frontendClassifyRequest():
 def classifyRequest(service, mapping, strokes):
 	''' Send a classification request to the chosen service. '''
 	try:
+		formattedRequest = formatter.formatRequest(service, strokes)
 		if service == 'hwrt':
-			formattedRequest = formatter.formatRequest_hwrt(strokes)
 			# url = 'http://write-math.com/worker' # website - fails
 			url = 'http://localhost:5000/worker' # local
 			response = requests.post(url=url, headers={}, data=formattedRequest)
-			answers = formatter.extractAnswer_hwrt(response.json())
 		elif service == 'detexify':
-			formattedRequest = formatter.formatRequest_detexify(strokes)
 			# url = 'http://detexify.kirelabs.org/api/classify' # website - fails (old version)
 			url = 'http://localhost:3000/classify' # local (from branch 'stack')
 			response = requests.post(url=url, headers={}, json=formattedRequest)
-			answers = formatter.extractAnswer_detexify(response.json())
 		else:
 			print('Unsupported service:', service)
 			return ([], 404)
+		answers = formatter.extractAnswer(service, response.json())
 		answers = formatter.aggregateAnswers(service, mapping, answers)
 		return (answers, 200)
 	except Exception as e:

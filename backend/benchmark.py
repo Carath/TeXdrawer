@@ -78,13 +78,13 @@ def saveResults(service, mapping, top_k, samplesNumber, microRecalls, macroRecal
 if __name__ == '__main__':
 	if len(sys.argv) < 2:
 		print('''Please give as args the name of the service to benchmark, and the mapping used (optional).'''
-			'''\n- Supported services: hwrt, detexify.\n- Optional mapping: none, map1''')
+			'''\n- Supported services: hwrt, detexify\n- Optional mappings: '''
+			+ ', '.join(loader.getSupportedMappings()))
 		exit()
 	service = sys.argv[1]
 	mapping = 'none' # default
 	if len(sys.argv) >= 3:
 		mapping = sys.argv[2]
-	# TODO: fetch the .json mapping files from the ../symbols/mappings/ directory.
 
 	if service == 'hwrt':
 		# hwrt: train: 151160 samples, test: 17074 (split 90% / 10%). 369 classes.
