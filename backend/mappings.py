@@ -21,7 +21,7 @@ def getMapping(mappingName):
 	try:
 		if mappingName in mappingsLoader:
 			return mappingsLoader[mappingName]
-		mappingPath = loader.mappingsDir + '%s.json' % mappingName
+		mappingPath = loader.mappingsDir / ('%s.json' % mappingName)
 		equivClasses = getEquivalenceClasses(mappingPath)
 		print('Loaded:', mappingPath)
 		projectionMap = buildProjectionMap(equivClasses)

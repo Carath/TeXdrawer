@@ -2,19 +2,21 @@ import os, traceback, json
 from flask import Flask, request, Response, jsonify, send_from_directory, redirect
 from flask_cors import CORS
 import requests
+from pathlib import Path
 
 # Backend code:
 import loader, formatter, mappings
 
-filePath = os.path.dirname(os.path.realpath(__file__))
-# print('File path:', filePath, '\n')
+##################################################
+# REST API generic functions:
 
-app = Flask(__name__, static_folder='../frontend', static_url_path='')
+app = Flask(__name__, static_folder=str(Path('../frontend')), static_url_path='')
 CORS(app) # enables CORS for all routes.
 
 
 def handleError(errorMessage, statusCode):
 	''' Prints in the server logs the error message, and returns it as response. '''
+	errorMessage += '\n\n' + traceback.format_exc()
 	print(errorMessage)
 	return Response(errorMessage, content_type='text/plain; charset=UTF-8', status=statusCode)
 
@@ -60,7 +62,7 @@ def testPOST():
 		jsonified = json.dumps({'foundName': foundName})
 		return Response(jsonified, content_type='application/json')
 	except Exception as e:
-		return handleError('Unknown error in testPOST():\n' + traceback.format_exc(), 500)
+		return handleError('Unknown error in testPOST().', 500)
 
 
 # Careful: all URL to which requests will be redirected _must_ be hardcoded (security issues).
@@ -73,72 +75,12 @@ def redirectionTest():
 	return redirect(url, code=307)
 
 
-@app.route('/symbols/<service>', methods=['GET'])
-def frontendGetSymbols(service):
-	''' Returns a sorted list of supported symbols for the given service. '''
-	try:
-		symbols = loader.getSymbolsSorted(service)
-		return jsonify(symbols)
-	except Exception as e:
-		return handleError('Unknown error in frontendGetSymbols():\n' + traceback.format_exc(), 500)
-
-
-@app.route('/mappings', methods=['GET'])
-def frontendGetMappings():
-	''' Returns the list of available mappings. '''
-	try:
-		mappingList = loader.getSupportedMappings()
-		return jsonify(mappingList)
-	except Exception as e:
-		return handleError('Unknown error in frontendGetMappings():\n' + traceback.format_exc(), 500)
-
-
-@app.route('/classify', methods=['POST'])
-def frontendClassifyRequest():
-	''' Sends the frontend's request to the chosen service: '''
-	try:
-		receivedInput = extractRequestData(request)
-		# print('receivedInput:', receivedInput)
-		service = receivedInput['service']
-		mapping = receivedInput['mapping']
-		strokes = receivedInput['strokes']
-		result, status = classifyRequest(service, mapping, strokes)
-		if status != 200:
-			return handleError('Failure from classifyRequest()', status)
-		return jsonify(result)
-	except Exception as e:
-		return handleError('Unknown error in frontendClassifyRequest():\n' + traceback.format_exc(), 500)
-
-
-def classifyRequest(service, mapping, strokes):
-	''' Send a classification request to the chosen service. '''
-	try:
-		formattedRequest = formatter.formatRequest(service, strokes)
-		if service == 'hwrt':
-			# url = 'http://write-math.com/worker' # website - fails
-			url = 'http://localhost:5000/worker' # local
-			response = requests.post(url=url, headers={}, data=formattedRequest)
-		elif service == 'detexify':
-			# url = 'http://detexify.kirelabs.org/api/classify' # website - fails (old version)
-			url = 'http://localhost:3000/classify' # local (from branch 'stack')
-			response = requests.post(url=url, headers={}, json=formattedRequest)
-		else:
-			print('Unsupported service:', service)
-			return ([], 404)
-		answers = formatter.extractAnswer(service, response.json())
-		answers = formatter.aggregateAnswers(service, mapping, answers)
-		return (answers, 200)
-	except Exception as e:
-		print('-> %s service not available.' % service)
-		return ([], 500)
-
-
 def redirectCrossOrigin(url, request):
 	''' Redirects a request to another URL, removes CORS issues: '''
 	try:
 		if request.method == 'POST':
 			requestData = extractRequestData(request)
-			# print('requestData:  %s\n' % requestData)
+			# print('requestData: %s\n' % requestData)
 			response = requests.post(url=url, headers=request.headers, data=requestData)
 		elif request.method == 'GET':
 			response = requests.get(url=url)
@@ -167,7 +109,101 @@ def extractRequestData(request):
 			return None
 	except Exception as e:
 		print('Failed to extract a request data.')
+		print(traceback.format_exc())
 		return None
+
+##################################################
+# TeXdrawer specific functions:
+
+@app.route('/mappings', methods=['GET'])
+def frontendGetMappingsList():
+	''' Returns the list of available mappings. '''
+	try:
+		return jsonify(loader.getSupportedMappings())
+	except Exception as e:
+		return handleError('Unknown error in frontendGetMappingsList().', 500)
+
+
+@app.route('/mapping/classes/<mapping>', methods=['GET'])
+def frontendGetMapping(mapping):
+	''' Returns the equivalence classes for the given mapping. '''
+	try:
+		return jsonify(mappings.getMapping(mapping).classes)
+	except Exception as e:
+		return handleError('Unknown error in frontendGetMapping().', 500)
+
+
+@app.route('/services', methods=['GET'])
+def frontendGetServices():
+	''' Returns the list of supported services. '''
+	try:
+		return jsonify(['hwrt', 'detexify'])
+	except Exception as e:
+		return handleError('Unknown error in frontendGetServices().', 500)
+
+
+@app.route('/symbols/<service>', methods=['GET'])
+def frontendGetSymbols(service):
+	''' Returns a sorted list of supported symbols and their unicode, for the given service. '''
+	try:
+		latexToUnicodeMap = loader.getLatexToUnicodeMap()
+		symbols = loader.getSymbolsSorted(service)
+		data = []
+		for symbol in symbols:
+			symbolUnicode = 'U+0' # default
+			if symbol in latexToUnicodeMap:
+				symbolUnicode = latexToUnicodeMap[symbol]
+			data.append({
+				'symbol_class': symbol,
+				'unicode': symbolUnicode,
+				'package': '',
+			})
+		return jsonify(data)
+	except Exception as e:
+		return handleError('Unknown error in frontendGetSymbols().', 500)
+
+
+@app.route('/classify', methods=['POST'])
+def frontendClassifyRequest():
+	''' Sends the frontend's request to the chosen service: '''
+	try:
+		receivedInput = extractRequestData(request)
+		# print('receivedInput:', receivedInput)
+		service = receivedInput['service']
+		strokes = receivedInput['strokes']
+		mapping = 'none'
+		if 'mapping' in receivedInput:
+			mapping = receivedInput['mapping']
+		result, status = classifyRequest(service, mapping, strokes)
+		if status != 200:
+			return handleError('Failure from classifyRequest().', status)
+		return jsonify(result)
+	except Exception as e:
+		return handleError('Unknown error in frontendClassifyRequest().', 500)
+
+
+def classifyRequest(service, mapping, strokes):
+	''' Send a classification request to the chosen service. '''
+	try:
+		formattedRequest = formatter.formatRequest(service, strokes)
+		if service == 'hwrt':
+			# url = 'http://write-math.com/worker' # website - fails
+			url = 'http://localhost:5000/worker' # local
+			response = requests.post(url=url, headers={}, data=formattedRequest)
+		elif service == 'detexify':
+			# url = 'http://detexify.kirelabs.org/api/classify' # website - fails (old version)
+			url = 'http://localhost:3000/classify' # local (from branch 'stack')
+			response = requests.post(url=url, headers={}, json=formattedRequest)
+		else:
+			print('Unsupported service:', service)
+			return ([], 404)
+		answers = formatter.extractServiceAnswer(service, response.json())
+		answers = formatter.aggregateAnswers(service, mapping, answers)
+		return (answers, 200)
+	except Exception as e:
+		print('\n-> %s service seems not available.\n' % service)
+		# print(traceback.format_exc())
+		return ([], 500)
 
 
 # Set debug=True to not have to restart the server for code changes

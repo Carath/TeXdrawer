@@ -95,24 +95,27 @@ function drawResultsTable(service, response, startTime, mode) {
 
 	$.each(response, function(index, value) {
 		if (index < symbolsBound) {
-			let latex_command = value;
-			let unicode_dec = "-";
-			let symbolClass = "";
+			let symbol_class = value["symbol_class"];
+			let unicode = value["unicode"] == "U+0" ? "" : value["unicode"];
+			let symbolPackage = value["package"]; // unused for now.
 			let scoreHTML = "";
 
 			if (mode == "classify") {
-				let score = (100. * value["score"]).toFixed(1) + " %";
-				if (service == "detexify") {
+				let score = 0.; // default - for unsupported services.
+				if (service == "hwrt") {
+					score = (100. * value["score"]).toFixed(1) + " %";
+				}
+				else if (service == "detexify") {
 					score = value["score"].toFixed(3);
 				}
-				latex_command = value["latex_command"];
-				unicode_dec = value["unicode_dec"];
-				symbolClass = value["symbol_class"]; // unused for now.
+
+				let dataset_id = value["dataset_id"];
+				let raw_answer = value["raw_answer"]; // for traceability
 				scoreHTML = "<td>" + score + "</td>";
 			}
 
-			content += "<tr><td>$" + latex_command + "$</td><td>" + unicode_dec + "</td><td><input id=\"latex-"
-				+ unicode_dec + "\" class=\"command-box\" value='" + latex_command + "' disabled/></td>"
+			content += "<tr><td>$" + symbol_class + "$</td><td>" + unicode + "</td><td><input id=\"latex-"
+				+ symbol_class + "\" class=\"command-box\" value='" + symbol_class + "' disabled/></td>"
 				+ scoreHTML + "</tr>";
 		}
 	});

@@ -1,7 +1,7 @@
 # Datasets
 
 
-* hwrt/
+#### hwrt/
 
 - symbols.csv
 - test-data.csv (131M)
@@ -10,7 +10,7 @@
 Link: <http://www.martin-thoma.de/write-math/data>
 
 
-* detexify/
+#### detexify/
 
 - detexify.sql (1,0G)
 - symbols.txt

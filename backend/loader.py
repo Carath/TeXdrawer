@@ -1,44 +1,29 @@
-import os
+import os, json
+from pathlib import Path
 
 # Backend code:
 import formatter
 
 
-# Useful for getting the correct files path when running
-# the server from backend/ or from the root directory:
+symbolsDir = Path('../symbols/')
+datasetDir = Path('../datasets/')
+statsDir = Path('stats/')
 
-fullPath = os.getcwd() # from where the script is run.
-workingDir = fullPath.split('/')[-1]
+symbolsListsDir = symbolsDir / 'services'
+mappingsDir = symbolsDir / 'mappings'
 
-rootDir = './'
-if workingDir == 'backend':
-	rootDir = '../'
+latexToUnicodeTable = symbolsDir / 'latex2unicode.csv'
 
-# Enables Linux paths to work in Windows:
-def realPath(path):
-	return (rootDir + path).replace('/', os.sep)
+symbolsMap_hwrt = datasetDir / 'hwrt' / 'symbols.csv'
+trainDatasetPath_hwrt = datasetDir / 'hwrt' / 'train-data.csv'
+testDatasetPath_hwrt = datasetDir / 'hwrt' / 'test-data.csv'
 
-
-symbolsDir = realPath('symbols/')
-mappingsDir = realPath('symbols/mappings/')
-datasetDir_hwrt = realPath('datasets/hwrt/')
-datasetDir_detexify = realPath('datasets/detexify/')
-
-symbolsList_hwrt = symbolsDir + 'hwrt.txt'
-symbolsList_detexify = symbolsDir + 'detexify.txt'
-
-symbolsMap_hwrt = datasetDir_hwrt + 'symbols.csv'
-trainDatasetPath_hwrt = datasetDir_hwrt + 'train-data.csv'
-testDatasetPath_hwrt = datasetDir_hwrt + 'test-data.csv'
-
-symbolsMap_detexify = datasetDir_detexify + 'symbols.txt'
-datasetPath_detexify = datasetDir_detexify + 'detexify.sql' # train & test from same file...
-
-# TODO: differentiate between symbols maps for loading the datasets, and symbols lists...
+symbolsMap_detexify = datasetDir / 'detexify' / 'symbols.txt'
+datasetPath_detexify = datasetDir / 'detexify' / 'detexify.sql' # train & test from same file.
 
 
-def getFileContent(filename):
-	file = open(filename, 'r')
+def getFileContent(path):
+	file = open(path, 'r')
 	content = file.read()
 	file.close()
 	# print(content)
@@ -46,16 +31,25 @@ def getFileContent(filename):
 
 
 # Note: for .csv files, getLines() + splitting is 2 times faster than using csv.reader()!
-def getLines(filename):
-	return getFileContent(filename).splitlines()
+def getLines(path):
+	return getFileContent(path).splitlines()
 
 
 # content: string
-def writeContent(filename, content):
-	file = open(filename, 'w')
+def writeContent(path, content):
+	file = open(path, 'w')
 	file.write(content)
 	file.close()
-	print('Done writing to:', filename)
+	print('Done writing to:', path)
+
+
+def getLatexToUnicodeMap():
+	latexToUnicodeMap = {}
+	lines = getLines(latexToUnicodeTable)[1:]
+	for line in lines:
+		latex, unic = line.split('\t')
+		latexToUnicodeMap[latex] = unic
+	return latexToUnicodeMap
 
 
 def getSupportedMappings():
@@ -65,28 +59,29 @@ def getSupportedMappings():
 	return ['none'] + list(filter(lambda file : file != '', mappingFiles))
 
 
-# Returns a sorted list of the supported symbols:
+# Returns a sorted list of the supported symbols by the given service:
 def getSymbolsSorted(service):
 	return sorted(getSymbolsSet(service))
 
 
-# Returns a set of the supported symbols:
+# Returns a set of the supported symbols by the given service.
+# This must not rely on getSymbolsDatasetMap(), for symbols list files must follow the same pattern.
 def getSymbolsSet(service):
-	return set(getSymbolsMap(service).values())
+	return set(getLines(symbolsListsDir / (service + '.txt')))
 
 
 # Returns a map of the supported symbols. Used for parsing datasets:
-def getSymbolsMap(service):
+def getSymbolsDatasetMap(service):
 	symbolMap = {}
 	if service == 'hwrt':
 		lines = getLines(symbolsMap_hwrt)
 		for line in lines[1:]:
 			splitted = line.split(';')
-			symbolMap[splitted[0]] = splitted[1] # id -> latex_command
+			symbolMap[splitted[0]] = splitted[1] # id -> symbol
 	elif service == 'detexify':
 		lines = getLines(symbolsMap_detexify)
 		for line in lines:
-			symbolMap[line] = line # latex_command -> latex_command
+			symbolMap[line] = line # symbol -> symbol
 	else:
 		print('Unsupported service:', service)
 	return symbolMap
@@ -106,15 +101,15 @@ def getSymbolName(symbolMap, key):
 # will only be done during the benchmark, to enable reading quickly only parts of a dataset:
 def loadDataset(service, datasetPath):
 	print('-> Loading the dataset from:', datasetPath)
-	symbolMap = getSymbolsMap(service)
+	symbolMap = getSymbolsDatasetMap(service)
 	lines = getLines(datasetPath)
-	foundClasses, dataset = set(), [] # dataset will be a list of (latex_command, strokes string)
+	foundClasses, dataset = set(), [] # dataset will be a list of string couples: (symbol name, strokes)
 	if service == 'hwrt':
 		for line in lines[1:]:
 			splitted = line.split(';')
-			latex_command = getSymbolName(symbolMap, splitted[0])
-			foundClasses.add(latex_command)
-			dataset.append((latex_command, splitted[2]))
+			symbol = getSymbolName(symbolMap, splitted[0])
+			foundClasses.add(symbol)
+			dataset.append((symbol, splitted[2]))
 	elif service == 'detexify':
 		for start in range(len(lines)):
 			if 'COPY samples' in lines[start]:
@@ -123,9 +118,9 @@ def loadDataset(service, datasetPath):
 			if '\\.' in lines[rank]: # reached the end.
 				break
 			splitted = lines[rank].split('\t')
-			latex_command = formatter.extractLatexCommand_detexify(splitted[1])
-			foundClasses.add(latex_command)
-			dataset.append((latex_command, splitted[2]))
+			symbol = formatter.extractLatexCommand_detexify(splitted[1])
+			foundClasses.add(symbol)
+			dataset.append((symbol, splitted[2]))
 	else:
 		print('Unsupported service:', service)
 
@@ -140,3 +135,13 @@ def loadDataset(service, datasetPath):
 	# print('Dataset preview:', *dataset[:10], sep="\n\n")
 	# print('Classes:', *foundClasses, sep='\n')
 	return foundClasses, dataset
+
+
+if __name__ == '__main__':
+	foundClasses, testDataset = loadDataset('hwrt', testDatasetPath_hwrt)
+	firstSymbol, strokesString = testDataset[0]
+	strokes = json.loads(strokesString)
+	firstStrokeString = json.dumps(strokes[0], indent='  ')
+	# N.B: remove indent=... to minify. Other useful options of json.dumps(): ensure_ascii=..., sort_keys=...
+
+	print('First symbol from hwrt test dataset: %s\nIts first stroke:\n\n%s' % (firstSymbol, firstStrokeString))

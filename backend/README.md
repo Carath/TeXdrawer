@@ -16,60 +16,96 @@ Furthermore, an optional symbol mapping can also be given (default to ``` none `
 
 ``` python3 benchmark.py hwrt map1 ```
 
+The results will be saved in the ``` stats ``` directory.
+
 
 ## Requests
 
-Here are listed examples of requests, using *curl*, to the supported services:
+Below are listed examples of requests allowed by each services:
 
 
 #### TeXdrawer
 
-- Check if the service is running, and get its version:
+- Check if TeXdrawer is running, and get its version:
 
 ```
 curl http://localhost:5050/
 ```
 
-- Get the (sorted) list of symbols, supported by the hwrt service:
+- Access the frontend, served by the backend, by opening in a web browser:
+
+```
+http://localhost:5050/app
+```
+
+- Get the list of available mappings:
+
+```
+curl http://localhost:5050/mappings
+```
+
+- Get the equivalence classes for the given mapping (here ``` map0 ```):
+
+```
+curl http://localhost:5050/mapping/classes/map0
+```
+
+- Get the list of supported services:
+
+```
+curl http://localhost:5050/services
+```
+
+- Get the list of symbols and their unicode, supported by the given service (here ``` hwrt ```):
 
 ```
 curl http://localhost:5050/symbols/hwrt
 ```
 
-- Send a classification request to the hwrt service:
+- Send a classification request to the given service (here ``` hwrt ```), for the given mapping (here ``` map0 ``` - use ``` none ``` to not use any):
 
 ```
-curl -X POST http://localhost:5050/classify -H 'Content-Type:application/json' -d '{"service":"hwrt","strokes":[[{"x":50,"y":60,"time":123456}]]}'
+curl -X POST http://localhost:5050/classify \
+  -H 'Content-Type:application/json' \
+  -d '{"service":"hwrt", "mapping":"map0", "strokes":[[{"x":50,"y":60,"time":123456}]]}'
 ```
-
-The last two requests are also available for detexify, by just replacing the service name.
 
 
 #### hwrt
 
-- Check if the service is running, and get its version:
+- Check if hwrt is running, and get its version:
 
 ```
 curl http://localhost:5000/worker
 ```
 
-- Classify request:
+- Access the frontend, served by the backend, by opening in a web browser:
 
 ```
-curl -X POST http://localhost:5000/worker -H 'Content-Type:application/x-www-form-urlencoded' -d 'classify=[[{"x":50,"y":60,"time":123456}]]'
+http://localhost:5000/
+```
+
+- Classification request:
+
+```
+curl -X POST http://localhost:5000/worker \
+  -H 'Content-Type:application/x-www-form-urlencoded' \
+  -d 'classify=[[{"x":50,"y":60,"time":123456}]]'
 ```
 
 
 #### Detexify (version from *stack* branch):
 
-- Check if the service is running, and get its version:
+- Check if detexify is running, and get its version:
 
 ```
 curl http://localhost:3000/
 ```
 
-- Classify request:
+- Classification request:
 
 ```
-curl -X POST http://localhost:3000/classify -H 'Content-Type: application/json' -d '{"strokes":[[{"x":50, "y":60}]]}'
+curl -X POST http://localhost:3000/classify \
+  -H 'Content-Type: application/json' \
+  -d '{"strokes":[[{"x":50, "y":60}]]}'
 ```

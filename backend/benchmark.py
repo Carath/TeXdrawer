@@ -27,7 +27,7 @@ def benchmark(service, mapping, dataset, top_k):
 		recallMap[key][0] += 1
 		max_results = min(top_k, len(result))
 		for i in range(max_results):
-			if key == result[i]['latex_command']:
+			if key == result[i]['symbol_class']:
 				recallMap[key][i+1] += 1
 				break
 	aggregateStats(service, mapping, top_k, samplesNumber, recallMap)
@@ -63,16 +63,16 @@ formatPercentList = lambda percents : list(map(formatPercent, percents))
 
 def saveResults(service, mapping, top_k, samplesNumber, microRecalls, macroRecalls, recallMap):
 	headers = ['Class', 'Samples'] + [ 'TOP %d' % (i+1) for i in range(top_k) ]
-	table = [['MICRO', samplesNumber] + formatPercentList(microRecalls)]
-	table.append(['MACRO', samplesNumber] + formatPercentList(macroRecalls))
+	table = [['MACRO', samplesNumber] + formatPercentList(macroRecalls)]
+	table.append(['MICRO', samplesNumber] + formatPercentList(microRecalls))
 	for key in recallMap:
 		table.append([key, recallMap[key][0]] + formatPercentList(recallMap[key][1:]))
-	table.sort(key=lambda row : row[1], reverse=True)
+	table.sort(key=lambda row : row[1], reverse=True) # sorting by decreasing samples number.
 	stringTable = tabulate(table, headers=headers, tablefmt="github", colalign=("left", *["right"] * (top_k+1)))
-	outputFilename = 'logs/%s_%s_top%d.txt' % (service, mapping, top_k)
-	content = 'Service: %s\nNumber of symbols: %d\nRecall scores:\n\n' % (service, len(recallMap))
+	content = 'Service: %s, mapping: %s\nNumber of symbols: %d\nRecall scores:\n\n' % (service, mapping, len(recallMap))
 	content += stringTable + '\n'
-	loader.writeContent(outputFilename, content)
+	outputPath = loader.statsDir / ('%s_%s_top%d.txt' % (service, mapping, top_k))
+	loader.writeContent(outputPath, content)
 
 
 if __name__ == '__main__':

@@ -1,9 +1,11 @@
-import json
+import traceback, json
+from collections import OrderedDict
 
 # Backend code:
 import loader, mappings
 
 
+# Formatting a classification request, to be sent to the given service:
 def formatRequest(service, strokes):
 	if service == 'hwrt':
 		return {'secret': '', 'classify': json.dumps(strokes)} # secret not used.
@@ -15,30 +17,28 @@ def formatRequest(service, strokes):
 		return {}
 
 
-def createGuess(dataset_id, latex_command, unicode_dec, package, symbol_class, score):
-	guess = {}
-	guess['dataset_id'] = dataset_id
-	guess['latex_command'] = latex_command
-	guess['unicode_dec'] = unicode_dec
-	guess['package'] = package
-	guess['symbol_class'] = symbol_class
-	guess['score'] = score
-	return guess
+def createGuess(dataset_id, raw_answer, score):
+	return {
+		'dataset_id': dataset_id,
+		'symbol_class': raw_answer,
+		'raw_answer': raw_answer,
+		'unicode': 'U+0', # default
+		'package': '',
+		'score': score
+	}
 
 
-def extractAnswer(service, answer):
+# Extracting the answers from the given service:
+def extractServiceAnswer(service, answer):
 	try:
-		formatted_answer = []
+		formattedAnswer = []
 		if service == 'hwrt':
 			for symbol in answer:
 				# First semantic only. Overall separator is ';;':
 				semantic = symbol['semantics'].split(';')
-				formatted_answer.append(createGuess(
+				formattedAnswer.append(createGuess(
 					dataset_id = semantic[0],
-					latex_command = semantic[1],
-					unicode_dec = semantic[2],
-					package = 'null',
-					symbol_class = 'null',
+					raw_answer = semantic[1],
 					score = symbol['probability']
 				))
 		elif service == 'detexify':
@@ -46,43 +46,45 @@ def extractAnswer(service, answer):
 			if 'results' in answer:
 				answer = answer['results']
 			for symbol in answer:
-				formatted_answer.append(createGuess(
+				formattedAnswer.append(createGuess(
 					dataset_id = 0,
-					latex_command = extractLatexCommand_detexify(symbol['id']),
-					unicode_dec = 'null',
-					package = 'null',
-					symbol_class = 'null',
+					raw_answer = extractLatexCommand_detexify(symbol['id']),
 					score = symbol['score']
 				))
 		else:
 			print('Unsupported service:', service)
-		return formatted_answer
+		return formattedAnswer
 	except:
 		print('Unknown error happened while extracting data from an answer.')
+		print(traceback.format_exc())
 		return []
 
 
+# Regrouping answers according to the given mapping, scores update, and unicode fetching:
 def aggregateAnswers(service, mapping, answers):
 	try:
-		aggregated = {}
+		latexToUnicodeMap = loader.getLatexToUnicodeMap() # load this only once?
+		aggregated = OrderedDict() # keeping the same order for scores!
 		for guess in answers:
-			symbol = guess['latex_command']
-			symbol = mappings.getProjectedSymbol(symbol, mapping)
-			if not symbol in aggregated:
-				aggregated[symbol] = guess
-				guess['latex_command'] = symbol
+			symbol_class = mappings.getProjectedSymbol(guess['raw_answer'], mapping)
+			if not symbol_class in aggregated:
+				aggregated[symbol_class] = guess
+				guess['symbol_class'] = symbol_class
+				if symbol_class in latexToUnicodeMap:
+					guess['unicode'] = latexToUnicodeMap[symbol_class]
 			elif service == 'hwrt':
-				aggregated[symbol]['score'] += guess['score']
+				aggregated[symbol_class]['score'] += guess['score']
 			elif service == 'detexify':
-				aggregated[symbol]['score'] = min(aggregated[symbol]['score'], guess['score']) # min distance
+				aggregated[symbol_class]['score'] = min(aggregated[symbol_class]['score'], guess['score']) # min distance
 			else:
 				print('Unsupported service:', service)
 				return []
-		return list(aggregated.values()) # No need to sort back this list,
-		# since from Python 3.6 onwards, the dict type maintains insertion order.
+		return list(aggregated.values())
 	except:
 		print('Unknown error happened while aggregating some answers.')
+		print(traceback.format_exc())
 		return []
+
 
 ##################################################
 # detexify specific:
