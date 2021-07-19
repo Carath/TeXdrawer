@@ -64,7 +64,7 @@
 						<input type="button" class="button" id="showSamplesButton" value="show samples">
 						<input type="button" class="button" id="classifyButton" value="classify">
 						<input type="button" class="button" id="symbolsButton" value="Show symbols">
-						<input type="button" class="button" id="testButton" value="test" hidden>
+						<!-- <input type="button" class="button" id="testButton" value="test" hidden> -->
 					</div>
 				</div>
 				<div id="serviceArea">
@@ -72,6 +72,10 @@
 					<select name="serviceChoice" id="serviceChoice">
 						<option value="hwrt" selected>hwrt</option>
 						<option value="detexify">detexify</option>
+					</select>
+					<label for="mappingChoice">and mapping:</label>
+					<select name="mappingChoice" id="mappingChoice">
+						<option value="none" selected>none</option> <!-- default -->
 					</select>
 				</div>
 				<div>

@@ -14,23 +14,21 @@ class Mapping:
 		self.projection = projection # dict
 
 
-mappingsLoader = {'none': Mapping('none', {}, {})} # default mapping
-
+_mappingsLoader = {'none': Mapping('none', {}, {})} # default mapping
 
 def getMapping(mappingName):
 	try:
-		if mappingName in mappingsLoader:
-			return mappingsLoader[mappingName]
-		mappingPath = loader.mappingsDir / ('%s.json' % mappingName)
-		equivClasses = getEquivalenceClasses(mappingPath)
-		print('Loaded:', mappingPath)
+		if mappingName in _mappingsLoader:
+			return _mappingsLoader[mappingName]
+		path = loader.mappingsDir / ('%s.json' % mappingName)
+		equivClasses = getEquivalenceClasses(path)
+		print('Loaded mapping:', mappingName)
 		projectionMap = buildProjectionMap(equivClasses)
-		mappingsLoader[mappingName] = Mapping(mappingName, equivClasses, projectionMap)
+		_mappingsLoader[mappingName] = Mapping(mappingName, equivClasses, projectionMap)
 	except:
 		print("Mapping '%s' not found, falling back to default." % mappingName)
-		mappingsLoader[mappingName] = getMapping('none') # default
-	finally:
-		return mappingsLoader[mappingName]
+		_mappingsLoader[mappingName] = getMapping('none') # mappingName forced to default
+	return _mappingsLoader[mappingName]
 
 
 def getEquivalenceClasses(mappingPath):
@@ -48,10 +46,12 @@ def buildProjectionMap(equivClasses):
 	return projectionMap
 
 
-# Symbols present in the projection map may not be supported for a given
-# service, and the usage of such a projection must be optional...
-# ... which it is, just pass a {} projection map.
-def getProjectedSymbolsSet(symbols, projectionMap):
+# Symbols present in the projection map may not be supported by the given service,
+# and reciprocally symbols from the service may not figure in the projection.
+# In that case, such symbols are kept as is. The usage of a projection is optional,
+# by passing the 'none' mapping name.
+def getProjectedSymbolsSet(symbols, mappingName):
+	projectionMap = getMapping(mappingName).projection
 	projectedSymbols = set()
 	for symbol in symbols:
 		if symbol in projectionMap:
@@ -61,22 +61,22 @@ def getProjectedSymbolsSet(symbols, projectionMap):
 
 
 def getProjectedSymbol(symbol, mappingName):
-	projectionMap = getMapping(mappingName).projection
-	return list(getProjectedSymbolsSet([symbol], projectionMap))[0]
+	return list(getProjectedSymbolsSet([symbol], mappingName))[0]
 
 
-def getServiceProjectedSymbolsSet(service, projectionMap):
-	return getProjectedSymbolsSet(loader.getSymbolsSet(service), projectionMap)
+def getServiceProjectedSymbolsSet(service, mappingName):
+	return getProjectedSymbolsSet(loader.getSymbolsSet(service), mappingName)
 
 
-def getServiceProjectedSymbolsSorted(service, projectionMap):
-	return sorted(getServiceProjectedSymbolsSet(service, projectionMap))
+def getServiceProjectedSymbolsSorted(service, mappingName):
+	return sorted(getServiceProjectedSymbolsSet(service, mappingName))
 
 
 if __name__ == '__main__':
 
 	# mappingName = 'none' # default
-	mappingName = 'map1'
+	# mappingName = 'strict-0'
+	mappingName = 'similar-0'
 	mapping = getMapping(mappingName)
 	print("\n'%s' equivalence classes:\n" % mappingName, *mapping.classes.items(), sep='\n')
 	print("\nFound %d equivalence classes." % len(mapping.classes))
@@ -85,6 +85,6 @@ if __name__ == '__main__':
 	service = 'hwrt'
 	# service = 'detexify'
 	symbols = loader.getSymbolsSet(service)
-	projectedSymbols = getServiceProjectedSymbolsSorted(service, mapping.projection)
+	projectedSymbols = getServiceProjectedSymbolsSorted(service, mappingName)
 	print("\n'%s' projected symbols:\n" % service, *projectedSymbols, sep='\n')
 	print("\n'%s' projected symbols number: %d (vs %d)" % (service, len(projectedSymbols), len(symbols)))

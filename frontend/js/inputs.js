@@ -43,7 +43,7 @@ function isInCanvas(coord) {
 }
 
 function saveCoord() {
-	if (timeOffset == 0 && allowTimeReshifting) {
+	if (timeOffset === 0 && allowTimeReshifting) {
 		timeOffset = new Date().getTime(); // UNIX time
 	}
 	currentStroke.push({

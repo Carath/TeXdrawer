@@ -38,17 +38,17 @@ window.onload = function() {
 	});
 
 	$("#classifyButton").click(function(e) {
-		classifyRequest(serviceChoice.value, inputStrokes); // sending raw inputs.
+		classifyRequest(serviceChoice.value, mappingChoice.value, inputStrokes); // sending raw inputs.
 	});
 
 	$("#symbolsButton").click(function(e) {
-		symbolsRequest(serviceChoice.value);
+		symbolsRequest(serviceChoice.value, mappingChoice.value);
 		clearInputs();
 	});
 
-	$("#testButton").click(function(e) {
-		typeset("#mathjax-test", "$$\\frac{a^3}{1-a^2}$$");
-	});
+	// $("#testButton").click(function(e) {
+	// 	typeset("#mathjax-test", "$$\\frac{a^3}{1-a^2}$$");
+	// });
 	// testButton.hidden = false;
 
 	$("#sidenav-about").click(function(e) {
@@ -67,6 +67,7 @@ window.onload = function() {
 		$('#usage').html("Trying out some classification services (locally):");
 		$('#stats').html("");
 		clearInputs();
+		mappingsRequest();
 	});
 
 	$("#sidenav-draw").click(function(e) {

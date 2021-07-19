@@ -14,7 +14,7 @@ To benchmark a supported service, run the command below with the service name as
 
 Furthermore, an optional symbol mapping can also be given (default to ``` none ```):
 
-``` python3 benchmark.py hwrt map1 ```
+``` python3 benchmark.py hwrt similar-0 ```
 
 The results will be saved in the ``` stats ``` directory.
 
@@ -44,10 +44,10 @@ http://localhost:5050/app
 curl http://localhost:5050/mappings
 ```
 
-- Get the equivalence classes for the given mapping (here ``` map0 ```):
+- Get the equivalence classes for the given mapping (here ``` strict-0 ```):
 
 ```
-curl http://localhost:5050/mapping/classes/map0
+curl http://localhost:5050/mapping/classes/strict-0
 ```
 
 - Get the list of supported services:
@@ -56,18 +56,24 @@ curl http://localhost:5050/mapping/classes/map0
 curl http://localhost:5050/services
 ```
 
-- Get the list of symbols and their unicode, supported by the given service (here ``` hwrt ```):
+- Get the list of symbols (and their unicode) supported by the given service (here ``` hwrt ```):
 
 ```
 curl http://localhost:5050/symbols/hwrt
 ```
 
-- Send a classification request to the given service (here ``` hwrt ```), for the given mapping (here ``` map0 ``` - use ``` none ``` to not use any):
+- Get the list of projected symbols (and their unicode) for the given service and mapping (here ``` detexify ``` and ``` similar-0 ```):
+
+```
+curl http://localhost:5050/symbols/detexify/similar-0
+```
+
+- Send a classification request to the given service (here ``` hwrt ```), for the given mapping (here ``` strict-0 ``` - use ``` none ``` to not use any):
 
 ```
 curl -X POST http://localhost:5050/classify \
   -H 'Content-Type:application/json' \
-  -d '{"service":"hwrt", "mapping":"map0", "strokes":[[{"x":50,"y":60,"time":123456}]]}'
+  -d '{"service":"hwrt", "mapping":"strict-0", "strokes":[[{"x":50,"y":60,"time":123456}]]}'
 ```
 
 

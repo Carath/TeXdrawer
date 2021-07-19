@@ -124,6 +124,11 @@ Benchmarks of the classification capabilities of the previous services have been
 For both services, new samples need to be created in order to have a more robust validation.
 
 
+## Limitations
+
+At the present time, it doesn't seem possible to containerize TeXdrawer's backend using Docker, at least in a *portable* way. The issue is that a Docker container cannot out of the box reach an appliction running on the host local network... To fix this, all supported services should be containerized, and placed on the same network as TeXdrawer. This would require to modify some of those services, e.g the Flask server of hwrt should be made to run on ``` host='0.0.0.0' ```.
+
+
 ## Links
 
 Services to benchmark (locally):

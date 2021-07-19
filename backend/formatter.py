@@ -23,12 +23,12 @@ def createGuess(dataset_id, raw_answer, score):
 		'symbol_class': raw_answer,
 		'raw_answer': raw_answer,
 		'unicode': 'U+0', # default
-		'package': '',
+		'package': '', # default
 		'score': score
 	}
 
 
-# Extracting the answers from the given service:
+# Extracting data from the given service answer:
 def extractServiceAnswer(service, answer):
 	try:
 		formattedAnswer = []
@@ -63,7 +63,7 @@ def extractServiceAnswer(service, answer):
 # Regrouping answers according to the given mapping, scores update, and unicode fetching:
 def aggregateAnswers(service, mapping, answers):
 	try:
-		latexToUnicodeMap = loader.getLatexToUnicodeMap() # load this only once?
+		latexToUnicodeMap = loader.getLatexToUnicodeMap()
 		aggregated = OrderedDict() # keeping the same order for scores!
 		for guess in answers:
 			symbol_class = mappings.getProjectedSymbol(guess['raw_answer'], mapping)

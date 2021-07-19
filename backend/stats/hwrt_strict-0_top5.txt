@@ -1,4 +1,4 @@
-Service: hwrt, mapping: map0
+Service: hwrt, mapping: strict-0
 Number of symbols: 340
 Recall scores:
 

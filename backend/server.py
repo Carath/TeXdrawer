@@ -143,13 +143,15 @@ def frontendGetServices():
 
 
 @app.route('/symbols/<service>', methods=['GET'])
-def frontendGetSymbols(service):
-	''' Returns a sorted list of supported symbols and their unicode, for the given service. '''
+@app.route('/symbols/<service>/<mapping>', methods=['GET'])
+def frontendGetProjectedSymbols(service, mapping='none'):
+	''' Returns the sorted list of supported symbols and their unicode, for the given service. '''
+	''' If a mapping is given, then the projected symbols are returned. '''
 	try:
 		latexToUnicodeMap = loader.getLatexToUnicodeMap()
-		symbols = loader.getSymbolsSorted(service)
+		projectedSymbols = mappings.getServiceProjectedSymbolsSorted(service, mapping)
 		data = []
-		for symbol in symbols:
+		for symbol in projectedSymbols:
 			symbolUnicode = 'U+0' # default
 			if symbol in latexToUnicodeMap:
 				symbolUnicode = latexToUnicodeMap[symbol]
@@ -160,7 +162,7 @@ def frontendGetSymbols(service):
 			})
 		return jsonify(data)
 	except Exception as e:
-		return handleError('Unknown error in frontendGetSymbols().', 500)
+		return handleError('Unknown error in frontendGetProjectedSymbols().', 500)
 
 
 @app.route('/classify', methods=['POST'])

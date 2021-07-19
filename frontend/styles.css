@@ -6,6 +6,11 @@ html, body {
 	font-size: 13pt;
 }
 
+select {
+	font-size: 14px;
+	padding: 4px 4px;
+}
+
 .main {
 }
 
@@ -118,11 +123,6 @@ html, body {
 	text-align: center;
 	text-decoration: none;
 	display: inline-block;
-}
-
-#serviceChoice {
-	font-size: 14px;
-	padding: 4px 8px;
 }
 
 #stats {

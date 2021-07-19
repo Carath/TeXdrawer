@@ -4,7 +4,7 @@ const frameMargin = 0.05;
 var inputSymbols = [];
 
 function boundingBox(strokes) {
-	if (strokes.length == 0 || strokes[0].length == 0) {
+	if (strokes.length === 0 || strokes[0].length === 0) {
 		console.log("Cannot find the bounding box without strokes!");
 		return null;
 	}
@@ -56,7 +56,7 @@ function resize(strokes) {
 }
 
 function createSymbol(rank, unicode, latex_command, strokes) {
-	if (strokes.length == 0) {
+	if (strokes.length === 0) {
 		return null;
 	}
 	let symbol = {};
@@ -102,7 +102,7 @@ function createOutput(symbols) {
 // in case it changes with each user. On the other hand, this implies that input must be resized
 // (and centered) to fit well in the canvas.
 function save() {
-	if (inputSymbols.length == 0) {
+	if (inputSymbols.length === 0) {
 		alert("Nothing to save.");
 		return;
 	}

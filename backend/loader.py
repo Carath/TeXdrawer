@@ -12,7 +12,7 @@ statsDir = Path('stats/')
 symbolsListsDir = symbolsDir / 'services'
 mappingsDir = symbolsDir / 'mappings'
 
-latexToUnicodeTable = symbolsDir / 'latex2unicode.csv'
+latexToUnicodePath = symbolsDir / 'latex2unicode.csv'
 
 symbolsMap_hwrt = datasetDir / 'hwrt' / 'symbols.csv'
 trainDatasetPath_hwrt = datasetDir / 'hwrt' / 'train-data.csv'
@@ -23,11 +23,10 @@ datasetPath_detexify = datasetDir / 'detexify' / 'detexify.sql' # train & test f
 
 
 def getFileContent(path):
-	file = open(path, 'r')
-	content = file.read()
-	file.close()
-	# print(content)
-	return content
+	with open(path, "r") as file: # file closed at exit
+		content = file.read()
+		# print(content)
+		return content
 
 
 # Note: for .csv files, getLines() + splitting is 2 times faster than using csv.reader()!
@@ -37,19 +36,25 @@ def getLines(path):
 
 # content: string
 def writeContent(path, content):
-	file = open(path, 'w')
-	file.write(content)
-	file.close()
-	print('Done writing to:', path)
+	with open(path, "w") as file: # file closed at exit
+		file.write(content)
+		print('Done writing to:', path)
 
+
+_latexToUnicodeMap = {}
 
 def getLatexToUnicodeMap():
-	latexToUnicodeMap = {}
-	lines = getLines(latexToUnicodeTable)[1:]
-	for line in lines:
-		latex, unic = line.split('\t')
-		latexToUnicodeMap[latex] = unic
-	return latexToUnicodeMap
+	try:
+		if _latexToUnicodeMap != {}:
+			return _latexToUnicodeMap
+		lines = getLines(latexToUnicodePath)[1:]
+		for line in lines:
+			latex, unic = line.split('\t')
+			_latexToUnicodeMap[latex] = unic
+		print('Successfully loaded the LaTeX -> unicode map.')
+	except:
+		print('Could not load the LaTeX -> unicode map from %s' % latexToUnicodePath)
+	return _latexToUnicodeMap
 
 
 def getSupportedMappings():
@@ -59,15 +64,27 @@ def getSupportedMappings():
 	return ['none'] + list(filter(lambda file : file != '', mappingFiles))
 
 
-# Returns a sorted list of the supported symbols by the given service:
-def getSymbolsSorted(service):
-	return sorted(getSymbolsSet(service))
-
+_symbolsLoader = {}
 
 # Returns a set of the supported symbols by the given service.
 # This must not rely on getSymbolsDatasetMap(), for symbols list files must follow the same pattern.
 def getSymbolsSet(service):
-	return set(getLines(symbolsListsDir / (service + '.txt')))
+	try:
+		if service in _symbolsLoader:
+			return _symbolsLoader[service]
+		path = symbolsListsDir / (service + '.txt')
+		theSet = set(getLines(path))
+		print('Loaded symbols for service:', service)
+		_symbolsLoader[service] = theSet
+		return theSet
+	except:
+		print('Could not get symbols of service %s from %s' % (service, path))
+		return set()
+
+
+# Returns a sorted list of the supported symbols by the given service:
+def getSymbolsSorted(service):
+	return sorted(getSymbolsSet(service))
 
 
 # Returns a map of the supported symbols. Used for parsing datasets:
