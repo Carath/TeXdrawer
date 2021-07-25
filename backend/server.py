@@ -115,13 +115,16 @@ def extractRequestData(request):
 ##################################################
 # TeXdrawer specific functions:
 
-@app.route('/mappings', methods=['GET'])
-def frontendGetMappingsList():
-	''' Returns the list of available mappings. '''
+@app.route('/services-and-mappings', methods=['GET'])
+def frontendGetServicesAndMappingsList():
+	''' Returns the lists of supported services and mappings. '''
 	try:
-		return jsonify(loader.getSupportedMappings())
+		return jsonify({
+			'services': ['hwrt', 'detexify'],
+			'mappings': loader.getSupportedMappings()
+		})
 	except Exception as e:
-		return handleError('Unknown error in frontendGetMappingsList().', 500)
+		return handleError('Unknown error in frontendGetServicesAndMappingsList().', 500)
 
 
 @app.route('/mapping/classes/<mapping>', methods=['GET'])
@@ -131,15 +134,6 @@ def frontendGetMapping(mapping):
 		return jsonify(mappings.getMapping(mapping).classes)
 	except Exception as e:
 		return handleError('Unknown error in frontendGetMapping().', 500)
-
-
-@app.route('/services', methods=['GET'])
-def frontendGetServices():
-	''' Returns the list of supported services. '''
-	try:
-		return jsonify(['hwrt', 'detexify'])
-	except Exception as e:
-		return handleError('Unknown error in frontendGetServices().', 500)
 
 
 @app.route('/symbols/<service>', methods=['GET'])
@@ -173,10 +167,12 @@ def frontendClassifyRequest():
 		# print('receivedInput:', receivedInput)
 		service = receivedInput['service']
 		strokes = receivedInput['strokes']
-		mapping = 'none'
+		mapping, pretty = 'none', False
 		if 'mapping' in receivedInput:
 			mapping = receivedInput['mapping']
-		result, status = classifyRequest(service, mapping, strokes)
+		if 'pretty' in receivedInput:
+			pretty = receivedInput['pretty']
+		result, status = classifyRequest(service, mapping, strokes, pretty)
 		if status != 200:
 			return handleError('Failure from classifyRequest().', status)
 		return jsonify(result)
@@ -184,7 +180,7 @@ def frontendClassifyRequest():
 		return handleError('Unknown error in frontendClassifyRequest().', 500)
 
 
-def classifyRequest(service, mapping, strokes):
+def classifyRequest(service, mapping, strokes, pretty=False):
 	''' Send a classification request to the chosen service. '''
 	try:
 		formattedRequest = formatter.formatRequest(service, strokes)
@@ -200,7 +196,7 @@ def classifyRequest(service, mapping, strokes):
 			print('Unsupported service:', service)
 			return ([], 404)
 		answers = formatter.extractServiceAnswer(service, response.json())
-		answers = formatter.aggregateAnswers(service, mapping, answers)
+		answers = formatter.aggregateAnswers(service, mapping, answers, pretty)
 		return (answers, 200)
 	except Exception as e:
 		print('\n-> %s service seems not available.\n' % service)

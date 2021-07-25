@@ -5,19 +5,25 @@ const maxPrintedResults = 10;
 const backendIP = "http://" + (location.host === "" ? "localhost:5050" : location.host);
 // console.log("Backend IP:", backendIP);
 
-// Fetch available mappings from the backend:
-function mappingsRequest() {
+// Fetch supported services and mappings from the backend:
+function servicesAndMappingsRequest() {
 	let startTime = performance.now();
 	$.ajax({
 		type: "GET",
-		url: backendIP + "/mappings",
+		url: backendIP + "/services-and-mappings",
 
 		success: function(response) {
 			// let responseTime = performance.now() - startTime; // in ms
 			// console.log("Mappings request took " + responseTime + " ms");
+			$("#serviceChoice").empty();
 			$("#mappingChoice").empty();
-			for (let i=0; i < response.length; ++i) {
-				mappingChoice.add(new Option(response[i], response[i]));
+			let services = response['services'];
+			let mappings = response['mappings'];
+			for (let i=0; i < services.length; ++i) {
+				serviceChoice.add(new Option(services[i], services[i]));
+			}
+			for (let i=0; i < mappings.length; ++i) {
+				mappingChoice.add(new Option(mappings[i], mappings[i]));
 			}
 		},
 		error: function(xhr) {
@@ -57,6 +63,7 @@ function classifyRequest(service, mapping, strokes) {
 		frameHeight: canvas.height,
 		service: service,
 		mapping: mapping,
+		pretty: true,
 		strokes: strokes
 	};
 
@@ -120,17 +127,9 @@ function drawResultsTable(service, mapping, response, startTime, mode) {
 			let scoreHTML = "";
 
 			if (mode === "classify") {
-				let score = 0.; // default - for unsupported services.
-				if (service === "hwrt") {
-					score = (100. * value["score"]).toFixed(1) + " %";
-				}
-				else if (service === "detexify") {
-					score = value["score"].toFixed(3);
-				}
-
+				scoreHTML = "<td>" + value["score"] + "</td>";
 				let dataset_id = value["dataset_id"];
 				let raw_answer = value["raw_answer"]; // for traceability
-				scoreHTML = "<td>" + score + "</td>";
 			}
 
 			content += "<tr><td>$" + symbol_class + "$</td><td>" + unicode + "</td><td><input id=\"latex-"

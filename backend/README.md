@@ -38,22 +38,16 @@ curl http://localhost:5050/
 http://localhost:5050/app
 ```
 
-- Get the list of available mappings:
+- Get the lists of supported services and mappings:
 
 ```
-curl http://localhost:5050/mappings
+curl http://localhost:5050/services-and-mappings
 ```
 
 - Get the equivalence classes for the given mapping (here ``` strict-0 ```):
 
 ```
 curl http://localhost:5050/mapping/classes/strict-0
-```
-
-- Get the list of supported services:
-
-```
-curl http://localhost:5050/services
 ```
 
 - Get the list of symbols (and their unicode) supported by the given service (here ``` hwrt ```):
@@ -68,12 +62,12 @@ curl http://localhost:5050/symbols/hwrt
 curl http://localhost:5050/symbols/detexify/similar-0
 ```
 
-- Send a classification request to the given service (here ``` hwrt ```), for the given mapping (here ``` strict-0 ``` - use ``` none ``` to not use any):
+- Send a classification request to the given service (here ``` hwrt ```), for the given mapping (here ``` strict-0 ``` - use ``` none ``` to not use any). When ``` pretty ``` is set to ``` true ```, scores are truncated and send as string:
 
 ```
 curl -X POST http://localhost:5050/classify \
   -H 'Content-Type:application/json' \
-  -d '{"service":"hwrt", "mapping":"strict-0", "strokes":[[{"x":50,"y":60,"time":123456}]]}'
+  -d '{"service":"hwrt", "mapping":"strict-0", "pretty":true, "strokes":[[{"x":50,"y":60,"time":123456}]]}'
 ```
 
 

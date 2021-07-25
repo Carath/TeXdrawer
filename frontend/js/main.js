@@ -67,7 +67,7 @@ window.onload = function() {
 		$('#usage').html("Trying out some classification services (locally):");
 		$('#stats').html("");
 		clearInputs();
-		mappingsRequest();
+		servicesAndMappingsRequest();
 	});
 
 	$("#sidenav-draw").click(function(e) {

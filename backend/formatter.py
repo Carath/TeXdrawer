@@ -84,18 +84,20 @@ def extractServiceAnswer(service, answer):
 		return []
 
 
-# Regrouping answers according to the given mapping, scores update, and unicode fetching:
-def aggregateAnswers(service, mapping, answers):
+# Regrouping answers according to the given mapping, scores update, and unicode fetching.
+# When 'pretty' is enabled, scores are formatted to strings using formatScore():
+def aggregateAnswers(service, mapping, answers, pretty=False):
 	try:
 		latexToUnicodeMap = loader.getLatexToUnicodeMap()
 		aggregated = OrderedDict() # keeping the same order for scores!
 		for guess in answers:
 			symbol_class = mappings.getProjectedSymbol(guess['raw_answer'], mapping)
 			if not symbol_class in aggregated:
-				aggregated[symbol_class] = guess
+				guess = guess.copy() # preventing side effects.
 				guess['symbol_class'] = symbol_class
 				if symbol_class in latexToUnicodeMap:
 					guess['unicode'] = latexToUnicodeMap[symbol_class]
+				aggregated[symbol_class] = guess
 			elif service == 'hwrt':
 				aggregated[symbol_class]['score'] += guess['score']
 			elif service == 'detexify':
@@ -103,11 +105,25 @@ def aggregateAnswers(service, mapping, answers):
 			else:
 				print('Unsupported service:', service)
 				return []
+		if pretty:
+			for symbol_class in aggregated:
+				aggregated[symbol_class]['score'] = formatScore(service, aggregated[symbol_class]['score'])
 		return list(aggregated.values())
 	except:
 		print('Unknown error happened while aggregating some answers.')
 		print(traceback.format_exc())
 		return []
+
+
+# Truncating scores to be nicely rendered - a string is returned!
+def formatScore(service, score):
+	if service == 'hwrt':
+		return "%.1f %%" % (100. * score)
+	elif service == 'detexify':
+		return "%.3f" % score
+	else:
+		print('Unsupported service:', service)
+		return str(score)
 
 
 # Supporting both old and new versions of detexify:
