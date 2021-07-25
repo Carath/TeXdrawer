@@ -7,7 +7,6 @@ const backendIP = "http://" + (location.host === "" ? "localhost:5050" : locatio
 
 // Fetch available mappings from the backend:
 function mappingsRequest() {
-	$("#mappingChoice").empty();
 	let startTime = performance.now();
 	$.ajax({
 		type: "GET",
@@ -16,6 +15,7 @@ function mappingsRequest() {
 		success: function(response) {
 			// let responseTime = performance.now() - startTime; // in ms
 			// console.log("Mappings request took " + responseTime + " ms");
+			$("#mappingChoice").empty();
 			for (let i=0; i < response.length; ++i) {
 				mappingChoice.add(new Option(response[i], response[i]));
 			}
@@ -31,7 +31,7 @@ function symbolsRequest(service, mapping) {
 	let startTime = performance.now();
 	$.ajax({
 		type: "GET",
-		url: backendIP + "/symbols/" + service + "/" + mapping,
+		url: backendIP + "/symbols/" + service + (mapping !== "" ? "/" + mapping : ""),
 		// Accept: "application/json; charset=utf-8",
 
 		success: function(response) {

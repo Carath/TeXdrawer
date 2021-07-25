@@ -5,17 +5,38 @@ from tabulate import tabulate
 import server, loader, formatter, mappings
 
 
+# Checks how much the given dataset cover the service supported classes, after projection:
+def validateDataset(service, mapping, dataset, verbose=False):
+	foundClasses = set()
+	for sample in dataset:
+		symbol = mappings.getProjectedSymbol(sample[0], mapping)
+		foundClasses.add(symbol)
+	serviceClasses = mappings.getServiceProjectedSymbolsSet(service, mapping)
+	unknownClasses = foundClasses.difference(serviceClasses)
+	missingClasses = serviceClasses.difference(foundClasses)
+	print("* Found %d / %d classes for service '%s' and mapping '%s'" %
+		(len(serviceClasses) - len(missingClasses), len(serviceClasses), service, mapping))
+	print("* Found %d unsupported classes." % len(unknownClasses))
+	if verbose and unknownClasses != set():
+		print('', *unknownClasses, '', sep='\n')
+
+
 # Benchmarks the classification capabilities of the given service:
 def benchmark(service, mapping, dataset, top_k):
-	print('-> Starting the benchmark of service:', service)
+	validateDataset(service, mapping, dataset)
+	print("\n-> Starting the benchmark of service '%s', with mapping '%s':" % (service, mapping))
+	serviceClasses = mappings.getServiceProjectedSymbolsSet(service, mapping)
 	recallMap = {}
 	samplesNumber = len(dataset)
 	for rank in range(samplesNumber):
 		key, strokes = dataset[rank]
 		key = mappings.getProjectedSymbol(key, mapping)
+		if not key in serviceClasses:
+			# print('-> Ignored class:', key)
+			continue
 		strokes = json.loads(strokes)
 		if service == 'detexify':
-			strokes = formatter.formatDatasetStrokes_detexify(strokes)
+			strokes = formatter.formatStrokesTo('hwrt', strokes)
 		# print(key, strokes)
 		result, status = server.classifyRequest(service, mapping, strokes)
 		# print('result:', result)
@@ -89,13 +110,13 @@ if __name__ == '__main__':
 	if service == 'hwrt':
 		# hwrt: train: 151160 samples, test: 17074 (split 90% / 10%). 369 classes.
 		# This takes ~ 3m 30s to run:
-		foundClasses, testDataset = loader.loadDataset(service, loader.testDatasetPath_hwrt)
+		testDataset = loader.loadDataset(service, loader.testDatasetPath_hwrt)
 		benchmark(service, mapping, dataset=testDataset, top_k=5)
 
 	elif service == 'detexify':
 		# detexify: 210454 samples, training done on first 20K, testing on last 20K. 1077 classes overall.
 		# This takes ~ 35m to run:
-		foundClasses, testDataset = loader.loadDataset(service, loader.datasetPath_detexify)
+		testDataset = loader.loadDataset(service, loader.datasetPath_detexify)
 		benchmark(service, mapping, dataset=testDataset[-20000:], top_k=5)
 
 	else:

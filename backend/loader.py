@@ -1,4 +1,4 @@
-import os, json
+import os, traceback, json
 from pathlib import Path
 
 # Backend code:
@@ -51,7 +51,7 @@ def getLatexToUnicodeMap():
 		for line in lines:
 			latex, unic = line.split('\t')
 			_latexToUnicodeMap[latex] = unic
-		print('Successfully loaded the LaTeX -> unicode map.')
+		print('Loaded LaTeX -> unicode map.')
 	except:
 		print('Could not load the LaTeX -> unicode map from %s' % latexToUnicodePath)
 	return _latexToUnicodeMap
@@ -117,45 +117,38 @@ def getSymbolName(symbolMap, key):
 # Dataset partially loaded: strokes kept as string; use json.loads() to fully get them. Heavy parsing
 # will only be done during the benchmark, to enable reading quickly only parts of a dataset:
 def loadDataset(service, datasetPath):
-	print('-> Loading the dataset from:', datasetPath)
-	symbolMap = getSymbolsDatasetMap(service)
-	lines = getLines(datasetPath)
-	foundClasses, dataset = set(), [] # dataset will be a list of string couples: (symbol name, strokes)
-	if service == 'hwrt':
-		for line in lines[1:]:
-			splitted = line.split(';')
-			symbol = getSymbolName(symbolMap, splitted[0])
-			foundClasses.add(symbol)
-			dataset.append((symbol, splitted[2]))
-	elif service == 'detexify':
-		for start in range(len(lines)):
-			if 'COPY samples' in lines[start]:
-				break
-		for rank in range(start+1, len(lines)):
-			if '\\.' in lines[rank]: # reached the end.
-				break
-			splitted = lines[rank].split('\t')
-			symbol = formatter.extractLatexCommand_detexify(splitted[1])
-			foundClasses.add(symbol)
-			dataset.append((symbol, splitted[2]))
-	else:
-		print('Unsupported service:', service)
-
-	# Checking all dataset symbols are supported:
-	serviceClasses = set(symbolMap.values())
-	unknownSymbols = foundClasses.difference(serviceClasses)
-	if unknownSymbols != set():
-		print("%d unsupported symbols by service '%s' found in the dataset:"
-			% (len(unknownSymbols), service), '', *unknownSymbols, '', sep='\n')
-	print('Loaded %d samples.' % len(dataset))
-	print('Found %d classes.\n' % len(foundClasses))
-	# print('Dataset preview:', *dataset[:10], sep="\n\n")
-	# print('Classes:', *foundClasses, sep='\n')
-	return foundClasses, dataset
+	try:
+		print("\n-> Loading the dataset for service '%s' from %s" % (service, datasetPath))
+		symbolMap = getSymbolsDatasetMap(service)
+		lines = getLines(datasetPath)
+		dataset = [] # dataset will be a list of string couples: (symbol name, strokes)
+		if service == 'hwrt':
+			for line in lines[1:]:
+				splitted = line.split(';')
+				symbol = getSymbolName(symbolMap, splitted[0])
+				dataset.append((symbol, splitted[2]))
+		elif service == 'detexify':
+			for start in range(len(lines)):
+				if 'COPY samples' in lines[start]:
+					break
+			for rank in range(start+1, len(lines)):
+				if '\\.' in lines[rank]: # reached the end.
+					break
+				splitted = lines[rank].split('\t')
+				symbol = formatter.extractLatexCommand_detexify(splitted[1])
+				dataset.append((symbol, splitted[2]))
+		else:
+			print('Unsupported service:', service)
+		print('Loaded %d samples.' % len(dataset))
+		return dataset
+	except Exception:
+		print('\nFailure happened while trying to load a dataset:\n')
+		print(traceback.format_exc())
+		return []
 
 
 if __name__ == '__main__':
-	foundClasses, testDataset = loadDataset('hwrt', testDatasetPath_hwrt)
+	testDataset = loadDataset('hwrt', testDatasetPath_hwrt)
 	firstSymbol, strokesString = testDataset[0]
 	strokes = json.loads(strokesString)
 	firstStrokeString = json.dumps(strokes[0], indent='  ')

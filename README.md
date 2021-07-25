@@ -1,14 +1,20 @@
 # TeXdrawer
 
+*Small tool for handwritten LaTeX symbols recognition.*
+
 ## About
 
-The goal of this small project is (as of now) three-fold:
+The goals of this small project are the following:
+- Helping to build *balanced* datasets of handwritten symbols, by providing a simple GUI asking users to draw inputs for randomly selected symbols. Furthermore, the GUI should also provide a way to visualize such datasets, both sequentially and by filtering under given criteria. Even though any type of handwritten symbols could be relevant to this project, the main focus for now are math ones. Specifically, digits, latin and greek alphabets, and common math symbols used in formulas. Such symbols may be identified by their unicode, or their LaTeX command.
+- Benchmarking existing free open-source services allowing recognition of handwritten symbols, with as less bias as possible, and with support for regrouping similar symbols as shared classes.
+- Obtaining the most accurate service for a specified task, either by modifying the tested services, or by building new ones. The resulting service, should however be relatively lightweight and fast, for the target hardware may be tablet computers, or low power laptops with a touchscreen monitor.
+- Extending the obtained service capabilities to recognize associations of handwritten symbols, be them words, sentences, or math formulas. Moreover, the service should be able to replace in real-time user drawn symbols by the predicted ones, but also give the possiblity to change or correct the prediction should it be wrong. Small rotations of symbols should not hinder the system much.
 
-- Help building *balanced* datasets of handwritten symbols.
-- Benchmark existing open-source services allowing recognition of handwritten symbols, given as sequences of 2D points (called strokes). This is *not* an [OCR](https://en.wikipedia.org/wiki/Optical_character_recognition) project.
-- Modify the tested services, or even build new ones, in order to be the most accurate possible for a specified task. The resulting service, should however be relatively lightweight and fast.
-
-Furthermore, even though any type of handwritten symbols could be relevant to this project, the main focus for now are math ones. Specifically, apart from numbers, latin and greek alphabets, the system should recognize common math symbols, and be able to output either their unicode or LaTeX command name.
+Note: in this project, input handwritten symbols are only received as sequences of 2D points (called *strokes*), not scanned images. This is *not* an [OCR](https://en.wikipedia.org/wiki/Optical_character_recognition) project! Limiting input acquisition in such a way has several advantages:
+- inputs are way less noisy;
+- raw inputs are obtained, therefore noise will have few variations between users or devices;
+- it allows for fast and effective segmentation for associations of symbols. Rotations are cheap too.
+This notably prevents issues one would expect to rise with OCR, due to disparity in scanning device resolution, acquisition luminosity, image contrast, fuzziness / sharpness, symbol line color or thickness, ...
 
 
 ## Installation
@@ -67,7 +73,7 @@ Finally run:
 sudo sh run.sh
 ```
 
-Note that detexify docker image roughlty weights 3.6 Gb, be sure to have enough disk space.
+Note that detexify docker image roughlty weights 3.6 GB, be sure to have enough disk space.
 
 
 ## Usage
@@ -112,6 +118,7 @@ sudo sh run.sh
   - service goal weighted by dataset balance
   - custom goal (to be defined)
 - Build the best service possible for the desired task.
+- Extend to words or formulas. Support small rotations of symbols.
 
 
 ## Benchmarks

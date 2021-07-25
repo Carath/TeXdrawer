@@ -41,15 +41,26 @@
 		</div>
 		<div class="middle">
 			<div id="about">
-				<p>The goal of this small project is (as of now) three-fold:</p>
+				<p>The goals of this small project are the following:</p>
 				<br>
 				<ul>
-					<li>Help building <em>balanced</em> datasets of handwritten symbols.</li>
-					<li>Benchmark existing open-source services allowing recognition of handwritten symbols, given as sequences of 2D points (called strokes). This is <em>not</em> an <a href="https://en.wikipedia.org/wiki/Optical_character_recognition" target="_blank">OCR</a> project.</li>
-					<li>Modify the tested services, or even build new ones, in order to be the most accurate possible for a specified task. The resulting service, should however be relatively lightweight and fast.</li>
+					<li>Helping to build <em>balanced</em> datasets of handwritten symbols, by providing a simple GUI asking users to draw inputs for randomly selected symbols. Furthermore, the GUI should also provide a way to visualize such datasets, both sequentially and by filtering under given criteria. Even though any type of handwritten symbols could be relevant to this project, the main focus for now are math ones. Specifically, digits, latin and greek alphabets, and common math symbols used in formulas. Such symbols may be identified by their unicode, or their LaTeX command.</li>
+					<br>
+					<li>Benchmarking existing free open-source services allowing recognition of handwritten symbols, with as less bias as possible, and with support for regrouping similar symbols as shared classes.</li>
+					<br>
+					<li>Obtaining the most accurate service for a specified task, either by modifying the tested services, or by building new ones. The resulting service, should however be relatively lightweight and fast, for the target hardware may be tablet computers, or low power laptops with a touchscreen monitor.</li>
+					<br>
+					<li>Extending the obtained service capabilities to recognize associations of handwritten symbols, be them words, sentences, or math formulas. Moreover, the service should be able to replace in real-time user drawn symbols by the predicted ones, but also give the possiblity to change or correct the prediction should it be wrong. Small rotations of symbols should not hinder the system much.</li>
 				</ul>
 				<br>
-				<p>Furthermore, even though any type of handwritten symbols could be relevant to this project, the main focus for now are math ones. Specifically, apart from numbers, latin and greek alphabets, the system should recognize common math symbols, and be able to output either their unicode or LaTeX command name.</p>
+				<p>Note: in this project, input handwritten symbols are only received as sequences of 2D points (called <em>strokes</em>), not scanned images. This is <em>not</em> an <a href="https://en.wikipedia.org/wiki/Optical_character_recognition" target="_blank">OCR</a> project! Limiting input acquisition in such a way has several advantages:</p>
+				<ul>
+					<li>inputs are way less noisy;</li>
+					<li>raw inputs are obtained, therefore noise will have few variations between users or devices;</li>
+					<li>it allows for fast and effective segmentation for associations of symbols. Rotations are cheap too.</li>
+				</ul>
+				<br>
+				<p>This notably prevents issues one would expect to rise with OCR, due to disparity in scanning device resolution, acquisition luminosity, image contrast, fuzziness / sharpness, symbol line color or thickness, ...</p>
 			</div>
 			<div id="centerArea" hidden>
 				<p id="usage"></p>

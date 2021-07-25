@@ -5,7 +5,31 @@ from collections import OrderedDict
 import loader, mappings
 
 
-# Formatting a classification request, to be sent to the given service:
+# Translates strokes between 2 supported formats:
+# [x, y, t] <-> {'x': x, 'y': y, 'time': t}
+def formatStrokesTo(dest_service, strokes):
+	try:
+		if dest_service == 'hwrt':
+			formatPoint = lambda point : {'x' : point[0], 'y': point[1], 'time': point[2]}
+		elif dest_service == 'detexify':
+			formatPoint = lambda point : [point['x'], point['y'], point['time']] # N.B: t/time unused by detexify.
+		else:
+			print('Unsupported service:', dest_service)
+			return []
+		newStrokes = []
+		for stroke in strokes:
+			newStroke = []
+			for point in stroke:
+				newStroke.append(formatPoint(point))
+			newStrokes.append(newStroke)
+		return newStrokes
+	except Exception:
+		print('Strokes already in correct format.')
+		return strokes
+
+
+# Formatting a classification request, to be sent to the given service.
+# Note: no need to use formatStrokesTo(), for strokes should already be in correct format.
 def formatRequest(service, strokes):
 	if service == 'hwrt':
 		return {'secret': '', 'classify': json.dumps(strokes)} # secret not used.
@@ -86,9 +110,6 @@ def aggregateAnswers(service, mapping, answers):
 		return []
 
 
-##################################################
-# detexify specific:
-
 # Supporting both old and new versions of detexify:
 def extractLatexCommand_detexify(string):
 	symbol = string.split('-', maxsplit=2)[-1]
@@ -98,18 +119,14 @@ def extractLatexCommand_detexify(string):
 	return symbol
 
 
-# Translate [x, y, t] points to {'x': x, 'y': y, 'z': z} format:
-def formatDatasetStrokes_detexify(datasetStrokes):
-	newStrokes = []
-	for stroke in datasetStrokes:
-		newStroke = []
-		for point in stroke:
-			newStroke.append({'x' : point[0], 'y': point[1], 't': point[2]}) # N.B: t/time unused here.
-		newStrokes.append(newStroke)
-	return newStrokes
-
-
 if __name__ == '__main__':
+
+	inputStrokes = [[{"x":50,"y":60,"time":123456}, {"x":30,"y":15,"time":123457}], [{"x":60,"y":55,"time":123458}]]
+	strokes = formatStrokesTo('hwrt', inputStrokes) # same strokes
+	strokes = formatStrokesTo('detexify', strokes)
+	strokes = formatStrokesTo('hwrt', strokes)
+	if strokes != inputStrokes:
+		print('Error found in formatStrokesTo()')
 
 	# Tests which must be passed by Detexify's extractor on both the old
 	# and new format. Each test is made of a pair (string, answer):
