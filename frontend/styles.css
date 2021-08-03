@@ -1,8 +1,18 @@
 *{margin: 0; padding: 0;}
 
+:root {
+	--pagePadding: 25px;
+	--leftPanelSize: 200px;
+	--cellWidth: 200px;
+	--cellHalfWidth: calc(var(--cellWidth) / 2);
+	--cellCornerRadius: 10px;
+}
+
 html, body {
-	height: 100%;
 	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
 	font-size: 13pt;
 }
 
@@ -11,69 +21,83 @@ select {
 	padding: 4px 4px;
 }
 
-.main {
+footer {
 }
 
-.left {
-	width: 200px;
+/*------------------------------------------*/
+/* Core structure: */
+
+#left-panel {
+	background-color: #222;
+	width: var(--leftPanelSize);
 	height: 100%;
 	position: fixed;
 	float: left;
 	overflow-x: hidden;
-	background-color: #222;
-	/*display: table;*/
 }
 
-.middle {
-	margin-left: 200px;
-	width: auto;
-	height: 100%;
+#middle {
+	/*background-color: yellow;*/
+	padding-left: calc(var(--leftPanelSize) + var(--pagePadding));
+	padding-top: var(--pagePadding);
+	padding-right: var(--pagePadding);
+	padding-bottom: var(--pagePadding);
 	float: left;
 }
 
-#centerArea {
-	margin-left: 50px;
-	margin-top: 25px;
+#about {
+	/*background-color: grey;*/
 }
 
-.right {
+#grid-container {
+	/*background-color: crimson;*/
+	width: calc(100vw - var(--leftPanelSize) - var(--pagePadding));
+}
+
+#classify-draw {
+	/*background-color: lightblue;*/
+}
+
+#center-area {
+	/*background-color: lightcoral;*/
+	margin-left: 25px;
+}
+
+#right-side {
+	/*background-color: green;*/
+	padding-top: var(--pagePadding);
+	padding-right: var(--pagePadding);
+	padding-bottom: var(--pagePadding);
 	width: 45%;
-	height: auto;
 	float: right;
-	/*background-color: orange;*/
 }
 
-.topLeft {
+/*------------------------------------------*/
+/* Left panel: */
+
+#topLeft {
 	width: 100%;
 	height: 55px;
 	float: left;
-	/*margin-bottom: 10px;*/
+	margin-bottom: 5px;
 }
 
-.bottomLeft {
+#bottomLeft {
 	width: 100%;
 	float: left;
 }
 
-.topLeftLeft {
+#topLeftLeft {
 	width: 20%;
 	height: 100%;
 	float: left;
 }
 
-.topLeftRight {
+#topLeftRight {
 	margin-top: 5%;
 	width: 80%;
 	height: 100%;
 	float: left;
-}
-
-.logo {
-	margin-left: 10px;
-	margin-top: 5px;
-	height: 32px;
-	position: fixed;
-	filter: invert(100%);
 }
 
 #sitename {
@@ -83,56 +107,34 @@ select {
 	color: white;
 }
 
-#about {
-	margin-top: 20px;
-	margin-left: 20px;
-	margin-right: 50px;
-}
-
-#about li {
-	margin-left: 30px;
-}
-
-#Instruction {
-	font-size: 15pt;
-	font-style: italic;
-}
-
-#canvasArea {
-}
-
-.canvas {
-	border: 2px solid black;
-	margin-top: 10px;
-	/*Those break everything:*/
-	/*width: 300px;*/
-	/*height: 300px;*/
-	/*Causes drawings to disappear!*/
-	/*background-color: #ffffff;*/
-	/*background: #ffffff;*/
-}
-
-#buttonsArea {
-}
-
-.button {
+#texdrawer-logo {
+	border: none;
+	position: fixed;
+	height: 32px;
+	margin-left: 10px;
 	margin-top: 5px;
-	margin-bottom: 20px;
-	font-size: 15px;
-	padding: 4px 8px;
-	text-align: center;
-	text-decoration: none;
-	display: inline-block;
+	filter: invert(100%);
 }
 
-#stats {
-	/*margin-top: 10px;*/
-	margin-bottom: 10px;
+#mathjaxLogo {
+	border: none;
+	position: fixed;
+	bottom: 0;
+	height: 25px;
+	margin-left: 1px;
+}
+
+#githubLogo {
+	border: none;
+	position: fixed;
+	bottom: 0;
+	height: 40px;
+	margin-left: 120px;
+	margin-bottom: -5px;
+	filter: invert(100%);
 }
 
 .sidenav {
-	/*width: 175px;*/
-	/*position: fixed;*/
 }
 
 /* Style the sidenav links and the dropdown button */
@@ -161,15 +163,46 @@ select {
 	color: white;
 }
 
-.mathjaxLogo {
-	height: 25px;
-	margin-left: 1px;
-	bottom: 0;
-	position: fixed;
+/*------------------------------------------*/
+/* Center area */
+
+#about li {
+	margin-left: 30px;
+}
+
+#Instruction {
+	font-size: 15pt;
+	font-style: italic;
+}
+
+#canvasArea {
+}
+
+#input-canvas {
+	/* Do not set the canvas size here, it fails
+	to be retrieved by getContext() */
+	border: 2px solid black;
+	margin-top: 10px;
+}
+
+#buttonsArea {
+}
+
+.button {
+	margin-top: 5px;
+	margin-bottom: 20px;
+	font-size: 15px;
+	padding: 4px 8px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+}
+
+#stats {
+	margin-bottom: 10px;
 }
 
 #classification-results {
-	margin-top: 50px;
 }
 
 .responseTime {
@@ -182,8 +215,85 @@ select {
 	width: 90%;
 }
 
-.command-box {
+.latex-command-box {
 	width: 155px;
 	text-align: left;
 	font-size: 12pt;
+}
+
+/*------------------------------------------*/
+/* Cells grid: */
+
+#cells-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--cellWidth), 1fr));
+	grid-gap: 2px;
+}
+
+.cell-container {
+	width: var(--cellWidth);
+	padding: 5px;
+	border-radius: var(--cellCornerRadius);
+}
+
+.cell-container:hover {
+	background-color: darkgoldenrod;
+}
+
+.cell { /* to be placed before subcells definitions */
+	justify-content: center;
+	align-items: center;
+	display: flex;
+	border: 2px solid black;
+	font-family: Arial;
+	font-size: 16px;
+}
+
+.cell-top {
+	display: flex;
+	height: 25px;
+}
+
+.cell-top-left {
+	grid-column: 1;
+	width: var(--cellHalfWidth);
+	border-radius: var(--cellCornerRadius) 0px 0px 0px;
+	background-color: #dddddd;
+}
+
+.cell-top-right {
+	grid-column: 2;
+	width: var(--cellHalfWidth);
+	border-radius: 0px var(--cellCornerRadius) 0px 0px;
+	background-color: #dddddd;
+}
+
+.cell-center { /* may contain up to 25 chars strings */
+	height: 25px;
+	background-color: #ffffdd;
+}
+
+.cell-bottom {
+	display: flex;
+	height: 75px;
+}
+
+.cell-bottom-left {
+	grid-column: 1;
+	width: var(--cellHalfWidth);
+	border-radius: 0px 0px 0px var(--cellCornerRadius);
+	background-color: white;
+	font-size: 25px;
+}
+
+.cell-bottom-right {
+	grid-column: 2;
+	width: var(--cellHalfWidth);
+	border-radius: 0px 0px var(--cellCornerRadius) 0px;
+	background-color: white;
+}
+
+.cell-canvas {
+	width: var(--cellHalfWidth);
+	height: 75px;
 }

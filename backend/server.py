@@ -181,7 +181,7 @@ def frontendClassifyRequest():
 
 
 def classifyRequest(service, mapping, strokes, pretty=False):
-	''' Send a classification request to the chosen service. '''
+	''' Sends a classification request to the chosen service. '''
 	try:
 		formattedRequest = formatter.formatRequest(service, strokes)
 		if service == 'hwrt':

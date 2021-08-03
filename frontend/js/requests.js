@@ -133,7 +133,7 @@ function drawResultsTable(service, mapping, response, startTime, mode) {
 			}
 
 			content += "<tr><td>$" + symbol_class + "$</td><td>" + unicode + "</td><td><input id=\"latex-"
-				+ symbol_class + "\" class=\"command-box\" value='" + symbol_class + "' disabled/></td>"
+				+ symbol_class + "\" class=\"latex-command-box\" value='" + symbol_class + "' disabled/></td>"
 				+ scoreHTML + "</tr>";
 		}
 	});
@@ -141,5 +141,5 @@ function drawResultsTable(service, mapping, response, startTime, mode) {
 	startTime = performance.now();
 	typeset("#classification-results", content);
 	let drawingTime = performance.now() - startTime; // in ms
-	$('#drawingTime').html(drawingTime);
+	$("#drawingTime").html(drawingTime);
 }

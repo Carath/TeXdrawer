@@ -7,12 +7,13 @@ const samplesOpacity = 0.5;
 const drawingColor = "orange";
 const samplesColor = "green";
 const rescaledSamplesColor = "red";
+const cellSize = 4.; // in ex
 
 var canvas = null;
 var ctx = null;
 
 window.onload = function() {
-	canvas = document.getElementById("myCanvas");
+	canvas = document.getElementById("input-canvas");
 	ctx = canvas.getContext("2d");
 
 	// Starting from the canvas only, but drawing and samples
@@ -52,39 +53,40 @@ window.onload = function() {
 	// testButton.hidden = false;
 
 	$("#sidenav-about").click(function(e) {
-		$(this).addClass('active').siblings().removeClass('active');
+		$(this).addClass("active").siblings().removeClass("active");
+		$("#grid-container, #classify-draw, #right-side").hide();
 		$("#about").show();
-		$("#centerArea, .right").hide();
-		$('#classification-results').empty();
+		$("#classification-results").empty();
 		clearInputs();
 	});
 
 	$("#sidenav-classify").click(function(e) {
-		$(this).addClass('active').siblings().removeClass('active');
-		$("#about, #exportButton, #submitButton, #showSamplesButton").hide();
-		$("#centerArea, #classifyButton, #symbolsButton, #serviceArea, .right").show();
-		$('#classification-results').empty();
-		$('#usage').html("Trying out some classification services (locally):");
-		$('#stats').html("");
+		$(this).addClass("active").siblings().removeClass("active");
+		$("#about, #grid-container, #exportButton, #submitButton, #showSamplesButton").hide();
+		$("#classify-draw, #right-side, #classifyButton, #symbolsButton, #serviceArea").show();
+		$("#classification-results").empty();
+		$("#usage").html("Trying out some classification services (locally):");
+		$("#stats").html("");
 		clearInputs();
 		servicesAndMappingsRequest();
 	});
 
 	$("#sidenav-draw").click(function(e) {
-		$(this).addClass('active').siblings().removeClass('active');
-		$("#about, #classifyButton, #symbolsButton, #serviceArea").hide();
-		$("#centerArea, #exportButton, #submitButton, #showSamplesButton, .right").show();
-		$('#classification-results').empty();
-		$('#usage').html("Dataset creation tool:");
-		$('#stats').html("");
+		$(this).addClass("active").siblings().removeClass("active");
+		$("#about, #grid-container, #classifyButton, #symbolsButton, #serviceArea").hide();
+		$("#classify-draw, #right-side, #exportButton, #submitButton, #showSamplesButton").show();
+		$("#classification-results").empty();
+		$("#usage").html("Dataset creation tool:");
+		$("#stats").html("");
 		clearInputs();
 	});
 
 	$("#sidenav-inspect").click(function(e) {
-		// $(this).addClass('active').siblings().removeClass('active');
-		// $("#about").hide();
-		// $('#classification-results').empty();
-		// clearInputs();
-		alert("Note done yet!");
+		$(this).addClass("active").siblings().removeClass("active");
+		$("#about, #classify-draw, #right-side").hide();
+		$("#grid-container").show();
+		$("#classification-results").empty();
+		clearInputs();
+		addAllCells(exampleCells());
 	});
 }

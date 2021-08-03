@@ -8,38 +8,43 @@
 		<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 		<script type="text/javascript" src="js/load-mathjax.js" defer></script>
 		<script type="text/javascript" src="js/main.js"></script>
-		<script type="text/javascript" src="js/datasets.js"></script>
 		<script type="text/javascript" src="js/inputs.js"></script>
+		<script type="text/javascript" src="js/datasets.js"></script>
+		<script type="text/javascript" src="js/inspector.js"></script>
 		<script type="text/javascript" src="js/requests.js"></script>
 		<title>TeXdrawer</title>
 	</head>
 	<body>
-		<div class="left">
-			<div class="topLeft">
-				<div class="topLeftLeft">
-					<img src="img/sqrt-cropped.svg" alt="logo" class="logo"/>
+		<div id="left-panel">
+			<div id="topLeft">
+				<div id="topLeftLeft">
+					<img id="texdrawer-logo" alt="texdrawer-logo" src="img/sqrt-cropped.svg"/>
 				</div>
-				<div class="topLeftRight">
+				<div id="topLeftRight">
 					<i id="sitename">TeXdrawer</i>
 				</div>
 			</div>
-			<div class="bottomLeft">
+			<div id="bottomLeft">
 				<div class="sidenav">
 					<a id="sidenav-about" class="active">About</a>
 					<a id="sidenav-classify">Classify</a>
 					<a id="sidenav-draw">Draw</a>
 					<a id="sidenav-inspect">Inspect</a>
 				</div>
-				<div>
+				<div id="bottom-logos">
 					<a href="https://www.mathjax.org" target="_blank">
-						<img class="mathjaxLogo" title="Powered by MathJax"
-						src="https://www.mathjax.org/badge/badge.gif"
-						border="0" alt="Powered by MathJax"/>
+						<img id="mathjaxLogo" title="Powered by MathJax" alt="Powered by MathJax"
+						src="https://www.mathjax.org/badge/badge.gif"/>
+					</a>
+					<a href="https://github.com/Carath/TeXdrawer" target="_blank">
+						<img id="githubLogo" title="Source code"
+						alt="Credit: https://commons.wikimedia.org/wiki/File:Ei-sc-github.svg"
+						src="img/github.svg"/>
 					</a>
 				</div>
 			</div>
 		</div>
-		<div class="middle">
+		<div id="middle">
 			<div id="about">
 				<p>The goals of this small project are the following:</p>
 				<br>
@@ -62,41 +67,50 @@
 				<br>
 				<p>This notably prevents issues one would expect to rise with OCR, due to disparity in scanning device resolution, acquisition luminosity, image contrast, fuzziness / sharpness, symbol line color or thickness, ...</p>
 			</div>
-			<div id="centerArea" hidden>
-				<p id="usage"></p>
-				<br>
-				<div id="canvasArea">
-					<h3 id="Instruction">Draw here:</h3>
-					<canvas id="myCanvas" class="canvas" width="300" height="300"></canvas>
-					<div id="buttonsArea">
-						<input type="button" class="button" id="retryButton" value="retry">
-						<input type="button" class="button" id="exportButton" value="export">
-						<input type="button" class="button" id="submitButton" value="submit">
-						<input type="button" class="button" id="showSamplesButton" value="show samples">
-						<input type="button" class="button" id="classifyButton" value="classify">
-						<input type="button" class="button" id="symbolsButton" value="Show symbols">
-						<!-- <input type="button" class="button" id="testButton" value="test" hidden> -->
+			<div id="grid-container" hidden>
+				<div id="cells-grid"></div>
+			</div>
+			<div id="classify-draw" hidden>
+				<div id="center-area">
+					<p id="usage"></p>
+					<br>
+					<div id="canvasArea">
+						<h3 id="Instruction">Draw here:</h3>
+						<canvas id="input-canvas" width="300" height="300"></canvas> <!-- set size here! -->
+						<div id="buttonsArea">
+							<input type="button" class="button" id="retryButton" value="retry">
+							<input type="button" class="button" id="exportButton" value="export">
+							<input type="button" class="button" id="submitButton" value="submit">
+							<input type="button" class="button" id="showSamplesButton" value="show samples">
+							<input type="button" class="button" id="classifyButton" value="classify">
+							<input type="button" class="button" id="symbolsButton" value="Show symbols">
+							<!-- <input type="button" class="button" id="testButton" value="test" hidden> -->
+						</div>
 					</div>
-				</div>
-				<div id="serviceArea">
-					<label for="serviceChoice">Using service:</label>
-					<select name="serviceChoice" id="serviceChoice"></select>
-					<label for="mappingChoice">and mapping:</label>
-					<select name="mappingChoice" id="mappingChoice">
-						<option value="none" selected>none</option> <!-- default -->
-					</select>
-				</div>
-				<div>
-					<p id="stats"></p>
-				</div>
-				<div id="tests">
-					<p id="test-zone"></p>
-					<p id="mathjax-test"></p>
+					<div id="serviceArea">
+						<label for="serviceChoice">Using service:</label>
+						<select name="serviceChoice" id="serviceChoice"></select>
+						<label for="mappingChoice">and mapping:</label>
+						<select name="mappingChoice" id="mappingChoice">
+							<option value="none" selected>none</option> <!-- default -->
+						</select>
+					</div>
+					<div>
+						<p id="stats"></p>
+					</div>
+					<div id="tests">
+						<p id="test-zone"></p>
+						<p id="mathjax-test"></p>
+					</div>
 				</div>
 			</div>
 		</div>
-		<div class="right" hidden>
+		<div id="right-side" hidden>
 			<div id="classification-results"></div>
 		</div>
+		<footer hidden>
+			<p>Author: Carath</p>
+			<p><a href="https://github.com/Carath/TeXdrawer"></a></p>
+		</footer>
 	</body>
 </html>

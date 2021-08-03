@@ -62,7 +62,7 @@ curl http://localhost:5050/symbols/hwrt
 curl http://localhost:5050/symbols/detexify/similar-0
 ```
 
-- Send a classification request to the given service (here ``` hwrt ```), for the given mapping (here ``` strict-0 ``` - use ``` none ``` to not use any). When ``` pretty ``` is set to ``` true ```, scores are truncated and send as string:
+- Send a classification request to the given service (here ``` hwrt ```), for the given mapping (here ``` strict-0 ``` - use ``` none ``` to not use any). When ``` pretty ``` is set to ``` true ```, scores are truncated and sent as strings:
 
 ```
 curl -X POST http://localhost:5050/classify \

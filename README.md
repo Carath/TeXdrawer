@@ -14,6 +14,7 @@ Note: in this project, input handwritten symbols are only received as sequences 
 - inputs are way less noisy;
 - raw inputs are obtained, therefore noise will have few variations between users or devices;
 - it allows for fast and effective segmentation for associations of symbols. Rotations are cheap too.
+
 This notably prevents issues one would expect to rise with OCR, due to disparity in scanning device resolution, acquisition luminosity, image contrast, fuzziness / sharpness, symbol line color or thickness, ...
 
 
@@ -21,7 +22,7 @@ This notably prevents issues one would expect to rise with OCR, due to disparity
 
 #### TeXdrawer
 
-The dataset creation tool from TeXdrawer's frontend has no installation steps (beside getting the code). To try out some classification services or benchmark them, the backend must however be used. It requires ``` python 3.6+ ``` and ``` pip3 ``` installed, and the command below to be run. Note that TeXdrawer has only been tested on Linux at this time.
+The dataset creation tool from TeXdrawer's frontend has no installation steps (beside getting the code). To try out some classification services or benchmark them, the backend must however be used. It requires [python 3.6+](https://www.python.org/download/releases/3.0/) and [pip3](https://pypi.org/project/pip/) installed, and the command below to be run. Note that TeXdrawer has only been tested on Linux at this time.
 
 ```
 pip3 install -r backend/requirements.txt
@@ -43,6 +44,7 @@ The project backend needs to be cloned. However, the *master* branch seems to no
 git clone https://github.com/kirel/detexify-hs-backend.git
 cd detexify-hs-backend
 git checkout stack
+git checkout e6c65b3ef1ed5307fb8f15708b09cd11811ef7b3 # in case further commits are added.
 ```
 
 Then, replace the content of the file ``` detexify-hs-backend.cabal ``` with the following:
@@ -133,7 +135,8 @@ For both services, new samples need to be created in order to have a more robust
 
 ## Limitations
 
-At the present time, it doesn't seem possible to containerize TeXdrawer's backend using Docker, at least in a *portable* way. The issue is that a Docker container cannot out of the box reach an appliction running on the host local network... To fix this, all supported services should be containerized, and placed on the same network as TeXdrawer. This would require to modify some of those services, e.g the Flask server of hwrt should be made to run on ``` host='0.0.0.0' ```.
+- At the present time, it doesn't seem possible to containerize TeXdrawer's backend using Docker, at least in a *portable* way. The issue is that a Docker container cannot out of the box reach an appliction running on the host local network... To fix this, all supported services should be containerized, and placed on the same network as TeXdrawer. This would require to modify some of those services, e.g the Flask server of hwrt should be made to run on ``` host='0.0.0.0' ```.
+- Some math symbols are not currently rendered by MathJax (typically, those from custom packages). Some efforts could be done to try supporting a few of them, the rest have to be drawn with a placeholder, and skipped during dataset creation.
 
 
 ## Links
