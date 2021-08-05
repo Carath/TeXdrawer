@@ -101,11 +101,11 @@ function drawResultsTable(service, mapping, response, startTime, mode) {
 	// jQuery("#test-zone").html(JSON.stringify(response));
 
 	let scoreColumn = "";
-	let title = "Found " + response.length + " symbols for service: " + service;
+	let title = "Found <strong>" + response.length + "</strong> symbols for service <strong>" + service + "</strong>";
 	let symbolsBound = response.length;
 
 	if (mapping !== "" && mapping !== "none") {
-		title += ", and mapping: " + mapping;
+		title += ", and mapping <strong>" + mapping + "</strong>";
 	}
 
 	if (mode === "classify") {
@@ -133,7 +133,7 @@ function drawResultsTable(service, mapping, response, startTime, mode) {
 			}
 
 			content += "<tr><td>$" + symbol_class + "$</td><td>" + unicode + "</td><td><input id=\"latex-"
-				+ symbol_class + "\" class=\"latex-command-box\" value='" + symbol_class + "' disabled/></td>"
+				+ symbol_class + "\" class=\"symbol-class-box\" value='" + symbol_class + "' disabled/></td>"
 				+ scoreHTML + "</tr>";
 		}
 	});

@@ -33,6 +33,10 @@ window.onload = function() {
 	});
 
 	$("#showSamplesButton").click(function(e) { // for testing purposes
+		if (inputStrokes.length === 0) {
+			alert("No strokes given, no samples to show.");
+			return;
+		}
 		let resized = resize(inputStrokes);
 		showSamples(inputStrokes, samplesColor);
 		showSamples(resized, rescaledSamplesColor);
@@ -65,7 +69,7 @@ window.onload = function() {
 		$("#about, #grid-container, #exportButton, #submitButton, #showSamplesButton").hide();
 		$("#classify-draw, #right-side, #classifyButton, #symbolsButton, #serviceArea").show();
 		$("#classification-results").empty();
-		$("#usage").html("Trying out some classification services (locally):");
+		$("#usage").html("Trying out some classification services (self hosted):");
 		$("#stats").html("");
 		clearInputs();
 		servicesAndMappingsRequest();

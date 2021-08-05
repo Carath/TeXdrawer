@@ -2,8 +2,9 @@
 <html lang="en">
 	<head>
 		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-		<link rel="icon" href="img/sqrt-cropped.svg">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" type="text/css" href="styles.css">
+		<link rel="icon" href="img/sqrt-cropped.svg">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 		<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 		<script type="text/javascript" src="js/load-mathjax.js" defer></script>
@@ -34,11 +35,11 @@
 				<div id="bottom-logos">
 					<a href="https://www.mathjax.org" target="_blank">
 						<img id="mathjaxLogo" title="Powered by MathJax" alt="Powered by MathJax"
-						src="https://www.mathjax.org/badge/badge.gif"/>
+						src="img/mathjax-badge.gif"/>
 					</a>
 					<a href="https://github.com/Carath/TeXdrawer" target="_blank">
 						<img id="githubLogo" title="Source code"
-						alt="Credit: https://commons.wikimedia.org/wiki/File:Ei-sc-github.svg"
+						alt="Logo credit: https://commons.wikimedia.org/wiki/File:Ei-sc-github.svg"
 						src="img/github.svg"/>
 					</a>
 				</div>
@@ -59,6 +60,7 @@
 				</ul>
 				<br>
 				<p>Note: in this project, input handwritten symbols are only received as sequences of 2D points (called <em>strokes</em>), not scanned images. This is <em>not</em> an <a href="https://en.wikipedia.org/wiki/Optical_character_recognition" target="_blank">OCR</a> project! Limiting input acquisition in such a way has several advantages:</p>
+				<br>
 				<ul>
 					<li>inputs are way less noisy;</li>
 					<li>raw inputs are obtained, therefore noise will have few variations between users or devices;</li>
@@ -66,9 +68,6 @@
 				</ul>
 				<br>
 				<p>This notably prevents issues one would expect to rise with OCR, due to disparity in scanning device resolution, acquisition luminosity, image contrast, fuzziness / sharpness, symbol line color or thickness, ...</p>
-			</div>
-			<div id="grid-container" hidden>
-				<div id="cells-grid"></div>
 			</div>
 			<div id="classify-draw" hidden>
 				<div id="center-area">
@@ -103,10 +102,13 @@
 						<p id="mathjax-test"></p>
 					</div>
 				</div>
+				<div id="right-side" hidden>
+					<div id="classification-results"></div>
+				</div>
 			</div>
-		</div>
-		<div id="right-side" hidden>
-			<div id="classification-results"></div>
+			<div id="grid-container" hidden>
+				<div id="cells-grid"></div>
+			</div>
 		</div>
 		<footer hidden>
 			<p>Author: Carath</p>

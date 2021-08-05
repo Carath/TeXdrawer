@@ -65,12 +65,12 @@ function exampleCells() { // TODO: add example strokes!
 		{dataset_id: "9514", unicode: "U+222B", symbol_class: "\\int", strokes: []},
 		{dataset_id: "75391", unicode: "U+221E", symbol_class: "\\infty", strokes: []},
 		{dataset_id: "1472583", unicode: "U+27F9", symbol_class: "\\Longrightarrow", strokes: []},
-		{dataset_id: "1472583", unicode: "U+220F", symbol_class: "\\prod", strokes: []},
-		{dataset_id: "1472583", unicode: "U+3A0", symbol_class: "\\Pi", strokes: []},
-		{dataset_id: "1472583", unicode: "U+2245", symbol_class: "\\cong", strokes: []},
-		{dataset_id: "1472583", unicode: "U+223C", symbol_class: "\\sim", strokes: []},
-		{dataset_id: "1472583", unicode: "U+2205", symbol_class: "\\varnothing", strokes: []},
-		{dataset_id: "1472583", unicode: "U+3B1", symbol_class: "\\alpha", strokes: []},
-		{dataset_id: "1472583", unicode: "U+2020", symbol_class: "\\dagger", strokes: []}
+		{dataset_id: "3681", unicode: "U+220F", symbol_class: "\\prod", strokes: []},
+		{dataset_id: "8461", unicode: "U+3A0", symbol_class: "\\Pi", strokes: []},
+		{dataset_id: "42069", unicode: "U+2245", symbol_class: "\\cong", strokes: []},
+		{dataset_id: "12", unicode: "U+223C", symbol_class: "\\sim", strokes: []},
+		{dataset_id: "25981", unicode: "U+2205", symbol_class: "\\varnothing", strokes: []},
+		{dataset_id: "1257", unicode: "U+3B1", symbol_class: "\\alpha", strokes: []},
+		{dataset_id: "1001", unicode: "U+2020", symbol_class: "\\dagger", strokes: []}
 	];
 }

@@ -27,12 +27,9 @@
 
 #### Backend
 
+- use argparse for scripts arguments?
 - compare Flask with [FastAPI](https://fastapi.tiangolo.com/)
 - obtain frequencies of each classes, for a given mapping and dataset. [dataset creator]
 - obtain frequencies of each symbols in its equivalence class, for a given mapping and dataset. [disambiguation]
-- use argparse for scripts arguments?
-
-
-#### Issues
-
-- zoom bug: messes up right-side alignment in classify mode.
+- classification request: bound parameter for classes number?
+- aggregateAnswers(): keep (ordered) list of raw answers, per classes? + scores

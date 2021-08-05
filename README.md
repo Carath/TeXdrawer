@@ -89,7 +89,7 @@ cd backend
 python3 server.py
 ```
 
-The frontend is then reachable at ``` http://localhost:5050/app ```. Note that it cannot work offline as of now, for it needs to download external resources (e.g JQuery, MathJAx).
+The frontend is then reachable at ``` http://localhost:5050/app ```. Note that it cannot work offline as of now, for it needs to download external resources (e.g JQuery, MathJax).
 
 #### hwrt
 
