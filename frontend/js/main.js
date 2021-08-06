@@ -37,12 +37,14 @@ window.onload = function() {
 			alert("No strokes given, no samples to show.");
 			return;
 		}
+		console.log("inputStrokes:", JSON.stringify(inputStrokes));
 		let resized = resize(inputStrokes);
 		showSamples(inputStrokes, samplesColor);
 		showSamples(resized, rescaledSamplesColor);
 	});
 
 	$("#classifyButton").click(function(e) {
+		// console.log("inputStrokes:", JSON.stringify(inputStrokes));
 		classifyRequest(serviceChoice.value, mappingChoice.value, inputStrokes); // sending raw inputs.
 	});
 

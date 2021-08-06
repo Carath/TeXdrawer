@@ -167,12 +167,14 @@ def frontendClassifyRequest():
 		# print('receivedInput:', receivedInput)
 		service = receivedInput['service']
 		strokes = receivedInput['strokes']
-		mapping, pretty = 'none', False
+		mapping, bound, pretty = 'none', 0, False
 		if 'mapping' in receivedInput:
 			mapping = receivedInput['mapping']
+		if 'bound' in receivedInput:
+			bound = receivedInput['bound']
 		if 'pretty' in receivedInput:
 			pretty = receivedInput['pretty']
-		result, status = classifyRequest(service, mapping, strokes, pretty)
+		result, status = classifyRequest(service, mapping, strokes, bound=bound, pretty=pretty)
 		if status != 200:
 			return handleError('Failure from classifyRequest().', status)
 		return jsonify(result)
@@ -180,8 +182,8 @@ def frontendClassifyRequest():
 		return handleError('Unknown error in frontendClassifyRequest().', 500)
 
 
-def classifyRequest(service, mapping, strokes, pretty=False):
-	''' Sends a classification request to the chosen service. '''
+def classifyRequest(service, mapping, strokes, bound=0, pretty=False):
+	''' Sends a classification request to the chosen service. See aggregateAnswers() for args details. '''
 	try:
 		formattedRequest = formatter.formatRequest(service, strokes)
 		if service == 'hwrt':
@@ -196,7 +198,7 @@ def classifyRequest(service, mapping, strokes, pretty=False):
 			print('Unsupported service:', service)
 			return ([], 404)
 		answers = formatter.extractServiceAnswer(service, response.json())
-		answers = formatter.aggregateAnswers(service, mapping, answers, pretty)
+		answers = formatter.aggregateAnswers(service, mapping, answers, bound=bound, pretty=pretty)
 		return (answers, 200)
 	except Exception as e:
 		print('\n-> %s service seems not available.\n' % service)

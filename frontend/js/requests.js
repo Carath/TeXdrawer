@@ -63,6 +63,7 @@ function classifyRequest(service, mapping, strokes) {
 		frameHeight: canvas.height,
 		service: service,
 		mapping: mapping,
+		bound: maxPrintedResults, // comment or use 0 to disable.
 		pretty: true,
 		strokes: strokes
 	};
@@ -129,7 +130,7 @@ function drawResultsTable(service, mapping, response, startTime, mode) {
 			if (mode === "classify") {
 				scoreHTML = "<td>" + value["score"] + "</td>";
 				let dataset_id = value["dataset_id"];
-				let raw_answer = value["raw_answer"]; // for traceability
+				let raw_answers = value["raw_answers"]; // for traceability
 			}
 
 			content += "<tr><td>$" + symbol_class + "$</td><td>" + unicode + "</td><td><input id=\"latex-"

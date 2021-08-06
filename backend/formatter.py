@@ -45,7 +45,7 @@ def createGuess(dataset_id, raw_answer, score):
 	return {
 		'dataset_id': dataset_id,
 		'symbol_class': raw_answer,
-		'raw_answer': raw_answer,
+		'raw_answers': [[raw_answer, score]],
 		'unicode': 'U+0', # default
 		'package': '', # default
 		'score': score
@@ -85,30 +85,37 @@ def extractServiceAnswer(service, answer):
 
 
 # Regrouping answers according to the given mapping, scores update, and unicode fetching.
-# When 'pretty' is enabled, scores are formatted to strings using formatScore():
-def aggregateAnswers(service, mapping, answers, pretty=False):
+# Optional args: 'bound' to limit bandwidth usage by bounding the number of returned classes,
+# and 'pretty' to format classes scores as strings using formatScore():
+def aggregateAnswers(service, mapping, answers, bound=0, pretty=False):
 	try:
 		latexToUnicodeMap = loader.getLatexToUnicodeMap()
 		aggregated = OrderedDict() # keeping the same order for scores!
 		for guess in answers:
-			symbol_class = mappings.getProjectedSymbol(guess['raw_answer'], mapping)
+			symbol_class = mappings.getProjectedSymbol(guess['symbol_class'], mapping)
 			if not symbol_class in aggregated:
 				guess = guess.copy() # preventing side effects.
 				guess['symbol_class'] = symbol_class
 				if symbol_class in latexToUnicodeMap:
 					guess['unicode'] = latexToUnicodeMap[symbol_class]
 				aggregated[symbol_class] = guess
-			elif service == 'hwrt':
-				aggregated[symbol_class]['score'] += guess['score']
-			elif service == 'detexify':
-				aggregated[symbol_class]['score'] = min(aggregated[symbol_class]['score'], guess['score']) # min distance
 			else:
-				print('Unsupported service:', service)
-				return []
+				aggregated[symbol_class]['raw_answers'].append(guess['raw_answers'][0])
+				# Updating class score:
+				if service == 'hwrt':
+					aggregated[symbol_class]['score'] += guess['score']
+				elif service == 'detexify':
+					aggregated[symbol_class]['score'] = min(aggregated[symbol_class]['score'], guess['score']) # min distance
+				else:
+					print('Unsupported service:', service)
+					return []
+		aggregated = list(aggregated.values())
+		if bound > 0:
+			aggregated = aggregated[:bound] # done after each classes score has been aggregated.
 		if pretty:
-			for symbol_class in aggregated:
-				aggregated[symbol_class]['score'] = formatScore(service, aggregated[symbol_class]['score'])
-		return list(aggregated.values())
+			for guess in aggregated:
+				guess['score'] = formatScore(service, guess['score'])
+		return aggregated
 	except:
 		print('Unknown error happened while aggregating some answers.')
 		print(traceback.format_exc())
