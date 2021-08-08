@@ -22,7 +22,7 @@ This notably prevents issues one would expect to rise with OCR, due to disparity
 
 #### TeXdrawer
 
-The dataset creation tool from TeXdrawer's frontend has no installation steps (beside getting the code). To try out some classification services or benchmark them, the backend must however be used. It requires [python 3.6+](https://www.python.org/download/releases/3.0/) and [pip3](https://pypi.org/project/pip/) installed, and the command below to be run. Note that TeXdrawer has only been tested on Linux at this time.
+The dataset creation tool from TeXdrawer's frontend has no installation steps (beside getting the code). To try out some classification services or benchmark them, the backend must however be used. It requires [python 3.6+](https://www.python.org/downloads/) and [pip3](https://pypi.org/project/pip/) installed, and the command below to be run. Note that TeXdrawer has only been tested on Linux at this time.
 
 ```
 pip3 install -r backend/requirements.txt

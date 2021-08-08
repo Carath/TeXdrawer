@@ -1,7 +1,7 @@
 "use strict";
 
-const frameMargin = 0.05;
-var inputSymbols = [];
+const frameMargin = 0.10;
+var inputSamples = [];
 
 function boundingBox(strokes) {
 	if (strokes.length === 0 || strokes[0].length === 0) {
@@ -28,7 +28,7 @@ function boundingBox(strokes) {
 }
 
 // Returns new strokes, resized and recentered, with integer coords:
-function resize(strokes) {
+function resize(canvas, strokes) {
 	let box = boundingBox(strokes);
 	if (! box) {
 		return [];
@@ -55,65 +55,68 @@ function resize(strokes) {
 	return newStrokes;
 }
 
-function createSymbol(rank, unicode, latex_command, strokes) {
+function createSample(rank, unicode, symbol_class, strokes) {
 	if (strokes.length === 0) {
 		return null;
 	}
-	let symbol = {};
-	symbol.rank = rank;
-	symbol.unicode = unicode;
-	symbol.latex_command = latex_command;
-	symbol.totalSamplesNumber = 0;
-	symbol.strokes = strokes;
+	let sample = {};
+	sample.dataset_id = rank;
+	sample.unicode = unicode;
+	sample.symbol_class = symbol_class;
+	sample.totalDotsNumber = 0;
+	sample.strokes = strokes;
 	for (let i = 0; i < strokes.length; ++i) {
-		symbol.totalSamplesNumber += strokes[i].length;
+		sample.totalDotsNumber += strokes[i].length;
 	}
-	return symbol;
+	return sample;
 }
 
-function submitSymbol() {
-	// TODO: fetch symbol unicode and latex command:
-	let symbol = createSymbol(inputSymbols.length, "null", "null", resize(inputStrokes));
-	if (symbol) {
-		inputSymbols.push(symbol);
-		clearInputs();
-		$('#stats').html("Saved symbols count: " + inputSymbols.length);
-	} // else, skipping this symbol.
+function submitSample(unicode, symbol_class) {
+	if (inputStrokes.length === 0) {
+		alert("Nothing to submit.");
+		return;
+	}
+	let sample = createSample(inputSamples.length, unicode, symbol_class, resize(inputCanvas, inputStrokes));
+	if (sample) {
+		inputSamples.push(sample);
+		clearInputs(inputCanvas);
+		$('#savedSamplesCount').html("Saved samples count: " + inputSamples.length +
+			"<br>Click on Inspect to see them.");
+	} // else, skipping this sample.
 }
 
-function createOutput(symbols) {
+function createOutput(samples) {
 	let output = {};
 	output.version = "1.0.0";
-	output.description = "Each symbol is represented by its metadata, and a list of strokes."
+	output.description = "Each sample contains some metadata, and a list of strokes."
 	output.description += " Each stroke is a list of dots, of the form {x: 50, y: 60, time: 1620256003707};"
 	output.description += " where 0 <= x <= frameWidth, 0 <= y <= frameHeight, and 'time' is the UNIX time.";
 	output.inputLib = "plain-js"; // library used in inputs.js
 	output.preprocessing = "resized";
-	output.frameWidth = canvas.width; // used to save input precision, and for compatibility.
-	output.frameHeight = canvas.height; // same.
+	output.frameWidth = inputCanvas.width; // used to save input precision, and for compatibility.
+	output.frameHeight = inputCanvas.height; // same.
 	output.frameMargin = frameMargin;
-	output.symbolsNumber = symbols.length;
-	output.symbols = symbols;
+	output.samplesNumber = samples.length;
+	output.samples = samples;
 	return output;
 }
 
-// Note: canvas.width and canvas.height are saved in the output format. This done both to
-// not hardcode the maximum precision of the input, and to be able to retrieve said precision
+// Note: inputCanvas width and height are saved in the output format. This is done both to not
+// hardcode the maximum precision of the input, and to be able to retrieve said precision
 // in case it changes with each user. On the other hand, this implies that input must be resized
 // (and centered) to fit well in the canvas.
-function save() {
-	if (inputSymbols.length === 0) {
-		alert("Nothing to save.");
+function saveSamples() {
+	if (inputSamples.length === 0) {
+		alert("Nothing to export.");
 		return;
 	}
-
-	let output = createOutput(inputSymbols);
+	let output = createOutput(inputSamples);
 	let jsonOutput = JSON.stringify(output);
 	// console.log("jsonOutput:", jsonOutput);
 	let filename = "output-" + timestamp() + ".json";
 	download(jsonOutput, filename, "text/plain");
-	// Cleanup, without emptying 'inputSymbols':
-	clearInputs();
+	// Cleanup, without emptying 'inputSamples':
+	clearInputs(inputCanvas);
 }
 
 function download(content, filename, contentType) {

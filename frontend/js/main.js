@@ -9,90 +9,105 @@ const samplesColor = "green";
 const rescaledSamplesColor = "red";
 const cellSize = 4.; // in ex
 
-var canvas = null;
-var ctx = null;
+var inputCanvas = null;
+
+// Set the size of the canvas bitmap as its css size, and return it as DOM object:
+function getFixedCanvas(canvasSelector) {
+	let canvas = $(canvasSelector);
+	canvas[0].width = canvas.width();
+	canvas[0].height = canvas.height();
+	return canvas[0];
+}
 
 window.onload = function() {
-	canvas = document.getElementById("input-canvas");
-	ctx = canvas.getContext("2d");
+	inputCanvas = getFixedCanvas("#input-canvas");
 
 	// Starting from the canvas only, but drawing and samples
 	// acquisition must continue outside!
-	canvas.addEventListener("mousedown", startInputs);
-
-	$("#exportButton").click(function(e) {
-		save();
+	inputCanvas.addEventListener("mousedown", function(event) {
+		startInputs(inputCanvas, event);
 	});
 
-	$("#retryButton").click(function(e) {
-		clearInputs();
+	$("#exportButton").click(function(event) {
+		saveSamples();
 	});
 
-	$("#submitButton").click(function(e) {
-		submitSymbol();
+	$("#clearButton").click(function(event) {
+		clearInputs(inputCanvas);
 	});
 
-	$("#showSamplesButton").click(function(e) { // for testing purposes
+	$("#submitButton").click(function(event) {
+		// TODO: add sample unicode and latex command:
+		submitSample("", "");
+	});
+
+	$("#showSamplesButton").click(function(event) { // for testing purposes
 		if (inputStrokes.length === 0) {
 			alert("No strokes given, no samples to show.");
 			return;
 		}
 		console.log("inputStrokes:", JSON.stringify(inputStrokes));
-		let resized = resize(inputStrokes);
-		showSamples(inputStrokes, samplesColor);
-		showSamples(resized, rescaledSamplesColor);
+		let resized = resize(inputCanvas, inputStrokes);
+		showSamples(inputCanvas, inputStrokes, [samplesColor]);
+		showSamples(inputCanvas, resized, [rescaledSamplesColor]);
 	});
 
-	$("#classifyButton").click(function(e) {
+	$("#classifyButton").click(function(event) {
 		// console.log("inputStrokes:", JSON.stringify(inputStrokes));
 		classifyRequest(serviceChoice.value, mappingChoice.value, inputStrokes); // sending raw inputs.
 	});
 
-	$("#symbolsButton").click(function(e) {
+	$("#showSymbolsButton").click(function(event) {
 		symbolsRequest(serviceChoice.value, mappingChoice.value);
-		clearInputs();
+		clearInputs(inputCanvas);
 	});
 
-	// $("#testButton").click(function(e) {
+	// $("#testButton").click(function(event) {
 	// 	typeset("#mathjax-test", "$$\\frac{a^3}{1-a^2}$$");
 	// });
 	// testButton.hidden = false;
 
-	$("#sidenav-about").click(function(e) {
+	$("#sidenav-about").click(function(event) {
 		$(this).addClass("active").siblings().removeClass("active");
 		$("#grid-container, #classify-draw, #right-side").hide();
 		$("#about").show();
 		$("#classification-results").empty();
-		clearInputs();
+		clearInputs(inputCanvas);
 	});
 
-	$("#sidenav-classify").click(function(e) {
+	$("#sidenav-classify").click(function(event) {
 		$(this).addClass("active").siblings().removeClass("active");
-		$("#about, #grid-container, #exportButton, #submitButton, #showSamplesButton").hide();
-		$("#classify-draw, #right-side, #classifyButton, #symbolsButton, #serviceArea").show();
+		$("#about, #grid-container, #exportButton, #submitButton, #showSamplesButton, #savedSamplesCount").hide();
+		$("#classify-draw, #right-side, #showSymbolsButton, #classifyButton, #service-area").show();
 		$("#classification-results").empty();
 		$("#usage").html("Trying out some classification services (self hosted):");
-		$("#stats").html("");
-		clearInputs();
+		clearInputs(inputCanvas);
 		servicesAndMappingsRequest();
 	});
 
-	$("#sidenav-draw").click(function(e) {
+	$("#sidenav-draw").click(function(event) {
 		$(this).addClass("active").siblings().removeClass("active");
-		$("#about, #grid-container, #classifyButton, #symbolsButton, #serviceArea").hide();
-		$("#classify-draw, #right-side, #exportButton, #submitButton, #showSamplesButton").show();
+		$("#about, #grid-container, #showSymbolsButton, #classifyButton, #service-area").hide();
+		$("#classify-draw, #right-side, #exportButton, #submitButton, #showSamplesButton, #savedSamplesCount").show();
 		$("#classification-results").empty();
 		$("#usage").html("Dataset creation tool:");
-		$("#stats").html("");
-		clearInputs();
+		clearInputs(inputCanvas);
 	});
 
-	$("#sidenav-inspect").click(function(e) {
+	$("#sidenav-inspect").click(function(event) {
 		$(this).addClass("active").siblings().removeClass("active");
 		$("#about, #classify-draw, #right-side").hide();
 		$("#grid-container").show();
 		$("#classification-results").empty();
-		clearInputs();
-		addAllCells(exampleCells());
+		clearInputs(inputCanvas);
+
+		if (inputSamples.length === 0) {
+			$("#samples-message").html("Mock data:");
+			addAllCells(mockSamples());
+		}
+		else {
+			$("#samples-message").html("Submitted samples:");
+			addAllCells(inputSamples);
+		}
 	});
 }

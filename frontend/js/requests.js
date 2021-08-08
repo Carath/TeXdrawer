@@ -59,8 +59,8 @@ function classifyRequest(service, mapping, strokes) {
 	let input = {
 		inputLib: "plain-js", // library used in inputs.js
 		preprocessing: "none",
-		frameWidth: canvas.width,
-		frameHeight: canvas.height,
+		frameWidth: inputCanvas.width,
+		frameHeight: inputCanvas.height,
 		service: service,
 		mapping: mapping,
 		bound: maxPrintedResults, // comment or use 0 to disable.

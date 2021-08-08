@@ -16,12 +16,8 @@
 - frontend > datasets : symbol metadata
 - Complete work on the balanced dataset builder, with custom classes.
 - better input acquisition (samples number)? Check some javascript libraries.
-- prettier cleanup button
-- dehardcode 'canvas' and 'ctx' from inputs.js, so functions can be used in inspector.js
-- draw strokes in cell canvas
-- move (slightly) drawn symbol to be correctly centered
+- grid: move (slightly) symbols drawn with MathJax, to be correctly centered.
 - add support for symbols not drawn by MathJax: detect them, add a placeholder for the inspector, and skip them during dataset creation.
-- keep saved input in memory while switching context
 - classify: typeset only where needed - speed gain?
 
 

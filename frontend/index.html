@@ -73,20 +73,28 @@
 				<div id="center-area">
 					<p id="usage"></p>
 					<br>
-					<div id="canvasArea">
-						<h3 id="Instruction">Draw here:</h3>
-						<canvas id="input-canvas" width="300" height="300"></canvas> <!-- set size here! -->
-						<div id="buttonsArea">
-							<input type="button" class="button" id="retryButton" value="retry">
-							<input type="button" class="button" id="exportButton" value="export">
-							<input type="button" class="button" id="submitButton" value="submit">
-							<input type="button" class="button" id="showSamplesButton" value="show samples">
-							<input type="button" class="button" id="classifyButton" value="classify">
-							<input type="button" class="button" id="symbolsButton" value="Show symbols">
+					<div id="canvas-area">
+						<div id="instruction-area">
+							<h3 id="instruction">Draw here:</h3>
+							<button type="button" class="imageButton" id="clearButton" value="Clear" title="Clear">
+								<img src="img/jean_victor_balin_cross.svg">
+							</button>
+						</div>
+						<canvas id="input-canvas"></canvas>
+						<div id="buttons-area">
+							<input type="button" class="button" id="showSamplesButton" value="Show samples">
+							<input type="button" class="button" id="showSymbolsButton" value="Show symbols">
+							<input type="button" class="button" id="classifyButton" value="Classify">
 							<!-- <input type="button" class="button" id="testButton" value="test" hidden> -->
+							<button type="button" class="imageButton" id="submitButton" value="Submit" title="Submit">
+								<img src="img/emblem-plus.svg">
+							</button>
+							<button type="button" class="imageButton" id="exportButton" value="Export" title="Export">
+								<img src="img/rodentia-icons_emblem-downloads.svg">
+							</button>
 						</div>
 					</div>
-					<div id="serviceArea">
+					<div id="service-area">
 						<label for="serviceChoice">Using service:</label>
 						<select name="serviceChoice" id="serviceChoice"></select>
 						<label for="mappingChoice">and mapping:</label>
@@ -95,7 +103,7 @@
 						</select>
 					</div>
 					<div>
-						<p id="stats"></p>
+						<p id="savedSamplesCount"></p>
 					</div>
 					<div id="tests">
 						<p id="test-zone"></p>
@@ -107,6 +115,7 @@
 				</div>
 			</div>
 			<div id="grid-container" hidden>
+				<div id="samples-message"></div>
 				<div id="cells-grid"></div>
 			</div>
 		</div>
