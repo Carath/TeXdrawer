@@ -11,6 +11,9 @@ function servicesAndMappingsRequest() {
 	$.ajax({
 		type: "GET",
 		url: backendIP + "/services-and-mappings",
+		contentType: "application/json; charset=utf-8",
+		Accept: "application/json; charset=utf-8",
+		timeout: 500, // in ms
 
 		success: function(response) {
 			// let responseTime = performance.now() - startTime; // in ms
@@ -37,8 +40,10 @@ function symbolsRequest(service, mapping) {
 	let startTime = performance.now();
 	$.ajax({
 		type: "GET",
-		url: backendIP + "/symbols/" + service + (mapping !== "" ? "/" + mapping : ""),
-		// Accept: "application/json; charset=utf-8",
+		url: backendIP + "/symbols/" + service + (mapping === "" ? "" : "/" + mapping),
+		contentType: "application/json; charset=utf-8",
+		Accept: "application/json; charset=utf-8",
+		timeout: 500, // in ms
 
 		success: function(response) {
 			drawResultsTable(service, mapping, response, startTime, "symbols");
@@ -72,8 +77,9 @@ function classifyRequest(service, mapping, strokes) {
 	$.ajax({
 		type: "POST",
 		url: backendIP + "/classify",
-		// contentType: "application/x-www-form-urlencoded",
-		// Accept: "application/json; charset=utf-8",
+		contentType: "application/json; charset=utf-8",
+		Accept: "application/json; charset=utf-8",
+		timeout: 5000, // in ms
 		data: JSON.stringify(input),
 
 		success: function(response) {
@@ -101,17 +107,16 @@ function drawResultsTable(service, mapping, response, startTime, mode) {
 	// console.log("Response:", response);
 	// jQuery("#test-zone").html(JSON.stringify(response));
 
+	let serviceMappingInfo = (mapping === "" || mapping === "none") ? "" : ", using mapping <strong>" + mapping + "</strong>";
+	serviceMappingInfo = "service <strong>" + service + "</strong>" + serviceMappingInfo + ":";
+
+	let title = "Found <strong>" + response.length + "</strong> symbols for " + serviceMappingInfo;
 	let scoreColumn = "";
-	let title = "Found <strong>" + response.length + "</strong> symbols for service <strong>" + service + "</strong>";
 	let symbolsBound = response.length;
 
-	if (mapping !== "" && mapping !== "none") {
-		title += ", and mapping <strong>" + mapping + "</strong>";
-	}
-
 	if (mode === "classify") {
+		title = "Prediction by " + serviceMappingInfo;
 		scoreColumn = "<th>Score</th>";
-		title = "Prediction (up to " + maxPrintedResults + " classes):";
 		symbolsBound = maxPrintedResults;
 	}
 

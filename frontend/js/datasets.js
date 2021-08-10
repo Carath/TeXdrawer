@@ -36,9 +36,9 @@ function resize(canvas, strokes) {
 
 	let boxWidth = box.xMax - box.xMin, boxHeight = box.yMax - box.yMin;
 	let canvasDim = Math.min(canvas.width, canvas.height), boxDim = Math.max(boxWidth, boxHeight);
-	let scale = (1. - 2. * frameMargin) * canvasDim / boxDim;
-	let offsetX = scale * ((boxDim - boxWidth) / 2. - box.xMin) + (canvas.width - canvasDim) / 2. + frameMargin * canvasDim;
-	let offsetY = scale * ((boxDim - boxHeight) / 2. - box.yMin) + (canvas.height - canvasDim) / 2. + frameMargin * canvasDim;
+	let scale = boxDim === 0 ? 1.0 : (1. - 2. * frameMargin) * canvasDim / boxDim;
+	let offsetX = (canvas.width - scale * (box.xMin + box.xMax)) / 2.;
+	let offsetY = (canvas.height - scale * (box.yMin + box.yMax)) / 2.;
 	let newStrokes = [];
 
 	for (let i = 0; i < strokes.length; ++i) {
@@ -53,6 +53,24 @@ function resize(canvas, strokes) {
 		newStrokes.push(stroke);
 	}
 	return newStrokes;
+}
+
+function showDots() {
+	if (inputStrokes.length === 0) {
+		alert("No strokes given, no samples to show.");
+		return;
+	}
+	if (dotsShown) {
+		clearCanvas(inputCanvas);
+		drawStrokes(inputCanvas, inputStrokes, drawingColor);
+	}
+	else {
+		console.log("inputStrokes:", JSON.stringify(inputStrokes));
+		let resized = resize(inputCanvas, inputStrokes);
+		showSamples(inputCanvas, inputStrokes, [samplesColor]);
+		showSamples(inputCanvas, resized, [rescaledSamplesColor]);
+	}
+	dotsShown = !dotsShown;
 }
 
 function createSample(rank, unicode, symbol_class, strokes) {
@@ -80,8 +98,8 @@ function submitSample(unicode, symbol_class) {
 	if (sample) {
 		inputSamples.push(sample);
 		clearInputs(inputCanvas);
-		$('#savedSamplesCount').html("Saved samples count: " + inputSamples.length +
-			"<br>Click on Inspect to see them.");
+		$('#savedSamplesCount').html("Saved samples count: <strong>" + inputSamples.length +
+			"</strong><br>Click on Inspect to see them.");
 	} // else, skipping this sample.
 }
 

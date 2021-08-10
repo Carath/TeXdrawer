@@ -13,15 +13,19 @@ const allowTimeReshifting = true;
 var timeOffset = 0;
 
 function startInputs(canvas, event) {
-	let drawStrokeAction = function(event) {
-		drawStroke(canvas, event);
-	};
+	if (dotsShown) {
+		clearCanvas(canvas);
+		drawStrokes(canvas, inputStrokes, drawingColor);
+		dotsShown = false;
+	}
 
-	document.addEventListener("mouseup", stopInputs);
-	document.addEventListener("mousemove", drawStrokeAction);
 	updateCurrentCoord(canvas, event);
 	drawDot(canvas, currCoord, lineThickness / 2, drawingColor);
 	saveCoord();
+
+	function drawStrokeAction(event) {
+		drawCurrentStroke(canvas, event);
+	};
 
 	function stopInputs() {
 		document.removeEventListener("mousemove", drawStrokeAction);
@@ -31,6 +35,9 @@ function startInputs(canvas, event) {
 			// console.log("inputStrokes:", inputStrokes);
 		}
 	}
+
+	document.addEventListener("mousemove", drawStrokeAction);
+	document.addEventListener("mouseup", stopInputs);
 }
 
 function updateCurrentCoord(canvas, event) {
@@ -47,7 +54,7 @@ function isInCanvas(canvas, coord) {
 }
 
 function saveCoord() {
-	if (timeOffset === 0 && allowTimeReshifting) {
+	if (allowTimeReshifting && timeOffset === 0) {
 		timeOffset = new Date().getTime(); // UNIX time
 	}
 	currentStroke.push({
@@ -57,12 +64,12 @@ function saveCoord() {
 	});
 }
 
-function drawStroke(canvas, event) {
+function drawCurrentStroke(canvas, event) {
 	const ctx = canvas.getContext("2d");
-	ctx.beginPath();
 	ctx.lineWidth = lineThickness;
-	ctx.lineCap = "round";
 	ctx.strokeStyle = drawingColor;
+	ctx.lineCap = "round";
+	ctx.beginPath();
 	ctx.moveTo(currCoord.x, currCoord.y);
 	updateCurrentCoord(canvas, event);
 	ctx.lineTo(currCoord.x, currCoord.y);
@@ -72,22 +79,27 @@ function drawStroke(canvas, event) {
 
 function drawDot(canvas, dot, size, color) {
 	const ctx = canvas.getContext("2d");
-	ctx.beginPath();
-	ctx.arc(dot.x, dot.y, size, 0, 2. * Math.PI, false);
-	ctx.fillStyle = color; // center
-	ctx.fill();
 	ctx.lineWidth = 1;
 	ctx.strokeStyle = color;
+	ctx.fillStyle = color; // center
+	ctx.beginPath();
+	ctx.arc(dot.x, dot.y, size, 0, 2. * Math.PI, false);
+	ctx.fill();
 	ctx.stroke();
 }
 
-function clearInputs(canvas) {
+function clearCanvas(canvas) {
 	const ctx = canvas.getContext("2d");
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function clearInputs(canvas) {
+	clearCanvas(canvas);
 	inputStrokes = [];
 	currentStroke = [];
 	currCoord = [];
 	timeOffset = 0; // resetting the time for each symbol.
+	dotsShown = false;
 }
 
 // Will draw each stroke with a different color, until no given color remains.
@@ -97,15 +109,37 @@ function showSamples(canvas, strokes, colors) {
 		console.log("Cannot show samples: no colors given.");
 		return;
 	}
-	// clearInputs(canvas);
 	const ctx = canvas.getContext("2d");
 	ctx.globalAlpha = samplesOpacity;
 	for (let i = 0; i < strokes.length; ++i) {
 		let color = colors[Math.min(i, colors.length - 1)];
-		// console.log("strokes["+i+"]:", strokes[i]);
 		for (let j = 0; j < strokes[i].length; ++j) {
 			drawDot(canvas, strokes[i][j], samplesSize, color);
 		}
 	}
 	ctx.globalAlpha = 1.0;
+}
+
+function drawStrokes(canvas, strokes, color) {
+	const ctx = canvas.getContext("2d");
+	for (let i = 0; i < strokes.length; ++i) {
+		if (strokes[i].length === 0) {
+			continue;
+		}
+		if (strokes[i].length === 1) {
+			drawDot(canvas, strokes[i][0], samplesSize, color);
+			continue;
+		}
+
+		// Resetting the context here!
+		ctx.lineWidth = lineThickness;
+		ctx.strokeStyle = color;
+		ctx.lineCap = "round";
+		ctx.beginPath();
+		ctx.moveTo(strokes[i][0].x, strokes[i][0].y);
+		for (let j = 1; j < strokes[i].length; ++j) {
+			ctx.lineTo(strokes[i][j].x, strokes[i][j].y);
+			ctx.stroke();
+		}
+	}
 }

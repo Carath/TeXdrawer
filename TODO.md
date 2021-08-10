@@ -14,11 +14,12 @@
 - add support for [stixfonts](https://github.com/stipub/stixfonts) ?
 - allow to draw symbols from LaTeX packages with MathJax
 - frontend > datasets : symbol metadata
-- Complete work on the balanced dataset builder, with custom classes.
-- better input acquisition (samples number)? Check some javascript libraries.
+- complete work on the balanced dataset builder, with custom classes.
+- check some canvas javascript libraries => consistency between web browsers, better input acquisition, mobiles support...
 - grid: move (slightly) symbols drawn with MathJax, to be correctly centered.
 - add support for symbols not drawn by MathJax: detect them, add a placeholder for the inspector, and skip them during dataset creation.
 - classify: typeset only where needed - speed gain?
+- inspector: import files
 
 
 #### Backend

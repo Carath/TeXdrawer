@@ -10,6 +10,7 @@ const rescaledSamplesColor = "red";
 const cellSize = 4.; // in ex
 
 var inputCanvas = null;
+var dotsShown = false;
 
 // Set the size of the canvas bitmap as its css size, and return it as DOM object:
 function getFixedCanvas(canvasSelector) {
@@ -28,28 +29,8 @@ window.onload = function() {
 		startInputs(inputCanvas, event);
 	});
 
-	$("#exportButton").click(function(event) {
-		saveSamples();
-	});
-
 	$("#clearButton").click(function(event) {
 		clearInputs(inputCanvas);
-	});
-
-	$("#submitButton").click(function(event) {
-		// TODO: add sample unicode and latex command:
-		submitSample("", "");
-	});
-
-	$("#showSamplesButton").click(function(event) { // for testing purposes
-		if (inputStrokes.length === 0) {
-			alert("No strokes given, no samples to show.");
-			return;
-		}
-		console.log("inputStrokes:", JSON.stringify(inputStrokes));
-		let resized = resize(inputCanvas, inputStrokes);
-		showSamples(inputCanvas, inputStrokes, [samplesColor]);
-		showSamples(inputCanvas, resized, [rescaledSamplesColor]);
 	});
 
 	$("#classifyButton").click(function(event) {
@@ -62,10 +43,22 @@ window.onload = function() {
 		clearInputs(inputCanvas);
 	});
 
+	$("#showDotsButton").click(function(event) { // for testing purposes
+		showDots();
+	});
+
+	$("#submitButton").click(function(event) {
+		// TODO: add sample unicode and latex command:
+		submitSample("", "");
+	});
+
+	$("#exportButton").click(function(event) {
+		saveSamples();
+	});
+
 	// $("#testButton").click(function(event) {
 	// 	typeset("#mathjax-test", "$$\\frac{a^3}{1-a^2}$$");
 	// });
-	// testButton.hidden = false;
 
 	$("#sidenav-about").click(function(event) {
 		$(this).addClass("active").siblings().removeClass("active");
@@ -77,10 +70,10 @@ window.onload = function() {
 
 	$("#sidenav-classify").click(function(event) {
 		$(this).addClass("active").siblings().removeClass("active");
-		$("#about, #grid-container, #exportButton, #submitButton, #showSamplesButton, #savedSamplesCount").hide();
+		$("#about, #grid-container, #exportButton, #submitButton, #showDotsButton, #savedSamplesCount").hide();
 		$("#classify-draw, #right-side, #showSymbolsButton, #classifyButton, #service-area").show();
 		$("#classification-results").empty();
-		$("#usage").html("Trying out some classification services (self hosted):");
+		$("#usage").html("Trying out self hosted classification services:");
 		clearInputs(inputCanvas);
 		servicesAndMappingsRequest();
 	});
@@ -88,7 +81,7 @@ window.onload = function() {
 	$("#sidenav-draw").click(function(event) {
 		$(this).addClass("active").siblings().removeClass("active");
 		$("#about, #grid-container, #showSymbolsButton, #classifyButton, #service-area").hide();
-		$("#classify-draw, #right-side, #exportButton, #submitButton, #showSamplesButton, #savedSamplesCount").show();
+		$("#classify-draw, #right-side, #exportButton, #submitButton, #showDotsButton, #savedSamplesCount").show();
 		$("#classification-results").empty();
 		$("#usage").html("Dataset creation tool:");
 		clearInputs(inputCanvas);

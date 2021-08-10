@@ -189,30 +189,16 @@ footer {
 }
 
 #canvas-area {
+	margin-bottom: 65px;
 }
 
 #instruction-area {
-	width: var(--inputCanvasSize);
 }
 
 #instruction {
 	font-size: 20px;
 	font-style: italic;
 	margin-bottom: 10px;
-	float: left;
-}
-
-.imageButton {
-	width: 36px;
-	height: 36px;
-	margin: 4px 4px 4px 4px;
-	float: right;
-}
-
-#clearButton {
-	margin-bottom: 0px;
-	margin-right: -3px;
-	filter: contrast(125%);
 }
 
 #input-canvas {
@@ -236,13 +222,33 @@ footer {
 	display: inline-block;
 }
 
+.imageButton {
+	width: 36px;
+	height: 36px;
+	margin: 4px 6px 4px 4px;
+	float: right;
+}
+
+#clearButton {
+	margin-right: -3px;
+	filter: contrast(125%);
+}
+
+#showDotsButton {
+	transform: scaleX(-1);
+}
+
+#classifyButton {
+	filter: contrast(95%);
+}
+
+#bottom-area {
+}
+
 #service-area {
-	margin-top: 15px;
 }
 
 #savedSamplesCount {
-	margin-bottom: 10px;
-	margin-top: 10px;
 }
 
 #classification-results {
