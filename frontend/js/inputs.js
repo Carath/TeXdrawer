@@ -4,9 +4,11 @@
 
 "use strict";
 
-var inputStrokes = [];
-var currentStroke = [];
-var currCoord = {};
+const minStepSizeSquared = 25; // to prevent oversampled inputs.
+
+var inputStrokes = []; // used by other scripts.
+var _currentStroke = [];
+var _currCoord = {};
 
 // Used to reduce files size, without data loss:
 const allowTimeReshifting = true;
@@ -20,23 +22,23 @@ function startInputs(canvas, event) {
 	}
 
 	updateCurrentCoord(canvas, event);
-	drawDot(canvas, currCoord, lineThickness / 2, drawingColor);
-	saveCoord();
+	drawDot(canvas, _currCoord, lineThickness / 2, drawingColor);
+	saveCurrentCoord();
 
-	function drawStrokeAction(event) {
-		drawCurrentStroke(canvas, event);
+	function drawUserAction(event) {
+		continuePath(canvas, event);
 	};
 
 	function stopInputs() {
-		document.removeEventListener("mousemove", drawStrokeAction);
-		if (currentStroke.length > 0) {
-			inputStrokes.push(currentStroke);
-			currentStroke = [];
+		document.removeEventListener("mousemove", drawUserAction);
+		if (_currentStroke.length > 0) {
+			inputStrokes.push(_currentStroke);
+			_currentStroke = [];
 			// console.log("inputStrokes:", inputStrokes);
 		}
 	}
 
-	document.addEventListener("mousemove", drawStrokeAction);
+	document.addEventListener("mousemove", drawUserAction);
 	document.addEventListener("mouseup", stopInputs);
 }
 
@@ -44,8 +46,29 @@ function updateCurrentCoord(canvas, event) {
 	// Using getBoundingClientRect() instead of canvas.offsetLeft/offsetTop,
 	// in case the page is scrolled down (e.g when zoomed).
 	let bounds = canvas.getBoundingClientRect();
-	currCoord.x = event.clientX - bounds.left;
-	currCoord.y = event.clientY - bounds.top;
+	_currCoord.x = event.clientX - bounds.left;
+	_currCoord.y = event.clientY - bounds.top;
+}
+
+function saveCurrentCoord() {
+	if (_currentStroke.length > 0) {
+		let prevCoord = _currentStroke[_currentStroke.length - 1];
+		let deltaX = _currCoord.x - prevCoord.x, deltaY = _currCoord.y - prevCoord.y;
+		let distSquared = deltaX * deltaX + deltaY * deltaY;
+		if (distSquared <= minStepSizeSquared) {
+			// console.log("Too small a step, skipping!");
+			return;
+		}
+	}
+
+	if (allowTimeReshifting && timeOffset === 0) {
+		timeOffset = new Date().getTime(); // UNIX time
+	}
+	_currentStroke.push({
+		x: Math.round(_currCoord.x),
+		y: Math.round(_currCoord.y),
+		time: new Date().getTime() - timeOffset
+	});
 }
 
 function isInCanvas(canvas, coord) {
@@ -53,28 +76,18 @@ function isInCanvas(canvas, coord) {
 		coord.y >= 0 && coord.y <= canvas.height;
 }
 
-function saveCoord() {
-	if (allowTimeReshifting && timeOffset === 0) {
-		timeOffset = new Date().getTime(); // UNIX time
-	}
-	currentStroke.push({
-		x: Math.round(currCoord.x),
-		y: Math.round(currCoord.y),
-		time: new Date().getTime() - timeOffset
-	});
+function clearCanvas(canvas) {
+	const ctx = canvas.getContext("2d");
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-function drawCurrentStroke(canvas, event) {
-	const ctx = canvas.getContext("2d");
-	ctx.lineWidth = lineThickness;
-	ctx.strokeStyle = drawingColor;
-	ctx.lineCap = "round";
-	ctx.beginPath();
-	ctx.moveTo(currCoord.x, currCoord.y);
-	updateCurrentCoord(canvas, event);
-	ctx.lineTo(currCoord.x, currCoord.y);
-	ctx.stroke();
-	saveCoord();
+function clearInputs(canvas) {
+	clearCanvas(canvas);
+	inputStrokes = [];
+	_currentStroke = [];
+	_currCoord = [];
+	timeOffset = 0; // resetting the time for each symbol.
+	dotsShown = false;
 }
 
 function drawDot(canvas, dot, size, color) {
@@ -88,36 +101,17 @@ function drawDot(canvas, dot, size, color) {
 	ctx.stroke();
 }
 
-function clearCanvas(canvas) {
+function continuePath(canvas, event) {
 	const ctx = canvas.getContext("2d");
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-function clearInputs(canvas) {
-	clearCanvas(canvas);
-	inputStrokes = [];
-	currentStroke = [];
-	currCoord = [];
-	timeOffset = 0; // resetting the time for each symbol.
-	dotsShown = false;
-}
-
-// Will draw each stroke with a different color, until no given color remains.
-// In that case, the last one will continue to be used.
-function showSamples(canvas, strokes, colors) {
-	if (colors.length === 0) {
-		console.log("Cannot show samples: no colors given.");
-		return;
-	}
-	const ctx = canvas.getContext("2d");
-	ctx.globalAlpha = samplesOpacity;
-	for (let i = 0; i < strokes.length; ++i) {
-		let color = colors[Math.min(i, colors.length - 1)];
-		for (let j = 0; j < strokes[i].length; ++j) {
-			drawDot(canvas, strokes[i][j], samplesSize, color);
-		}
-	}
-	ctx.globalAlpha = 1.0;
+	ctx.lineWidth = lineThickness;
+	ctx.strokeStyle = drawingColor;
+	ctx.lineCap = "round";
+	ctx.beginPath();
+	ctx.moveTo(_currCoord.x, _currCoord.y);
+	updateCurrentCoord(canvas, event);
+	ctx.lineTo(_currCoord.x, _currCoord.y);
+	ctx.stroke();
+	saveCurrentCoord();
 }
 
 function drawStrokes(canvas, strokes, color) {
@@ -142,4 +136,22 @@ function drawStrokes(canvas, strokes, color) {
 			ctx.stroke();
 		}
 	}
+}
+
+// Will draw each stroke with a different color, until no given color remains.
+// In that case, the last one will continue to be used.
+function showSamples(canvas, strokes, colors) {
+	if (colors.length === 0) {
+		console.log("Cannot show samples: no colors given.");
+		return;
+	}
+	const ctx = canvas.getContext("2d");
+	ctx.globalAlpha = samplesOpacity;
+	for (let i = 0; i < strokes.length; ++i) {
+		let color = colors[Math.min(i, colors.length - 1)];
+		for (let j = 0; j < strokes[i].length; ++j) {
+			drawDot(canvas, strokes[i][j], samplesSize, color);
+		}
+	}
+	ctx.globalAlpha = 1.0;
 }

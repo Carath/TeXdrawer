@@ -264,6 +264,10 @@ footer {
 	width: 100%;
 }
 
+#resultTable tr td {
+	height: 25px;
+}
+
 .symbol-class-box {
 	width: 160px;
 	text-align: left;

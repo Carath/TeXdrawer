@@ -57,7 +57,7 @@ window.onload = function() {
 	});
 
 	// $("#testButton").click(function(event) {
-	// 	typeset("#mathjax-test", "$$\\frac{a^3}{1-a^2}$$");
+	// 	typeset("#mathjax-test", "$$ \\frac{a^3}{1-a^2} $$");
 	// });
 
 	$("#sidenav-about").click(function(event) {
