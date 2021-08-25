@@ -108,7 +108,7 @@ if __name__ == '__main__':
 		mapping = sys.argv[2]
 
 	if service == 'hwrt':
-		# hwrt: train: 151160 samples, test: 17074 (split 90% / 10%). 369 classes.
+		# hwrt: train: 151160 samples, test: 17074 (split 90% / 10%). 368 / 377 classes found.
 		# This takes ~ 3m 30s to run:
 		testDataset = loader.loadDataset(service, loader.testDatasetPath_hwrt)
 		benchmark(service, mapping, dataset=testDataset, top_k=5)

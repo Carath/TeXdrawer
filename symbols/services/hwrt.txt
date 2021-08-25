@@ -1,3 +1,6 @@
+!
+(
+)
 +
 -
 /
@@ -12,6 +15,7 @@
 8
 9
 <
+=
 >
 A
 B
@@ -57,6 +61,7 @@ Z
 \Leftrightarrow
 \Longleftrightarrow
 \Longrightarrow
+\MVAt
 \O
 \Omega
 \Phi
@@ -66,6 +71,7 @@ Z
 \Rightarrow
 \S
 \Sigma
+\Smiley
 \Theta
 \Vdash
 \Xi
@@ -122,7 +128,6 @@ Z
 \div
 \doteq
 \dots
-\dotsc
 \downarrow
 \ell
 \emptyset
@@ -134,6 +139,7 @@ Z
 \fint
 \flat
 \forall
+\frac{}{}
 \frown
 \fullmoon
 \gamma
@@ -251,6 +257,7 @@ Z
 \parallel
 \parr
 \partial
+\pentagram
 \perp
 \phi
 \pi
@@ -360,6 +367,7 @@ p
 q
 r
 s
+t
 u
 v
 w

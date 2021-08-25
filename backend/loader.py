@@ -43,6 +43,7 @@ def writeContent(path, content):
 
 _latexToUnicodeMap = {}
 
+# Returns a map to convert latex commands to unicode values:
 def getLatexToUnicodeMap():
 	try:
 		if _latexToUnicodeMap != {}:

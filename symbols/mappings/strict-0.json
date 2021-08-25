@@ -24,13 +24,9 @@
 "\\checked": ["\\checked", "\\checkmark"],
 "\\lhd": ["\\lhd", "\\triangleleft", "\\vartriangleleft"],
 "\\oiint": ["\\oiint", "\\varoiint"],
-"\\mathbb{C}": ["\\mathbb{C}", "\\mathds{C}"],
-"\\mathbb{R}": ["\\mathbb{R}", "\\mathds{R}"],
-"\\mathbb{Q}": ["\\mathbb{Q}", "\\mathds{Q}"],
-"\\mathbb{Z}": ["\\mathbb{Z}", "\\mathds{Z}"],
 "\\mathbb{1}": ["\\mathbb{1}", "\\mathds{1}"],
-"\\mathcal{A}": ["\\mathcal{A}", "\\mathscr{A}"],
-"\\mathcal{D}": ["\\mathcal{D}", "\\mathscr{D}"],
-"\\mathcal{N}": ["\\mathcal{N}", "\\mathscr{N}"],
-"\\mathcal{R}": ["\\mathcal{R}", "\\mathscr{R}"]
+"\\mathbb{C}": ["\\mathbb{C}", "\\mathds{C}"],
+"\\mathbb{Q}": ["\\mathbb{Q}", "\\mathds{Q}"],
+"\\mathbb{R}": ["\\mathbb{R}", "\\mathds{R}"],
+"\\mathbb{Z}": ["\\mathbb{Z}", "\\mathds{Z}"]
 }

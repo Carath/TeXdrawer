@@ -29,7 +29,7 @@ def helloWorld():
 
 
 @app.route('/app')
-@app.route('/api')
+@app.route('/frontend')
 def serveWebpage():
 	''' Sends static resources used for a webpage. '''
 	return send_from_directory(app.static_folder, 'index.html')
@@ -114,6 +114,15 @@ def extractRequestData(request):
 
 ##################################################
 # TeXdrawer specific functions:
+
+@app.route('/latex-to-unicode', methods=['GET'])
+def frontendGetLatexToUnicodeMap():
+	''' Sends a map to convert latex commands to unicode values. '''
+	try:
+		return jsonify(loader.getLatexToUnicodeMap())
+	except Exception as e:
+		return handleError('Unknown error in frontendGetLatexToUnicodeMap().', 500)
+
 
 @app.route('/services-and-mappings', methods=['GET'])
 def frontendGetServicesAndMappingsList():

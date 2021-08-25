@@ -7,7 +7,7 @@
 The goals of this small project are the following:
 - Helping to build *balanced* datasets of handwritten symbols, by providing a simple GUI asking users to draw inputs for randomly selected symbols. Furthermore, the GUI should also provide a way to visualize such datasets, both sequentially and by filtering under given criteria. Even though any type of handwritten symbols could be relevant to this project, the main focus for now are math ones. Specifically, digits, latin and greek alphabets, and common math symbols used in formulas. Such symbols may be identified by their unicode, or their LaTeX command.
 - Benchmarking existing free open-source services allowing recognition of handwritten symbols, with as less bias as possible, and with support for regrouping similar symbols as shared classes.
-- Obtaining the most accurate service for a specified task, either by modifying the tested services, or by building new ones. The resulting service, should however be relatively lightweight and fast, for the target hardware may be tablet computers, or low power laptops with a touchscreen monitor.
+- Obtaining the most accurate service for a specified task, either by modifying the tested services, or by building new ones. The resulting service, should however be relatively lightweight and fast, for the target hardware may be tablet computers, or low power laptops with a touchscreen monitor. Additionally, a purely client-side offline version could be desired.
 - Extending the obtained service capabilities to recognize associations of handwritten symbols, be them words, sentences, or math formulas. Moreover, the service should be able to replace in real-time user drawn symbols by the predicted ones, but also give the possiblity to change or correct the prediction should it be wrong. Small rotations of symbols should not hinder the system much.
 
 Note: in this project, input handwritten symbols are only received as sequences of 2D points (called *strokes*), not scanned images. This is *not* an [OCR](https://en.wikipedia.org/wiki/Optical_character_recognition) project! Limiting input acquisition in such a way has several advantages:
@@ -93,7 +93,7 @@ The frontend is then reachable at ``` http://localhost:5050/app ```. Note that i
 
 #### hwrt
 
-This service supports 369 symbols, most of which are also supported by detexify. Most notable exceptions are numbers and the latin alphabet, along with ``` < ``` and ``` > ```.
+This service supports 377 symbols, most of which are also supported by detexify. Most common symbols supported by hwrt but not by detexify are digits and the latin alphabet, along with ``` < ``` and ``` > ```.
 
 To run it, use the command below. The service should be usable at ``` http://localhost:5000 ```:
 

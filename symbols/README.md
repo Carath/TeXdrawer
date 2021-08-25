@@ -23,6 +23,8 @@ In such contentious cases, an unicode has been chosen (somewhat arbitrarily). Fu
 \lbrack => U+5B
 ```
 
+An useful link to search or visualize unicode characters is the following: <https://www.compart.com/en/unicode/>
+
 
 #### mappings/
 
@@ -37,4 +39,16 @@ It is worth mentioning that retrieving the correct LaTeX command of a given symb
 
 This directory contains text files, one per supported classification services (for now, only ``` hwrt ``` and ``` detexify ```). Each of those files must have a filename matching its service name, and contain the list of symbols supported by said service.
 
-Note about ``` hwrt ```: most upper case symbols from the greek alphabet are not present.
+Note about ``` hwrt ```: some uppercase letters from the greek alphabet are not present, for their are identical to letters from the latin alphabet. This is also the case for ``` \upsilon ``` (similar to ``` v ```), and ``` \omicron ``` (which does not exist, similar to ``` o ```). Furthermore, a previous version of hwrt supported only 369 symbols, the currently used version removed the symbol ``` \dotsc ``` (probably deemed too similar to ``` \dots ```), and added to following ones:
+
+```
+!
+(
+)
+=
+\MVAt
+\Smiley
+\frac{}{}
+\pentagram
+t
+```

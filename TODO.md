@@ -18,8 +18,10 @@
 - check some canvas javascript libraries => consistency between web browsers, better input acquisition, mobiles support...
 - grid: move (slightly) symbols drawn with MathJax, to be correctly centered.
 - add support for symbols not drawn by MathJax: detect them, add a placeholder for the inspector, and skip them during dataset creation.
-- classify: typeset only where needed - speed gain?
 - inspector: import files
+- add a menu to draw a given latex command.
+- enable to choose several categories of symbols, with ``` <input type="checkbox"> ```. Default: all ticked, except greek alphabet symbols not preset in "in_need".
+- Add a skip button too!
 
 
 #### Backend
@@ -28,3 +30,4 @@
 - compare Flask with [FastAPI](https://fastapi.tiangolo.com/)
 - obtain frequencies of each classes, for a given mapping and dataset. [dataset creator]
 - obtain frequencies of each symbols in its equivalence class, for a given mapping and dataset. [disambiguation]
+- add some abstraction for things specific to each service
