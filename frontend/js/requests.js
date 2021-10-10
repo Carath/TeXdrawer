@@ -16,7 +16,7 @@ function servicesAndMappingsRequest() {
 		timeout: 500, // in ms
 
 		success: function(response) {
-			// let responseTime = performance.now() - startTime; // in ms
+			// let responseTime = elapsedTime(startTime); // in ms
 			// console.log("Mappings request took " + responseTime + " ms");
 			$("#serviceChoice").empty();
 			$("#mappingChoice").empty();
@@ -101,7 +101,7 @@ function errorHandling(xhr, service) {
 }
 
 function drawResultsTable(service, mapping, response, startTime, mode) {
-	let responseTime = performance.now() - startTime; // in ms
+	let responseTime = elapsedTime(startTime); // in ms
 
 	// // For testing:
 	// console.log("Response:", response);
@@ -127,25 +127,32 @@ function drawResultsTable(service, mapping, response, startTime, mode) {
 
 	$.each(response, function(index, value) {
 		if (index < symbolsBound) {
-			let symbol_class = value["symbol_class"];
+			let symbol = value["symbol_class"];
 			let unicode = value["unicode"] === "U+0" ? "" : value["unicode"];
-			let symbolPackage = value["package"]; // unused for now.
+			let symbolPackage = "package" in value ? value["package"] : ""; // unused for now.
 			let scoreHTML = "";
 
 			if (mode === "classify") {
 				scoreHTML = "<td>" + value["score"] + "</td>";
-				let dataset_id = value["dataset_id"];
-				let raw_answers = value["raw_answers"]; // for traceability
+				let dataset_id = "dataset_id" in value ? value["dataset_id"] : 0;
+				let raw_answers = "raw_answers" in value ? value["raw_answers"] : []; // for traceability
 			}
 
-			content += "<tr><td>$" + symbol_class + "$</td><td>" + unicode + "</td><td><input id=\"latex-"
-				+ symbol_class + "\" class=\"symbol-class-box\" value='" + symbol_class + "' disabled/></td>"
+			content += "<tr><td>$" + symbol + "$</td><td>" + unicode + "</td><td><input id=\"latex-"
+				+ symbol + "\" class=\"symbol-class-box\" value='" + symbol + "' disabled/></td>"
 				+ scoreHTML + "</tr>";
 		}
 	});
 	content += "</tbody></table>";
 	startTime = performance.now();
 	typeset("#classification-results", content);
-	let drawingTime = performance.now() - startTime; // in ms
+	let drawingTime = elapsedTime(startTime); // in ms
 	$("#drawingTime").html(drawingTime);
+	// Note: it isn't viable here to use drawSample() on each symbol in order to
+	// correctly draw them all, for it takes way to long to print them one by one...
+}
+
+// Use performance.now() to get a starting point. Result in ms.
+function elapsedTime(start) {
+	return Math.round(performance.now() - start);
 }

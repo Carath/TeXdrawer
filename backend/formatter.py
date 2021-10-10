@@ -61,7 +61,7 @@ def extractServiceAnswer(service, answer):
 				# First semantic only. Overall separator is ';;':
 				semantic = symbol['semantics'].split(';')
 				formattedAnswer.append(createGuess(
-					dataset_id = semantic[0],
+					dataset_id = int(semantic[0]),
 					raw_answer = semantic[1],
 					score = symbol['probability']
 				))

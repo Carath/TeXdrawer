@@ -62,6 +62,7 @@ Z	U+5A
 \%	U+25
 \&	U+26
 \:	U+205F
+\AA	U+C5
 \AC	U+223F
 \AE	U+C6
 \APLboxquestion	U+2370
@@ -237,7 +238,7 @@ Z	U+5A
 \Zbar	U+1B5
 \Zeta	U+5A
 \_	U+5F
-\aa	U+C5
+\aa	U+E5
 \accurrent	U+23E6
 \acidfree	U+267E
 \acute	U+301
@@ -393,6 +394,7 @@ Z	U+5A
 \celsius	U+2103
 \cent	U+A2
 \check	U+30C
+\checked	U+2713
 \checkmark	U+2713
 \chi	U+3C7
 \cirE	U+29C3
@@ -657,6 +659,7 @@ Z	U+5A
 \hash	U+22D5
 \hat	U+302
 \hatapprox	U+2A6F
+\hbar	U+210F
 \heartsuit	U+2661
 \hermitmatrix	U+22B9
 \hexagon	U+2394
@@ -2223,10 +2226,10 @@ Z	U+5A
 \sqcap	U+2293
 \sqcup	U+2294
 \sqint	U+2A16
-\sqrt	U+221A
-\sqrt[3]	U+221B
-\sqrt[4]	U+221C
+\sqrt[3]{}	U+221B
+\sqrt[4]{}	U+221C
 \sqrtbottom	U+23B7
+\sqrt{}	U+221A
 \sqsubset	U+228F
 \sqsubseteq	U+2291
 \sqsubsetneq	U+22E4
@@ -2340,6 +2343,7 @@ Z	U+5A
 \tplus	U+29FE
 \trapezium	U+23E2
 \trianglecdot	U+25EC
+\triangleleft	U+25C1
 \triangleleftblack	U+25ED
 \trianglelefteq	U+22B4
 \triangleminus	U+2A3A

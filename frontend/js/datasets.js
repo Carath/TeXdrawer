@@ -1,6 +1,6 @@
 "use strict";
 
-const frameMargin = 0.10;
+const frameMargin = 0.10; // should be between 0. and 0.5
 var inputSamples = [];
 
 function boundingBox(strokes) {
@@ -28,7 +28,7 @@ function boundingBox(strokes) {
 }
 
 // Returns new strokes, resized and recentered, with integer coords:
-function resize(canvas, strokes) {
+function resizeStrokes(canvas, strokes) {
 	let box = boundingBox(strokes);
 	if (! box) {
 		return [];
@@ -66,21 +66,18 @@ function showDots() {
 	}
 	else {
 		console.log("inputStrokes:", JSON.stringify(inputStrokes));
-		let resized = resize(inputCanvas, inputStrokes);
+		let resized = resizeStrokes(inputCanvas, inputStrokes);
 		showSamples(inputCanvas, inputStrokes, [samplesColor]);
 		showSamples(inputCanvas, resized, [rescaledSamplesColor]);
 	}
 	dotsShown = !dotsShown;
 }
 
-function createSample(rank, unicode, symbol_class, strokes) {
-	if (strokes.length === 0) {
-		return null;
-	}
+function createSample(dataset_id, wannabeSample, strokes) {
 	let sample = {};
-	sample.dataset_id = rank;
-	sample.unicode = unicode;
-	sample.symbol_class = symbol_class;
+	sample.dataset_id = dataset_id;
+	sample.unicode = wannabeSample.unicode;
+	sample.symbol = wannabeSample.symbol;
 	sample.totalDotsNumber = 0;
 	sample.strokes = strokes;
 	for (let i = 0; i < strokes.length; ++i) {
@@ -89,26 +86,26 @@ function createSample(rank, unicode, symbol_class, strokes) {
 	return sample;
 }
 
-function submitSample(unicode, symbol_class) {
+function submitWannabeSample(wannabeSample) {
 	if (inputStrokes.length === 0) {
 		alert("Nothing to submit.");
-		return;
+		return false;
 	}
-	let sample = createSample(inputSamples.length, unicode, symbol_class, resize(inputCanvas, inputStrokes));
-	if (sample) {
-		inputSamples.push(sample);
-		clearInputs(inputCanvas);
-		$('#savedSamplesCount').html("Saved samples count: <strong>" + inputSamples.length +
-			"</strong><br>Click on Inspect to see them.");
-	} // else, skipping this sample.
+	let resized = resizeStrokes(inputCanvas, inputStrokes);
+	let sample = createSample(inputSamples.length, wannabeSample, resized);
+	inputSamples.push(sample);
+	clearInputs(inputCanvas);
+	$('#savedSamplesCount').html("Saved samples count: <strong>" + inputSamples.length +
+		"</strong><br>Click on Inspect to see them.");
+	return true;
 }
 
 function createOutput(samples) {
 	let output = {};
 	output.version = "1.0.0";
-	output.description = "Each sample contains some metadata, and a list of strokes."
-	output.description += " Each stroke is a list of dots, of the form {x: 50, y: 60, time: 1620256003707};"
-	output.description += " where 0 <= x <= frameWidth, 0 <= y <= frameHeight, and 'time' is the UNIX time.";
+	// output.description = "Each sample contains some metadata, and a list of strokes."
+	// output.description += " Each stroke is a list of dots, of the form {x: 50, y: 60, time: 1620256003707};"
+	// output.description += " where 0 <= x <= frameWidth, 0 <= y <= frameHeight, and 'time' is the UNIX time.";
 	output.inputLib = "plain-js"; // library used in inputs.js
 	output.preprocessing = "resized";
 	output.frameWidth = inputCanvas.width; // used to save input precision, and for compatibility.

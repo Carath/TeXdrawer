@@ -136,7 +136,7 @@ For both services, new samples need to be created in order to have a more robust
 ## Limitations
 
 - At the present time, it doesn't seem possible to containerize TeXdrawer's backend using Docker, at least in a *portable* way. The issue is that a Docker container cannot out of the box reach an appliction running on the host local network... To fix this, all supported services should be containerized, and placed on the same network as TeXdrawer. This would require to modify some of those services, e.g the Flask server of hwrt should be made to run on ``` host='0.0.0.0' ```.
-- Some math symbols are not currently rendered by MathJax (typically, those from custom packages). Some efforts could be done to try supporting a few of them, the rest have to be drawn with a placeholder, and skipped during dataset creation.
+- Some math symbols are not currently rendered by MathJax (typically, those from custom packages, but also rather common ones like ``` \AE ``` or ``` \pounds ```). Still, some efforts have been done to draw them, given a valid unicode value and using the drawSample() function. Howewer this is slow, and cannot be used to draw large quantities of symbols. Not drawable symbols have to be skipped during dataset creation.
 
 
 ## Links

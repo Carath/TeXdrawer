@@ -41,7 +41,7 @@ http://localhost:5050/app
 - Get a map to convert latex commands to unicode values.
 
 ```
-curl http://0.0.0.0:5050/latex-to-unicode
+curl http://localhost:5050/latex-to-unicode
 ```
 
 - Get the lists of supported services and mappings:

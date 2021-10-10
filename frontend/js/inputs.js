@@ -36,7 +36,7 @@ function startInputs(canvas, event) {
 			_currentStroke = [];
 			// console.log("inputStrokes:", inputStrokes);
 		}
-	}
+	};
 
 	document.addEventListener("mousemove", drawUserAction);
 	document.addEventListener("mouseup", stopInputs);
