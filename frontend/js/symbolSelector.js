@@ -46,7 +46,7 @@ function validateWannabeSamples() {
 		let startTime = performance.now();
 		let newList = [];
 		for (let i=0; i < wannabeSamplesList.length; ++i) {
-			if (drawSample("#wannabeSample", wannabeSamplesList[i], shownSymbolSize)) {
+			if (drawSample("#wannabeSample", wannabeSamplesList[i], 0)) {
 				newList.push(wannabeSamplesList[i]);
 			}
 		}
@@ -57,8 +57,8 @@ function validateWannabeSamples() {
 		if (diff > 0) {
 			console.log("Validated list:", wannabeSamplesList);
 		}
-		let totalTime = elapsedTime(startTime); // in ms
-		console.log("Validation time:", totalTime, "ms");
+		let validationTime = elapsedTime(startTime); // in ms
+		console.log("Validation time:", validationTime, "ms");
 		$("#wannabeSample").show();
 		$("#validationOverlay")[0].style.display = $("#waitingMessage")[0].style.display = "none";
 	}, 0); // 0 ms
@@ -76,7 +76,6 @@ function nextDrawableSample() {
 	setTimeout(function() {
 		currentWannabeSample = _chooseWannabeSample();
 		// console.log("currentWannabeSample:", currentWannabeSample);
-		$("#wannabeSample").css({fontSize: 20}); // before drawing!
 		drawSample("#wannabeSample", currentWannabeSample, shownSymbolSize);
 		lockedWannabeSample = true;
 	}, 0); // 0 ms

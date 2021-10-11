@@ -8,7 +8,7 @@ function addAllCells(samples) {
 }
 
 function addCell(rank, size, sample) { // 'size' in ex
-	let dataset_id = "dataset_id" in sample ? sample.dataset_id : "0";
+	let dataset_id = "dataset_id" in sample ? sample.dataset_id : 0;
 	let unicode = "unicode" in sample ? sample.unicode : "";
 	let symbol = "symbol" in sample ? sample.symbol : "";
 	let strokes = "strokes" in sample ? sample.strokes : [];

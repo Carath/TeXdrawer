@@ -1,14 +1,14 @@
 "use strict";
 
 // Settings:
-const lineThickness = 6;
-const samplesSize = 3;
+const lineThickness = 6; // in px
+const samplesSize = 3; // in px
 const samplesOpacity = 0.5;
 const drawingColor = "orange";
 const samplesColor = "green";
 const rescaledSamplesColor = "red";
-const cellSize = 4.; // in ex
-const shownSymbolSize = 6.; // in ex
+const cellSize = 42.; // in px
+const shownSymbolSize = 50.; // in px
 
 var inputCanvas = null;
 var dotsShown = false;
@@ -130,24 +130,8 @@ window.onload = function() {
 				if (textInputContent.value.substring(0, 2) === "U+") {
 					sample = {unicode: textInputContent.value};
 				}
-
-				// Preventing the symbol to grow... Still BUGGED!
-				// size shrinks a bit... (e.g with U+221)
-				$("#symbol-result").css({fontSize: 20});
-				// $("#symbol-result").css("font-size", "20px");
-				// $("#symbol-result")[0].style.fontSize="20px";
-
 				drawSample("#symbol-result", sample, shownSymbolSize);
 				$("#symbol-result-sentence, #symbol-result").show();
-
-				// resizing has some serious issues here...
-				// drawSample("#wannabeSample", {symbol: ",", unicode: ""}, shownSymbolSize);
-				// drawSample("#wannabeSample", {symbol: "\\Lambda", unicode: ""}, shownSymbolSize);
-				// drawSample("#wannabeSample", {symbol: "\\jhvtvfgvg", unicode: "U+39B"}, shownSymbolSize);
-				// drawSample("#wannabeSample", {symbol: "\\jhvtvfgvg", unicode: "U+7D"}, shownSymbolSize);
-				// drawSample("#wannabeSample", {symbol: "\\jhvtvfgvg", unicode: "hello"}, shownSymbolSize);
-				// drawSample("#wannabeSample", {symbol: "\\sum", unicode: ""}, shownSymbolSize);
-				// drawSample("#wannabeSample", {symbol: "\\Sigma", unicode: ""}, shownSymbolSize);
 			}
 		});
 	});

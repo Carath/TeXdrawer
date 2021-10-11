@@ -13,11 +13,12 @@
 - compare MathJax with [KaTeX](https://katex.org/)
 - add support for [stixfonts](https://github.com/stipub/stixfonts) ?
 - allow to draw symbols from LaTeX packages with MathJax
+- individual symbol drawing: like detexify, show several symbols - ignore case, not perfect match!
+- grid: move (slightly) symbols drawn with MathJax, to be correctly centered.
 - add mobiles support for input acquisition
 - inspector: import files
 - enable to choose several categories of symbols, with ``` <input type="checkbox"> ```. Default: all ticked, except greek alphabet symbols not preset in "in_need".
-- individual symbol drawing: like detexify, show several symbols - ignore case, not perfect match!
-- grid: move (slightly) symbols drawn with MathJax, to be correctly centered.
+- Inspector: bound number of drawn symbols. Add arrow buttons to loop through them.
 
 
 #### Backend
@@ -28,7 +29,7 @@
 - obtain frequencies of each symbols in its equivalence class, for a given mapping and dataset. [disambiguation]
 - add some abstraction for things specific to each service
 
-Work to be done on the benchmarks:
+Work to be done on the benchmarks tool:
 
 - print n° found symbols / total mapped, and print all symbols (found or not).
 - Do not use the missing classes in global stats computations, and explain that in the benchmark function help. Add a custom threshold.
@@ -36,8 +37,3 @@ Work to be done on the benchmarks:
 - add a progress bar
 - what happens if hwrt answers MULTISYMBOL during the bench? Is it a 'negative' class, or is it supposed to detect combinations of learned symbols? Add Support for a negative class anyway.
 - regenerate ALL benchs for ALL services after those changes! Everything may change!
-
-
-#### Issues
-
-- Symbols drawn in #Draw or #Symbol do not fit the frame. This problem is at its worst with the ',' symbol.
