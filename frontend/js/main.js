@@ -29,9 +29,29 @@ window.onload = function() {
 
 	inputCanvas = getFixedCanvas("#input-canvas");
 
+	// Prevent scrolling when touching the canvas:
+	document.body.addEventListener("touchstart", function(event) {
+		if (event.target == inputCanvas) {
+			event.preventDefault();
+		}
+	}, {passive: false});
+	document.body.addEventListener("touchend", function(event) {
+		if (event.target == inputCanvas) {
+			event.preventDefault();
+		}
+	}, {passive: false});
+	document.body.addEventListener("touchmove", function(event) {
+		if (event.target == inputCanvas) {
+			event.preventDefault();
+		}
+	}, {passive: false});
+
 	// Starting from the canvas only, but drawing and samples
 	// acquisition must continue outside!
 	inputCanvas.addEventListener("mousedown", function(event) {
+		startInputs(inputCanvas, event);
+	});
+	inputCanvas.addEventListener("touchstart", function(event) {
 		startInputs(inputCanvas, event);
 	});
 

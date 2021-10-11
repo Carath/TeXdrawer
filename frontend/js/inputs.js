@@ -31,6 +31,7 @@ function startInputs(canvas, event) {
 
 	function stopInputs() {
 		document.removeEventListener("mousemove", drawUserAction);
+		document.removeEventListener("touchmove", drawUserAction);
 		if (_currentStroke.length > 0) {
 			inputStrokes.push(_currentStroke);
 			_currentStroke = [];
@@ -39,15 +40,26 @@ function startInputs(canvas, event) {
 	};
 
 	document.addEventListener("mousemove", drawUserAction);
+	document.addEventListener("touchmove", drawUserAction);
 	document.addEventListener("mouseup", stopInputs);
+	document.addEventListener("touchend", stopInputs);
 }
 
 function updateCurrentCoord(canvas, event) {
 	// Using getBoundingClientRect() instead of canvas.offsetLeft/offsetTop,
 	// in case the page is scrolled down (e.g when zoomed).
-	let bounds = canvas.getBoundingClientRect();
-	_currCoord.x = event.clientX - bounds.left;
-	_currCoord.y = event.clientY - bounds.top;
+	let rect = canvas.getBoundingClientRect();
+	if (event.type === "mousedown" || event.type === "mousemove") {
+		_currCoord.x = event.clientX - rect.left;
+		_currCoord.y = event.clientY - rect.top;
+	}
+	else if (event.type === "touchstart" || event.type === "touchmove") {
+		_currCoord.x = event.touches[0].clientX - rect.left;
+		_currCoord.y = event.touches[0].clientY - rect.top;
+	}
+	else {
+		console.log("Unsupported event type:", event.type);
+	}
 }
 
 function saveCurrentCoord() {
@@ -60,7 +72,6 @@ function saveCurrentCoord() {
 			return;
 		}
 	}
-
 	if (allowTimeReshifting && timeOffset === 0) {
 		timeOffset = new Date().getTime(); // UNIX time
 	}
