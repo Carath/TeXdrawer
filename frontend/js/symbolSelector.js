@@ -81,7 +81,7 @@ function nextDrawableSample() {
 	}, 0); // 0 ms
 }
 
-// Returns symbols randomly between the less sampled. Not to be used in mockSamples().
+// Returns symbols randomly between the less sampled. Not to be used in generateMockSamples().
 function _chooseWannabeSample() {
 	if (_chosenIndex === 0) {
 		shuffle(wannabeSamplesList);

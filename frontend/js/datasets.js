@@ -1,7 +1,7 @@
 "use strict";
 
+const datasetFormatVersion = "1.0.0";
 const frameMargin = 0.10; // should be between 0. and 0.5
-var inputSamples = [];
 
 function boundingBox(strokes) {
 	if (strokes.length === 0 || strokes[0].length === 0) {
@@ -76,8 +76,8 @@ function showDots() {
 function createSample(dataset_id, wannabeSample, strokes) {
 	let sample = {};
 	sample.dataset_id = dataset_id;
-	sample.unicode = wannabeSample.unicode;
 	sample.symbol = wannabeSample.symbol;
+	sample.unicode = wannabeSample.unicode;
 	sample.totalDotsNumber = 0;
 	sample.strokes = strokes;
 	for (let i = 0; i < strokes.length; ++i) {
@@ -102,10 +102,10 @@ function submitWannabeSample(wannabeSample) {
 
 function createOutput(samples) {
 	let output = {};
-	output.version = "1.0.0";
-	// output.description = "Each sample contains some metadata, and a list of strokes."
-	// output.description += " Each stroke is a list of dots, of the form {x: 50, y: 60, time: 1620256003707};"
-	// output.description += " where 0 <= x <= frameWidth, 0 <= y <= frameHeight, and 'time' is the UNIX time.";
+	output.version = datasetFormatVersion;
+	output.description = "Each sample contains some metadata, and a list of strokes. Each stroke is a list of dots,"
+	output.description += " of the form {x: 50, y: 60, time: 1620256003707}; where 0 <= x <= frameWidth,"
+	output.description += " 0 <= y <= frameHeight, and 'time' is the UNIX time, potentially shifted.";
 	output.inputLib = "plain-js"; // library used in inputs.js
 	output.preprocessing = "resized";
 	output.frameWidth = inputCanvas.width; // used to save input precision, and for compatibility.
@@ -118,7 +118,7 @@ function createOutput(samples) {
 
 // Note: inputCanvas width and height are saved in the output format. This is done both to not
 // hardcode the maximum precision of the input, and to be able to retrieve said precision
-// in case it changes with each user. On the other hand, this implies that input must be resized
+// in case it changes with each user. On the other hand, this implies that inputs must be resized
 // (and centered) to fit well in the canvas.
 function saveSamples() {
 	if (inputSamples.length === 0) {
@@ -156,4 +156,58 @@ function timestamp() {
 	ts += "-" + addLeadingZeros(d.getMinutes(), 2);
 	ts += "-" + addLeadingZeros(d.getSeconds(), 2);
 	return ts;
+}
+
+function loadFile(fileInput) {
+	if (! window.FileReader) {
+		alert("FileReader not supported by this browser.");
+		return;
+	}
+	let files = fileInput[0].files;
+	let reader = new FileReader();
+	if (files.length) {
+		let textFile = files[0];
+		reader.readAsText(textFile);
+		$(reader).on("load", processLoadedFile);
+	} else {
+		alert("Please upload a file before continuing.");
+	}
+}
+
+function processLoadedFile(event) {
+	let fileContent = event.target.result;
+	if (fileContent && fileContent.length) {
+		// console.log(fileContent);
+		try {
+			let jsonObj = JSON.parse(fileContent);
+			// console.log(jsonObj);
+			if (validateLoadedFile(jsonObj)) {
+				$("#samples-message").html("Loaded samples:");
+				lastSamplesState = "loaded";
+				loadedSamples = jsonObj["samples"];
+				drawnSamples = loadedSamples;
+				startShownCells = 0;
+				drawCellsChunk(drawnSamples);
+			}
+			else {
+				alert("Unsupported loaded file content.");
+			}
+		} catch (error) {
+			alert("Loaded file must be in JSON format.");
+		}
+	}
+}
+
+// Only checks if the file looks valid, by looking at first order fields.
+function validateLoadedFile(jsonObj) {
+	let version = "version" in jsonObj ? jsonObj["version"] : "";
+	if (version !== datasetFormatVersion) {
+		console.log("Incompatible dataset versions:", version, "vs", datasetFormatVersion);
+		return false;
+	}
+	if (! ("samples" in jsonObj) || jsonObj["samples"].length === 0) {
+		console.log("No samples found in the loaded file.");
+		return false;
+	}
+	return true;
 }

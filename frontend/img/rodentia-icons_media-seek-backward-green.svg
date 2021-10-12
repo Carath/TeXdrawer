@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--part of the rodentia icon theme by sixsixfive released under CC0 (https://creativecommons.org/publicdomain/zero/1.0/) on openclipart-->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 48 48">
+ <defs id="0">
+  <linearGradient id="3">
+   <stop id="I" stop-color="#fff"/>
+   <stop id="J" offset="1" stop-color="#fff" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="4">
+   <stop id="K" stop-color="#fff" stop-opacity="0.8"/>
+   <stop id="L" offset="1" stop-color="#fff" stop-opacity="0"/>
+  </linearGradient>
+  <filter color-interpolation-filters="sRGB" id="5">
+   <feGaussianBlur stdDeviation="0.45938" id="M"/>
+  </filter>
+  <linearGradient x1="4.597" y1="-1.705" x2="17.328" y2="29.333" id="6" xlink:href="#3" gradientUnits="userSpaceOnUse"/>
+  <linearGradient y1="7.281" x2="0" y2="42.13" id="7" xlink:href="#4" gradientUnits="userSpaceOnUse"/>
+  <linearGradient x1="4.597" y1="-1.705" x2="17.328" y2="29.333" id="8" xlink:href="#3" gradientUnits="userSpaceOnUse" gradientTransform="translate(13.8245,0)"/>
+  <linearGradient id="9">
+   <stop id="N" stop-color="#2e3436" stop-opacity="0.5"/>
+   <stop id="O" offset="1" stop-color="#2e3436" stop-opacity="0.015"/>
+  </linearGradient>
+  <radialGradient cx="24.431" cy="52.28" r="21.578" id="A" xlink:href="#9" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1,0,0,0.2975207,0,36.725592)"/>
+ </defs>
+ <g transform="translate(0,2.1831683)" id="1">
+  <path d="m 2.02283,21.816834 15.07767,-9.382718 15.077669,-9.3827166 0,18.7654336 1e-6,18.765431 -15.07767,-9.382715 -15.07767,-9.382715 0,0 z" id="B" fill="#99cc00" stroke="#204a87" stroke-linejoin="round"/>
+  <path d="m 31.71875,3.90625 -14.375,8.9375 -14.40625,8.96875 8.125,5.0625 c 6.884975,-3.951961 13.782813,-7.556112 20.65625,-10.75 l 0,-12.21875 z" id="C" opacity="0.6" fill="url(#6)"/>
+  <path d="m 17.34375,7.78125 0,16.90625 0,16.9375 L 30.875,33.21875 44.53125,24.6875 30.875,16.1875 17.34375,7.78125 z" transform="matrix(-1,0,0,1,48.493791,-2.8788873)" id="D" opacity="0.8" fill="none" stroke="url(#7)"/>
+  <path d="m 16.813,13.8125 0,10.1875 0,10.1875 L 18.09425,33.375 33.188,24 18.09425,14.625 16.813,13.8125 z" transform="matrix(-1.0771109,0,0,1.0309863,50.559156,-2.9268396)" id="E" fill="#2e3436" filter="url(#5)"/>
+  <path d="m 15.82183,21.816834 15.07767,-9.382718 15.077669,-9.3827166 0,18.7654336 10e-7,18.765431 -15.07767,-9.382715 -15.07767,-9.382715 0,0 z" id="F" fill="#99cc00" stroke="#204a87" stroke-linejoin="round"/>
+  <path d="m 17.34375,7.78125 0,16.90625 0,16.9375 L 30.875,33.21875 44.53125,24.6875 30.875,16.1875 17.34375,7.78125 z" transform="matrix(-1,0,0,1,62.292791,-2.8788873)" id="G" opacity="0.8" fill="none" stroke="url(#7)"/>
+  <path d="m 45.54325,3.90625 -14.375,8.9375 -14.40625,8.96875 8.125,5.0625 c 6.884975,-3.951961 13.782813,-7.556112 20.65625,-10.75 l 0,-12.21875 z" id="H" opacity="0.6" fill="url(#8)"/>
+ </g>
+ <path d="m 46.009577,52.279961 a 21.578135,6.4199409 0 1 1 -43.1562693,0 21.578135,6.4199409 0 1 1 43.1562693,0 z" transform="matrix(1.112237,0,0,0.6111111,-3.173554,11.050839)" id="2" opacity="0.8" fill="url(#A)"/>
+</svg>

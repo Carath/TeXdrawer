@@ -1,16 +1,18 @@
 "use strict";
 
-function addAllCells(samples) {
+function drawCellsChunk(samples) {
 	$("#cells-grid").empty();
-	for (let i=0; i < samples.length; ++i) {
-		addCell(i, cellSize, samples[i]);
+	let bound = Math.min(samples.length, startShownCells + maxDrawnSamples);
+	for (let i=startShownCells; i < bound; ++i) {
+		drawCell(i, cellSize, samples[i]);
 	}
+	$("#samplesRangeIndicator").html(startShownCells+1 + "-" + bound + " / " + samples.length);
 }
 
-function addCell(rank, size, sample) { // 'size' in ex
+function drawCell(rank, size, sample) { // 'size' in ex
 	let dataset_id = "dataset_id" in sample ? sample.dataset_id : 0;
-	let unicode = "unicode" in sample ? sample.unicode : "";
 	let symbol = "symbol" in sample ? sample.symbol : "";
+	let unicode = "unicode" in sample ? sample.unicode : "";
 	let strokes = "strokes" in sample ? sample.strokes : [];
 	let cellID = "cell-" + rank, symbolID = cellID + "-symbol", canvasID = cellID + "-canvas";
 	let content =
@@ -39,13 +41,12 @@ function addCell(rank, size, sample) { // 'size' in ex
 	drawSample("#" + symbolID, sample, size);
 }
 
-function mockSamples() {
+function generateMockSamples(samplesNumber) {
 	let mockStrokes = [[{"x":183,"y":72,"time":0}], [{"x":52,"y":72,"time":245}], [{"x":285,"y":121,"time":713},
 		{"x":273,"y":138,"time":729},{"x":256,"y":162,"time":746},{"x":224,"y":187,"time":763},{"x":183,"y":207,"time":780},
 		{"x":146,"y":220,"time":798},{"x":113,"y":224,"time":813},{"x":80,"y":228,"time":832},{"x":48,"y":224,"time":846},
 		{"x":27,"y":220,"time":862},{"x":15,"y":211,"time":873}]];
 
-	const samplesNumber = 20;
 	let mockSamplesList = [];
 	for (let i=0; i < samplesNumber; ++i) {
 		let index = Math.floor(Math.random() * wannabeSamplesList.length); // between 0 and length-1

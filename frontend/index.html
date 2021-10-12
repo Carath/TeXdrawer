@@ -32,9 +32,9 @@
 				<div class="sidenav">
 					<a id="sidenav-about" class="active">About</a>
 					<a id="sidenav-classify">Classify</a>
+					<a id="sidenav-symbol">Symbol</a>
 					<a id="sidenav-draw">Draw</a>
 					<a id="sidenav-inspect">Inspect</a>
-					<a id="sidenav-symbol">Symbol</a>
 				</div>
 				<div id="bottom-logos">
 					<a href="https://www.mathjax.org" target="_blank">
@@ -143,6 +143,18 @@
 				</div>
 			</div>
 			<div id="grid-container" hidden>
+				<input type="file" id="submit-file">
+				<br>
+				<div id="jump-buttons-area">
+					<button type="button" class="imageButton" id="backwardButton" title="Backward">
+						<img src="img/rodentia-icons_media-seek-backward-green.svg">
+					</button>
+					<p id="samplesRangeIndicator"></p>
+					<button type="button" class="imageButton" id="forwardButton" title="Forward">
+						<img src="img/rodentia-icons_media-seek-backward-green.svg">
+					</button>
+				</div>
+				<br><br>
 				<div id="samples-message"></div>
 				<div id="cells-grid"></div>
 			</div>

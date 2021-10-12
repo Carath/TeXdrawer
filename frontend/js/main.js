@@ -9,11 +9,18 @@ const samplesColor = "green";
 const rescaledSamplesColor = "red";
 const cellSize = 42.; // in px
 const shownSymbolSize = 50.; // in px
+const maxDrawnSamples = 20;
+const mockSamplesNumber = 30;
 
 var inputCanvas = null;
 var dotsShown = false;
 var wannabeSamplesList = [];
 var currentWannabeSample = {};
+var inputSamples = [];
+var loadedSamples = [];
+var drawnSamples = [];
+var startShownCells = 0;
+var lastSamplesState = "";
 
 // Set the size of the canvas bitmap as its css size, and return it as DOM object:
 function getFixedCanvas(canvasSelector) {
@@ -55,6 +62,12 @@ window.onload = function() {
 		startInputs(inputCanvas, event);
 	});
 
+	const fileInput = $("#submit-file");
+	fileInput[0].value = "";
+	fileInput.change(function(event) {
+		loadFile(fileInput);
+	});
+
 	$("#clearButton").click(function(event) {
 		clearInputs(inputCanvas);
 	});
@@ -75,6 +88,7 @@ window.onload = function() {
 
 	$("#submitButton").click(function(event) {
 		if (submitWannabeSample(currentWannabeSample)) {
+			lastSamplesState = "submitted";
 			lockedWannabeSample = false;
 			nextDrawableSample();
 		}
@@ -82,6 +96,23 @@ window.onload = function() {
 
 	$("#exportButton").click(function(event) {
 		saveSamples();
+	});
+
+	$("#backwardButton").click(function(event) {
+		startShownCells -= maxDrawnSamples;
+		if (startShownCells < 0) {
+			let chunkIndex = Math.max(0, Math.ceil(drawnSamples.length / maxDrawnSamples - 1));
+			startShownCells = maxDrawnSamples * chunkIndex;
+		}
+		drawCellsChunk(drawnSamples);
+	});
+
+	$("#forwardButton").click(function(event) {
+		startShownCells += maxDrawnSamples;
+		if (startShownCells >= drawnSamples.length) {
+			startShownCells = 0;
+		}
+		drawCellsChunk(drawnSamples);
 	});
 
 	$("#sidenav-about").click(function(event) {
@@ -103,6 +134,30 @@ window.onload = function() {
 		servicesAndMappingsRequest();
 	});
 
+	$("#sidenav-symbol").click(function(event) {
+		$(this).addClass("active").siblings().removeClass("active");
+		$("#about, #grid-container, #center-area, #symbol-result-sentence, #symbol-result").hide();
+		$("#classify-draw, #symbol-area").show();
+		$("#classification-results").empty();
+		clearInputs(inputCanvas);
+
+		let textInputContent = $("#symbol-input")[0];
+		textInputContent.value = "";
+		$("#symbol-instruction").html("Type a latex command or unicode here:");
+
+		$("#symbolButton").click(function(event) { // replace this with an input listener?
+		// $("#symbol-input").on("input", function(event) {
+			if (textInputContent.value !== "") {
+				let sample = {symbol: textInputContent.value};
+				if (textInputContent.value.substring(0, 2) === "U+") {
+					sample = {unicode: textInputContent.value};
+				}
+				drawSample("#symbol-result", sample, shownSymbolSize);
+				$("#symbol-result-sentence, #symbol-result").show();
+			}
+		});
+	});
+
 	$("#sidenav-draw").click(function(event) {
 		$(this).addClass("active").siblings().removeClass("active");
 		$("#about, #grid-container, #showSymbolsButton, #classifyButton, #service-area, #symbol-area").hide();
@@ -121,38 +176,21 @@ window.onload = function() {
 		$("#classification-results").empty();
 		clearInputs(inputCanvas);
 
-		if (inputSamples.length === 0) {
-			$("#samples-message").html("Mock data:");
-			addAllCells(mockSamples());
+		if (lastSamplesState === "submitted" && inputSamples.length > 0) {
+			$("#samples-message").html("Submitted samples:");
+			drawnSamples = inputSamples;
+			loadedSamples = []; // freeing memory.
+			fileInput[0].value = "";
+		}
+		else if (lastSamplesState === "loaded" && loadedSamples.length > 0) {
+			$("#samples-message").html("Loaded samples:");
+			drawnSamples = loadedSamples;
 		}
 		else {
-			$("#samples-message").html("Submitted samples:");
-			addAllCells(inputSamples);
+			$("#samples-message").html("Mocked samples:");
+			drawnSamples = generateMockSamples(mockSamplesNumber);
 		}
-	});
-
-	$("#sidenav-symbol").click(function(event) {
-		$(this).addClass("active").siblings().removeClass("active");
-		$("#about, #grid-container, #center-area, #symbol-result-sentence, #symbol-result").hide();
-		$("#classify-draw, #symbol-area").show();
-		$("#classification-results").empty();
-		clearInputs(inputCanvas);
-
-		let textInputContent = $("#symbol-input")[0];
-		textInputContent.value = "";
-
-		$("#symbol-instruction").html("Type a latex command or unicode here:");
-
-		$("#symbolButton").click(function(event) { // replace this with an input listener?
-		// $("#symbol-input").on("input", function(event) {
-			if (textInputContent.value !== "") {
-				let sample = {symbol: textInputContent.value};
-				if (textInputContent.value.substring(0, 2) === "U+") {
-					sample = {unicode: textInputContent.value};
-				}
-				drawSample("#symbol-result", sample, shownSymbolSize);
-				$("#symbol-result-sentence, #symbol-result").show();
-			}
-		});
+		startShownCells = 0;
+		drawCellsChunk(drawnSamples);
 	});
 }

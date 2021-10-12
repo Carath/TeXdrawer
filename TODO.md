@@ -15,9 +15,7 @@
 - allow to draw symbols from LaTeX packages with MathJax
 - individual symbol drawing: like detexify, show several symbols - ignore case, not perfect match!
 - grid: move (slightly) symbols drawn with MathJax, to be correctly centered.
-- enable to choose several categories of symbols, with ``` <input type="checkbox"> ```. Default: all ticked, except greek alphabet symbols not preset in "in_need".
-- Inspector: import files
-- Inspector: bound number of drawn symbols. Add arrow buttons to loop through them.
+- enable to choose several categories of symbols, with ``` <input type="checkbox"> ```. Default: all ticked, except greek alphabet symbols not present in "in_need".
 
 
 #### Backend
