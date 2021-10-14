@@ -14,6 +14,7 @@ const mockSamplesNumber = 30;
 
 var inputCanvas = null;
 var dotsShown = false;
+var datasetCategories = [];
 var wannabeSamplesList = [];
 var currentWannabeSample = {};
 var inputSamples = [];
@@ -38,17 +39,17 @@ window.onload = function() {
 
 	// Prevent scrolling when touching the canvas:
 	document.body.addEventListener("touchstart", function(event) {
-		if (event.target == inputCanvas) {
+		if (event.target === inputCanvas) {
 			event.preventDefault();
 		}
 	}, {passive: false});
 	document.body.addEventListener("touchend", function(event) {
-		if (event.target == inputCanvas) {
+		if (event.target === inputCanvas) {
 			event.preventDefault();
 		}
 	}, {passive: false});
 	document.body.addEventListener("touchmove", function(event) {
-		if (event.target == inputCanvas) {
+		if (event.target === inputCanvas) {
 			event.preventDefault();
 		}
 	}, {passive: false});

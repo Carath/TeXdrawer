@@ -3,13 +3,11 @@
 
 #### Global
 
-- finish work on dataset creator & viewer
 - complete test datasets with new samples, rerun benchmarks
 
 
 #### Frontend
 
-- add offline support! Libs like jQuery or MathJax could be provided, MathJax logo too. Careful: do not put 'large' files in frontend/, for they would be automatically sent by the backend. Instead, place them at the root, and create a custom (portable) loader: local ?> cdnjs ?> backend.
 - compare MathJax with [KaTeX](https://katex.org/)
 - add support for [stixfonts](https://github.com/stipub/stixfonts) ?
 - allow to draw symbols from LaTeX packages with MathJax

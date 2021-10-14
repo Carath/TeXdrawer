@@ -98,9 +98,9 @@ def saveResults(service, mapping, top_k, samplesNumber, microRecalls, macroRecal
 
 if __name__ == '__main__':
 	if len(sys.argv) < 2:
-		print('''Please give as args the name of the service to benchmark, and the mapping used (optional).'''
-			'''\n- Supported services: hwrt, detexify\n- Optional mappings: '''
-			+ ', '.join(loader.getSupportedMappings()))
+		print('''Please give as args the name of the service to benchmark, and the mapping used (optional, default to 'none').'''
+			'''\n- Supported services: %s\n- Optional mappings: %s'''
+			% (', '.join(loader.getSupportedServices()), ', '.join(loader.getSupportedMappings())))
 		exit()
 	service = sys.argv[1]
 	mapping = 'none' # default

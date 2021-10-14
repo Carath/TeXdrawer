@@ -58,6 +58,10 @@ def getLatexToUnicodeMap():
 	return _latexToUnicodeMap
 
 
+def getSupportedServices():
+	return ['hwrt', 'detexify'] # hardcoded for now, later files in ../symbols/services/ could be listed.
+
+
 def getSupportedMappings():
 	mappingFiles = os.listdir(mappingsDir)
 	mappingFiles = list(filter(lambda file : '.json' in file, mappingFiles))

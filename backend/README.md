@@ -38,6 +38,18 @@ curl http://localhost:5050/
 http://localhost:5050/app
 ```
 
+- Get the list of javascript libraries used by the frontend and hosted by the backend:
+
+```
+curl http://localhost:5050/javascript-libs-list
+```
+
+- Get the desired javascript library used by the frontend and hosted by the backend (here jQuery v3.6.0):
+
+```
+curl http://localhost:5050/javascript-libs/jquery-3.6.0.min.js
+```
+
 - Get a map to convert latex commands to unicode values.
 
 ```

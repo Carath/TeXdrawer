@@ -13,6 +13,7 @@ function loadWannabeSamples(wannabeSamples, blacklist) {
 		if (blacklist.indexOf(category) !== -1) {
 			continue;
 		}
+		datasetCategories.push(category);
 		for (let i=0; i < wannabeSamples[category].length; ++i) {
 			let sample = wannabeSamples[category][i];
 			let symbol = "symbol" in sample ? sample.symbol : "";

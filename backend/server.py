@@ -1,5 +1,5 @@
 import os, traceback, json
-from flask import Flask, request, Response, jsonify, send_from_directory, redirect
+from flask import Flask, request, Response, redirect, jsonify, send_from_directory, send_file
 from flask_cors import CORS
 import requests
 from pathlib import Path
@@ -31,7 +31,7 @@ def helloWorld():
 @app.route('/app')
 @app.route('/frontend')
 def serveWebpage():
-	''' Sends static resources used for a webpage. '''
+	''' Sends static resources used for a webpage. Unused files are not sent! '''
 	return send_from_directory(app.static_folder, 'index.html')
 
 
@@ -45,24 +45,6 @@ def getRoutes():
 		routes[r.rule]['functionName'] = r.endpoint
 		routes[r.rule]['methods'] = list(r.methods)
 	return jsonify(routes)
-
-
-@app.route('/get/<name>', methods=['GET'])
-def testGET(name):
-	''' Example of GET request. '''
-	return 'Look at this => %s' % name
-
-
-@app.route('/post', methods=['POST'])
-def testPOST():
-	''' Example of POST request. Body must be in json, with a field 'name'. '''
-	try:
-		# print('\nRequest method: %s\nRequest content type: %s\n' % (request.method, request.content_type))
-		foundName = request.json['name']
-		jsonified = json.dumps({'foundName': foundName})
-		return Response(jsonified, content_type='application/json')
-	except Exception as e:
-		return handleError('Unknown error in testPOST().', 500)
 
 
 # Careful: all URL to which requests will be redirected _must_ be hardcoded (security issues).
@@ -115,39 +97,57 @@ def extractRequestData(request):
 ##################################################
 # TeXdrawer specific functions:
 
+@app.route('/javascript-libs-list', methods=['GET'])
+def serveJavascriptLibsList():
+	''' Returns the list of javascript libraries used by the frontend and hosted by the backend. '''
+	try:
+		return jsonify(os.listdir(Path('../frontend/libs/')))
+	except Exception as e:
+		return handleError('Unknown error in serveJavascriptLibsList().', 500)
+
+
+@app.route('/javascript-libs/<lib>', methods=['GET'])
+def serveJavascriptLib(lib):
+	''' Returns the desired javascript library used by the frontend and hosted by the backend. '''
+	try:
+		return send_file(str(Path('../frontend/libs/') / lib))
+	except Exception as e:
+		return handleError("Error from serveJavascriptLib(): Javascript library '%s' not found." % lib, 404)
+
+
 @app.route('/latex-to-unicode', methods=['GET'])
-def frontendGetLatexToUnicodeMap():
+def serveLatexToUnicodeMap():
 	''' Sends a map to convert latex commands to unicode values. '''
 	try:
 		return jsonify(loader.getLatexToUnicodeMap())
 	except Exception as e:
-		return handleError('Unknown error in frontendGetLatexToUnicodeMap().', 500)
+		return handleError('Unknown error in serveLatexToUnicodeMap().', 500)
 
 
 @app.route('/services-and-mappings', methods=['GET'])
-def frontendGetServicesAndMappingsList():
+def serveServicesAndMappingsList():
 	''' Returns the lists of supported services and mappings. '''
 	try:
 		return jsonify({
-			'services': ['hwrt', 'detexify'],
+			'services': loader.getSupportedServices(),
 			'mappings': loader.getSupportedMappings()
 		})
 	except Exception as e:
-		return handleError('Unknown error in frontendGetServicesAndMappingsList().', 500)
+		return handleError('Unknown error in serveServicesAndMappingsList().', 500)
 
 
 @app.route('/mapping/classes/<mapping>', methods=['GET'])
-def frontendGetMapping(mapping):
+def serveMapping(mapping):
 	''' Returns the equivalence classes for the given mapping. '''
 	try:
 		return jsonify(mappings.getMapping(mapping).classes)
 	except Exception as e:
-		return handleError('Unknown error in frontendGetMapping().', 500)
+		return handleError('Unknown error in serveMapping().', 500)
 
 
 @app.route('/symbols/<service>', methods=['GET'])
 @app.route('/symbols/<service>/<mapping>', methods=['GET'])
-def frontendGetProjectedSymbols(service, mapping='none'):
+def serveProjectedSymbols(service, mapping='none'):
 	''' Returns the sorted list of supported symbols and their unicode, for the given service. '''
 	''' If a mapping is given, then the projected symbols are returned. '''
 	try:
@@ -165,12 +165,12 @@ def frontendGetProjectedSymbols(service, mapping='none'):
 			})
 		return jsonify(data)
 	except Exception as e:
-		return handleError('Unknown error in frontendGetProjectedSymbols().', 500)
+		return handleError('Unknown error in serveProjectedSymbols().', 500)
 
 
 @app.route('/classify', methods=['POST'])
-def frontendClassifyRequest():
-	''' Sends the frontend's request to the chosen service: '''
+def serveClassifyRequest():
+	''' Serves the result of a classification request to a chosen service: '''
 	try:
 		receivedInput = extractRequestData(request)
 		# print('receivedInput:', receivedInput)
@@ -188,7 +188,7 @@ def frontendClassifyRequest():
 			return handleError('Failure from classifyRequest().', status)
 		return jsonify(result)
 	except Exception as e:
-		return handleError('Unknown error in frontendClassifyRequest().', 500)
+		return handleError('Unknown error in serveClassifyRequest().', 500)
 
 
 def classifyRequest(service, mapping, strokes, bound=0, pretty=False):
@@ -210,7 +210,7 @@ def classifyRequest(service, mapping, strokes, bound=0, pretty=False):
 		answers = formatter.aggregateAnswers(service, mapping, answers, bound=bound, pretty=pretty)
 		return (answers, 200)
 	except Exception as e:
-		print('\n-> %s service seems not available.\n' % service)
+		print("\n-> '%s' service seems not available.\n" % service)
 		# print(traceback.format_exc())
 		return ([], 500)
 

@@ -111,6 +111,8 @@ function createOutput(samples) {
 	output.frameWidth = inputCanvas.width; // used to save input precision, and for compatibility.
 	output.frameHeight = inputCanvas.height; // same.
 	output.frameMargin = frameMargin;
+	output.categories = datasetCategories;
+	output.classesNumber = wannabeSamplesList.length;
 	output.samplesNumber = samples.length;
 	output.samples = samples;
 	return output;

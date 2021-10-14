@@ -1,6 +1,6 @@
 {
-"\\Sigma": ["\\sum", "\\Sigma", "\\Upsigma"],
-"\\Pi": ["\\prod", "\\Pi", "\\Uppi", "\\sqcap"],
+"\\Sigma": ["\\Sigma", "\\sum", "\\Upsigma"],
+"\\Pi": ["\\Pi", "\\prod", "\\Uppi", "\\sqcap"],
 "\\coprod": ["\\coprod", "\\amalg", "\\sqcup", "\\bigsqcup"],
 "\\alpha": ["\\alpha", "\\propto", "\\varpropto", "\\upalpha"],
 "a": ["a", "\\textscripta"],

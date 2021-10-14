@@ -89,7 +89,8 @@ cd backend
 python3 server.py
 ```
 
-The frontend is then reachable at ``` http://localhost:5050/app ```. Note that it cannot work offline as of now, for it needs to download external resources (e.g JQuery, MathJax).
+The frontend is then reachable at ``` http://localhost:5050/app ```. Note that the frontend can work offline now, for files may either be loaded locally or fetched from the backend, if necessary.
+
 
 #### hwrt
 
@@ -126,7 +127,7 @@ sudo sh run.sh
 ## Benchmarks
 
 Benchmarks of the classification capabilities of the previous services have been done, and their results are saved in ``` backend/stats/ ```. Note however that:
-- Some symbols (e.g ``` \sum ``` and ``` \Sigma ```) look exactly the same, other are very similar. To solve this issue, an optional symbol mapping mechanism has been implemented. It allows to regroup such symbols in same classes, thus helping the classifiers.
+- Some symbols (e.g ``` \sum ``` and ``` \Sigma ```) look almost the same, others are very similar. To solve this issue, an optional symbol mapping mechanism has been implemented. It allows to regroup such symbols in same classes, thus helping the classifiers.
 - Many classes have too few samples, their recall score is probably highly inaccurate.
 - Detexify: training seems to have been done only on the first 20K of the 210454 samples. Here, testing has been done on the last 20K samples (this took ~ 40 minutes). Only 970 of the 1077 symbols are present in those test samples.
 
