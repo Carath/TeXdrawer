@@ -73,7 +73,7 @@ function saveCurrentCoord() {
 		}
 	}
 	if (allowTimeReshifting && timeOffset === 0) {
-		timeOffset = new Date().getTime(); // UNIX time
+		timeOffset = new Date().getTime(); // UNIX time, in ms
 	}
 	_currentStroke.push({
 		x: Math.round(_currCoord.x),

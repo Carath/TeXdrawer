@@ -73,11 +73,16 @@ function showDots() {
 	dotsShown = !dotsShown;
 }
 
+// The 'webBrowser', 'frameWidth', and 'frameHeight' fields must be present in each sample,
+// since they may change between users, and a unified dataset format is desired when merging files.
 function createSample(dataset_id, wannabeSample, strokes) {
 	let sample = {};
 	sample.dataset_id = dataset_id;
 	sample.symbol = wannabeSample.symbol;
 	sample.unicode = wannabeSample.unicode;
+	sample.webBrowser = navigator.userAgent;
+	sample.frameWidth = inputCanvas.width; // used to save input precision, and for compatibility.
+	sample.frameHeight = inputCanvas.height; // same.
 	sample.totalDotsNumber = 0;
 	sample.strokes = strokes;
 	for (let i = 0; i < strokes.length; ++i) {
@@ -105,15 +110,13 @@ function createOutput(samples) {
 	output.version = datasetFormatVersion;
 	output.description = "Each sample contains some metadata, and a list of strokes. Each stroke is a list of dots,"
 	output.description += " of the form {x: 50, y: 60, time: 1620256003707}; where 0 <= x <= frameWidth,"
-	output.description += " 0 <= y <= frameHeight, and 'time' is the UNIX time, potentially shifted.";
+	output.description += " 0 <= y <= frameHeight, and 'time' is the UNIX time in ms, potentially shifted.";
 	output.inputLib = "plain-js"; // library used in inputs.js
 	output.preprocessing = "resized";
-	output.frameWidth = inputCanvas.width; // used to save input precision, and for compatibility.
-	output.frameHeight = inputCanvas.height; // same.
 	output.frameMargin = frameMargin;
 	output.categories = datasetCategories;
 	output.classesNumber = wannabeSamplesList.length;
-	output.samplesNumber = samples.length;
+	output.samplesNumber = samples.length; // to see the samples number without parsing the file.
 	output.samples = samples;
 	return output;
 }
