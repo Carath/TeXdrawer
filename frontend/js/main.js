@@ -137,7 +137,7 @@ window.onload = function() {
 
 	$("#sidenav-symbol").click(function(event) {
 		$(this).addClass("active").siblings().removeClass("active");
-		$("#about, #grid-container, #center-area, #symbol-result-sentence, #symbol-result").hide();
+		$("#about, #grid-container, #center-area, #symbol-result-area").hide();
 		$("#classify-draw, #symbol-area").show();
 		$("#classification-results").empty();
 		clearInputs(inputCanvas);
@@ -146,15 +146,27 @@ window.onload = function() {
 		textInputContent.value = "";
 		$("#symbol-instruction").html("Type a latex command or unicode here:");
 
-		$("#symbolButton").click(function(event) { // replace this with an input listener?
-		// $("#symbol-input").on("input", function(event) {
-			if (textInputContent.value !== "") {
+		function drawInputSymbol() {
+			if (textInputContent.value === "") {
+				$("#symbol-result-area").hide();
+			}
+			else {
 				let sample = {symbol: textInputContent.value};
 				if (textInputContent.value.substring(0, 2) === "U+") {
 					sample = {unicode: textInputContent.value};
 				}
 				drawSample("#symbol-result", sample, shownSymbolSize);
-				$("#symbol-result-sentence, #symbol-result").show();
+				$("#symbol-result-area").show();
+			}
+		};
+
+		$("#symbolButton").click(function(event) {
+			drawInputSymbol();
+		});
+
+		$("#symbol-input").on('keyup', function (e) {
+			if (e.key === 'Enter' || e.keyCode === 13) {
+				drawInputSymbol();
 			}
 		});
 	});
