@@ -8,6 +8,8 @@ import formatter
 symbolsDir = Path('../symbols/')
 datasetDir = Path('../datasets/')
 statsDir = Path('stats/')
+answersDir = Path('answers/')
+frequenciesDir = Path('frequencies/')
 
 symbolsListsDir = symbolsDir / 'services'
 mappingsDir = symbolsDir / 'mappings'
@@ -29,8 +31,8 @@ def getFileContent(path):
 		return content
 
 
-# Note: for .csv files, getLines() + splitting is 2 times faster than using csv.reader()!
-def getLines(path):
+# Note: for .csv files, getFileLines() + splitting is 2 times faster than using csv.reader()!
+def getFileLines(path):
 	return getFileContent(path).splitlines()
 
 
@@ -48,7 +50,7 @@ def getLatexToUnicodeMap():
 	try:
 		if _latexToUnicodeMap != {}:
 			return _latexToUnicodeMap
-		lines = getLines(latexToUnicodePath)[1:]
+		lines = getFileLines(latexToUnicodePath)[1:]
 		for line in lines:
 			latex, unic = line.split('\t')
 			_latexToUnicodeMap[latex] = unic
@@ -78,7 +80,7 @@ def getSymbolsSet(service):
 		if service in _symbolsLoader:
 			return _symbolsLoader[service]
 		path = symbolsListsDir / (service + '.txt')
-		theSet = set(getLines(path))
+		theSet = set(getFileLines(path))
 		print('Loaded symbols for service:', service)
 		_symbolsLoader[service] = theSet
 		return theSet
@@ -96,12 +98,12 @@ def getSymbolsSorted(service):
 def getSymbolsDatasetMap(service):
 	symbolMap = {}
 	if service == 'hwrt':
-		lines = getLines(symbolsMap_hwrt)
+		lines = getFileLines(symbolsMap_hwrt)
 		for line in lines[1:]:
 			splitted = line.split(';')
 			symbolMap[splitted[0]] = splitted[1] # id -> symbol
 	elif service == 'detexify':
-		lines = getLines(symbolsMap_detexify)
+		lines = getFileLines(symbolsMap_detexify)
 		for line in lines:
 			symbolMap[line] = line # symbol -> symbol
 	else:
@@ -125,7 +127,7 @@ def loadDataset(service, datasetPath):
 	try:
 		print("\n-> Loading the dataset for service '%s' from %s" % (service, datasetPath))
 		symbolMap = getSymbolsDatasetMap(service)
-		lines = getLines(datasetPath)
+		lines = getFileLines(datasetPath)
 		dataset = [] # dataset will be a list of string couples: (symbol name, strokes)
 		if service == 'hwrt':
 			for line in lines[1:]:

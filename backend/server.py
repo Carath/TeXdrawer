@@ -183,10 +183,10 @@ def serveClassifyRequest():
 			bound = receivedInput['bound']
 		if 'pretty' in receivedInput:
 			pretty = receivedInput['pretty']
-		result, status = classifyRequest(service, mapping, strokes, bound=bound, pretty=pretty)
+		answers, status = classifyRequest(service, mapping, strokes, bound=bound, pretty=pretty)
 		if status != 200:
 			return handleError('Failure from classifyRequest().', status)
-		return jsonify(result)
+		return jsonify(answers)
 	except Exception as e:
 		return handleError('Unknown error in serveClassifyRequest().', 500)
 

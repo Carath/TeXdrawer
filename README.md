@@ -94,7 +94,7 @@ The frontend is then reachable at ``` http://localhost:5050/app ```. Note that t
 
 #### hwrt
 
-This service supports 377 symbols, most of which are also supported by detexify. Most common symbols supported by hwrt but not by detexify are digits and the latin alphabet, along with ``` < ``` and ``` > ```.
+This service supports 378 symbols (counting the ``` ::MULTISYMBOL:: ``` one), most of which are also supported by detexify. Most common symbols supported by hwrt but not by detexify are digits and the latin alphabet, along with ``` < ``` and ``` > ```.
 
 To run it, use the command below. The service should be usable at ``` http://localhost:5000 ```:
 

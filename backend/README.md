@@ -16,7 +16,7 @@ Furthermore, an optional symbol mapping can also be given (default to ``` none `
 
 ``` python3 benchmark.py hwrt similar-0 ```
 
-The results will be saved in the ``` stats ``` directory.
+Stats files will be saved in the ``` stats ``` directory, and data on correlated answers in ``` answers ```. Finally, data on symbols frequency in each dataset classes are stored in ``` frequencies ```.
 
 
 ## Requests

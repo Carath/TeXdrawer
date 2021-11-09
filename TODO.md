@@ -3,7 +3,7 @@
 
 #### Global
 
-- complete test datasets with new samples, rerun benchmarks
+- complete test datasets with new samples, rerun benchmarks!
 
 
 #### Frontend
@@ -14,21 +14,12 @@
 - individual symbol drawing: like detexify, show several symbols - ignore case, not perfect match!
 - grid: move (slightly) symbols drawn with MathJax, to be correctly centered.
 - enable to choose several categories of symbols, with ``` <input type="checkbox"> ```. Default: all ticked, except greek alphabet symbols not present in "in_need".
+- add a search option for classes/symbols
 
 
 #### Backend
 
 - use argparse for scripts arguments?
 - compare Flask with [FastAPI](https://fastapi.tiangolo.com/)
-- obtain frequencies of each classes, for a given mapping and dataset. [dataset creator]
-- obtain frequencies of each symbols in its equivalence class, for a given mapping and dataset. [disambiguation]
+- use a unified dataset format across services?
 - add some abstraction for things specific to each service
-
-Work to be done on the benchmarks tool:
-
-- print n° found symbols / total mapped, and print all symbols (found or not).
-- Do not use the missing classes in global stats computations, and explain that in the benchmark function help. Add a custom threshold.
-- handle the limit case where sampleNumber = 0.
-- add a progress bar
-- what happens if hwrt answers MULTISYMBOL during the bench? Is it a 'negative' class, or is it supposed to detect combinations of learned symbols? Add Support for a negative class anyway.
-- regenerate ALL benchs for ALL services after those changes! Everything may change!
