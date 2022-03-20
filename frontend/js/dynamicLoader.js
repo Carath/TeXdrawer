@@ -1,7 +1,8 @@
 "use strict";
 
 // This can be used to load javascript libraries, images, ...
-// Several links may be given, they can either be URLs or file paths:
+// Several links may be given, which can either be URLs or file paths,
+// and will be tried in the given order until the resource is loaded or all links failed.
 function dynamicLoader(type, id, attributes={}, links, onSuccess=()=>{}, onFailure=()=>{}) {
 	if (document.getElementById(id) !== null) {
 		console.log(id + " element already exists.");

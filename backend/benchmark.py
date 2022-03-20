@@ -7,6 +7,10 @@ from tqdm import tqdm
 import server, loader, formatter, mappings
 
 
+printingOrder = lambda x : (-x[1], x[0]) # sorting by decreasing samples number, and by name.
+formatPercent = lambda x : '%5.1f %%' % (100. * x)
+
+
 # Benchmarks the classification capabilities of the given service, and save data on correlated answers:
 def benchmark(service, mapping, dataset, top_k=5, samplesThreshold=10, filterAnswersData=False, suffix=''):
 	metadata = datasetMining(service, mapping, dataset, suffix)
@@ -15,6 +19,25 @@ def benchmark(service, mapping, dataset, top_k=5, samplesThreshold=10, filterAns
 	recallMap, answersMap = ingestDataset(service, mapping, dataset, top_k, metadata)
 	if aggregateStats(service, top_k, samplesThreshold, metadata, recallMap, answersMap):
 		saveResults(service, mapping, top_k, samplesThreshold, metadata, recallMap, answersMap, filterAnswersData, suffix)
+	statsRecap = {
+		"service": service,
+		"mapping": mapping,
+		"samples threshold": samplesThreshold,
+		"top_k": top_k,
+		"classes total": len(metadata['serviceClassesSet']),
+		"classes found": len(metadata['foundServiceClasses']),
+		"classes kept": metadata['relevantClassesNumber'],
+		"accuracy": {
+			"samples": recallMap['<Accuracy>'][0],
+			"values": recallMap['<Accuracy>'][1:]
+		},
+		"macro recall": {
+			"samples": recallMap['<Macro>'][0],
+			"values": recallMap['<Macro>'][1:]
+		}
+	}
+	print('\nStats recap:', statsRecap)
+	return statsRecap # to be used in the MLOps phase.
 
 
 # Do a mining task on a given dataset. This does not require a service to be running.
@@ -69,15 +92,15 @@ def datasetMining(service, mapping, dataset, suffix, verboseLevel=1):
 # Collect stats on service answers given dataset samples. This does require a service to be running!
 def ingestDataset(service, mapping, dataset, top_k, metadata):
 	serviceClassesSet = metadata['serviceClassesSet']
-	recallMap = { key: [0] * (top_k+1) for key in serviceClassesSet }
-	answersMap = { key: { key: 0 for key in serviceClassesSet } for key in serviceClassesSet }
+	recallMap = { key : [0] * (top_k+1) for key in serviceClassesSet }
+	answersMap = { key : { key2 : 0 for key2 in serviceClassesSet } for key in serviceClassesSet }
 	answeredClassesSet = set()
 	for rank in tqdm(range(len(dataset))):
 		key, strokes = dataset[rank]
 		key = mappings.getProjectedSymbol(key, mapping)
 		if not key in serviceClassesSet:
 			# print('-> Ignored class:', key)
-			continue
+			continue # necessary.
 		strokes = json.loads(strokes)
 		if service == 'detexify':
 			strokes = formatter.formatStrokesTo('hwrt', strokes)
@@ -93,7 +116,7 @@ def ingestDataset(service, mapping, dataset, top_k, metadata):
 			answer = answers[i]['symbol_class']
 			if key == answer:
 				recallMap[key][i+1] += 1
-			answersMap[key][answer] += top_k - i # Adding weight to the ranking. This does not rely on service
+			answersMap[key][answer] += top_k - i # Adding >= 0 weights to the ranking. This does not rely on service
 			# scores which may be noisy, and would also require a unified score format across services.
 		answeredClassesSet.update([ answers[i]['symbol_class'] for i in range(len(answers)) ]) # all answers used!
 	unknownClasses = sorted(answeredClassesSet.difference(serviceClassesSet))
@@ -110,7 +133,7 @@ def ingestDataset(service, mapping, dataset, top_k, metadata):
 # classes with less samples than this threshold are ignored.
 # Careful, '<Accuracy>' and '<Macro>' must not be mapping keys!
 def aggregateStats(service, top_k, samplesThreshold, metadata, recallMap, answersMap):
-	relevantClassesSet = set(filter(lambda key : recallMap[key][0] >= samplesThreshold, recallMap.keys()))
+	relevantClassesSet = set([ key for key in recallMap.keys() if recallMap[key][0] >= samplesThreshold ])
 	relevantClassesNumber = metadata['relevantClassesNumber'] = len(relevantClassesSet)
 	relevantClassesSamplesNumber = sum([recallMap[key][0] for key in relevantClassesSet])
 	supportedSamplesNumber = sum([recallMap[key][0] for key in recallMap])
@@ -136,10 +159,10 @@ def aggregateStats(service, top_k, samplesThreshold, metadata, recallMap, answer
 		if relevantClassesNumber > 0:
 			recallMap['<Macro>'][k] /= relevantClassesNumber
 	for key in answersMap:
-		itemsList = list(filter(lambda t : t[1] > 0, answersMap[key].items()))
-		sumSamples = sum(map(lambda t : t[1], itemsList)) # is > 0 when itemsList != []
+		sumSamples = sum(answersMap[key].values()) # values are >= 0.
+		itemsList = [ item for item in answersMap[key].items() if item[1] > 0 ]
 		itemsList = sorted(itemsList, key=printingOrder)[:top_k]
-		itemsList = list(map(lambda t : (t[0], round(t[1] / sumSamples, 3)), itemsList))
+		itemsList = [ (item[0], round(item[1] / sumSamples, 3)) for item in itemsList ] # cannot divide by 0.
 		answersMap[key] = OrderedDict(itemsList)
 	return True
 
@@ -147,11 +170,11 @@ def aggregateStats(service, top_k, samplesThreshold, metadata, recallMap, answer
 def saveResults(service, mapping, top_k, samplesThreshold, metadata, recallMap, answersMap, filterAnswersData, suffix):
 	# Saving stats:
 	headers = ['Class', 'Samples'] + [ 'TOP %d' % (i+1) for i in range(top_k) ]
-	table = [ [key, recallMap[key][0]] + formatPercentList(recallMap[key][1:]) for key in recallMap ]
+	table = [ [key, recallMap[key][0]] + [ formatPercent(x) for x in recallMap[key][1:] ] for key in recallMap ]
 	table.sort(key=printingOrder)
 	stringTable = tabulate(table, headers=headers, tablefmt="github", colalign=("left", *["right"] * (top_k+1)))
 	classesData = "Found %d / %d classes" % (len(metadata['foundServiceClasses']), len(metadata['serviceClassesSet']))
-	content = 'Service: %s, mapping: %s\n%s\nMacro-scores: %d classes with samples number >= %d\nRecall scores:\n\n%s\n' % (
+	content = 'Service: %s, mapping: %s\n%s\nMacro score: %d classes with samples number >= %d\nRecall scores:\n\n%s\n' % (
 		service, mapping, classesData, metadata['relevantClassesNumber'], samplesThreshold, stringTable)
 	statsPath = loader.statsDir / ('%s_%s_top%d%s.txt' % (service, mapping, top_k, suffix))
 	loader.writeContent(statsPath, content)
@@ -176,11 +199,6 @@ def peculiarJsonString(aDict, keysFilteringFunction=None, keysSortingFunction=No
 		processedKeys = sorted(processedKeys, key=keysSortingFunction)
 	entryList = [ json.dumps(key) + ': ' + json.dumps(aDict[key], sort_keys=False) for key in processedKeys ]
 	return '{\n' + ',\n'.join(entryList) + '\n}'
-
-
-printingOrder = lambda x : (-x[1], x[0]) # sorting by decreasing samples number, and by name.
-formatPercent = lambda x : '%5.1f %%' % (100. * x)
-formatPercentList = lambda percents : list(map(formatPercent, percents))
 
 
 if __name__ == '__main__':

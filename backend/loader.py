@@ -66,9 +66,8 @@ def getSupportedServices():
 
 def getSupportedMappings():
 	mappingFiles = os.listdir(mappingsDir)
-	mappingFiles = list(filter(lambda file : '.json' in file, mappingFiles))
-	mappingFiles = list(map(lambda file : file.split('.json')[0], mappingFiles))
-	return ['none'] + list(filter(lambda file : file != '', mappingFiles))
+	mappingFiles = [ file.split('.json')[0] for file in mappingFiles if '.json' in file ]
+	return ['none'] + [ file for file in mappingFiles if file != '' ]
 
 
 _symbolsLoader = {}

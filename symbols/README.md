@@ -9,7 +9,7 @@ This directory's purpose is to store files necessary for TeXdrawer to run. At th
 
 #### latex2unicode.csv
 
-The ``` latex2unicode.csv ``` file contains a table, whose rows are one LaTeX command with a possible unicode for the symbol said command represents. The separator is the tab ``` \t ``` character. Note that alike latex commands, different unicodes can point to the exact same symbol. For example, the ``` - ``` character could be given the following unicodes:
+The ``` latex2unicode.csv ``` file contains a table, whose rows are one LaTeX command with a possible unicode for the symbol said command represents. The separator is the tab ``` \t ``` character. Note that alike latex commands, different unicodes can point to the exact same symbol. For example, the ``` - ``` character could be given by the following unicodes:
 
 ```
 U+2D => "hyphen-minus"

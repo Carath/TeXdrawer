@@ -1,6 +1,6 @@
 Service: detexify, mapping: strict-0
 Found 937 / 1044 classes
-Macro-scores: 444 classes with samples number >= 10
+Macro score: 444 classes with samples number >= 10
 Recall scores:
 
 | Class                     |   Samples |   TOP 1 |   TOP 2 |   TOP 3 |   TOP 4 |   TOP 5 |
