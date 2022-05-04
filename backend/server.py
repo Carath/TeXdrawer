@@ -155,12 +155,9 @@ def serveProjectedSymbols(service, mapping='none'):
 		projectedSymbols = mappings.getServiceProjectedSymbolsSorted(service, mapping)
 		data = []
 		for symbol in projectedSymbols:
-			symbolUnicode = 'U+0' # default
-			if symbol in latexToUnicodeMap:
-				symbolUnicode = latexToUnicodeMap[symbol]
 			data.append({
 				'symbol_class': symbol,
-				'unicode': symbolUnicode,
+				'unicode': loader.getSymbolUnicode(symbol),
 				'package': '',
 			})
 		return jsonify(data)
@@ -176,13 +173,9 @@ def serveClassifyRequest():
 		# print('receivedInput:', receivedInput)
 		service = receivedInput['service']
 		strokes = receivedInput['strokes']
-		mapping, bound, pretty = 'none', 0, False
-		if 'mapping' in receivedInput:
-			mapping = receivedInput['mapping']
-		if 'bound' in receivedInput:
-			bound = receivedInput['bound']
-		if 'pretty' in receivedInput:
-			pretty = receivedInput['pretty']
+		mapping = receivedInput['mapping'] if 'mapping' in receivedInput else 'none'
+		bound = receivedInput['bound'] if 'bound' in receivedInput else 0
+		pretty = receivedInput['pretty'] if 'pretty' in receivedInput else False
 		answers, status = classifyRequest(service, mapping, strokes, bound=bound, pretty=pretty)
 		if status != 200:
 			return handleError('Failure from classifyRequest().', status)

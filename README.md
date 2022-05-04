@@ -40,7 +40,7 @@ pip3 install hwrt==0.2.1
 
 The project backend needs to be cloned. However, the *master* branch seems to not work properly, so a slightly modified version of the *stack* branch is used. For increased stability, the [docker](https://docs.docker.com/engine/install) build is used, be sure to have it installed.
 
-```
+```sh
 git clone https://github.com/kirel/detexify-hs-backend.git
 cd detexify-hs-backend
 git checkout stack
@@ -71,7 +71,7 @@ executable detexify-hs-backend
 
 Finally run:
 
-```
+```sh
 sudo sh run.sh
 ```
 
@@ -84,7 +84,7 @@ Note that detexify docker image roughlty weights 3.6 GB, be sure to have enough 
 
 To run the frontend without backend, simply open the ``` frontend/index.html ``` file with any (recent) web browser. To launch the backend, run:
 
-```
+```sh
 cd backend
 python3 server.py
 ```
@@ -107,7 +107,7 @@ hwrt serve
 
 This service supports 1077 math symbols. To run it, use the command below. To make sure the service is running, check ``` http://localhost:3000 ```.
 
-```
+```sh
 sudo sh run.sh
 ```
 
@@ -136,8 +136,8 @@ For both services, new samples need to be created in order to have a more robust
 
 ## Limitations
 
-- At the present time, it doesn't seem possible to containerize TeXdrawer's backend using Docker, at least in a *portable* way. The issue is that a Docker container cannot out of the box reach an appliction running on the host local network... To fix this, all supported services should be containerized, and placed on the same network as TeXdrawer. This would require to modify some of those services, e.g the Flask server of hwrt should be made to run on ``` host='0.0.0.0' ```.
-- Some math symbols are not currently rendered by MathJax (typically, those from custom packages, but also rather common ones like ``` \AE ``` or ``` \pounds ```). Still, some efforts have been done to draw them, given a valid unicode value and using the drawSample() function, yet this may be imperfect depending on the web browser, e.g in Firefox with symbols such has ``` \llbracket ``` of unicode ``` U+27E6 ```. Furthermore, this is slow and cannot be used to draw large quantities of symbols. Not drawable symbols have to be skipped during dataset creation.
+- At the present time, it doesn't seem possible to containerize TeXdrawer's backend using *Docker* while still being able to send requests to all supported services. The issue is that a Docker container cannot out of the box reach an appliction running on the host local network, at least in a *portable* way... To fix this, all supported services should be containerized, and placed on the same network as TeXdrawer. This would require to modify some of those services, e.g the Flask server of hwrt should be made to run on ``` host='0.0.0.0' ```.
+- Some math symbols are not currently rendered by MathJax (typically, those from custom packages, but also rather common ones like ``` \AE ``` or ``` \pounds ```). Still, some efforts have been done to draw them, given a valid unicode value and using the drawSample() function, yet this may be imperfect depending on the web browser, e.g in Firefox with symbols such as ``` \llbracket ``` of unicode ``` U+27E6 ```. Furthermore, this is slow and cannot be used to draw large quantities of symbols. Not drawable symbols have to be skipped during dataset creation.
 
 
 ## Links

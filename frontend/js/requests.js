@@ -2,6 +2,9 @@
 
 const maxPrintedResults = 10;
 
+const infoTimeoutDelay = 500; // in ms
+const classifyTimeoutDelay = 5000; // in ms
+
 const backendIP = "http://" + (location.host === "" ? "localhost:5050" : location.host);
 // console.log("Backend IP:", backendIP);
 
@@ -13,7 +16,7 @@ function servicesAndMappingsRequest() {
 		url: backendIP + "/services-and-mappings",
 		contentType: "application/json; charset=utf-8",
 		Accept: "application/json; charset=utf-8",
-		timeout: 500, // in ms
+		timeout: infoTimeoutDelay,
 
 		success: function(response) {
 			// let responseTime = elapsedTime(startTime); // in ms
@@ -43,7 +46,7 @@ function symbolsRequest(service, mapping) {
 		url: backendIP + "/symbols/" + service + (mapping === "" ? "" : "/" + mapping),
 		contentType: "application/json; charset=utf-8",
 		Accept: "application/json; charset=utf-8",
-		timeout: 500, // in ms
+		timeout: infoTimeoutDelay,
 
 		success: function(response) {
 			drawResultsTable(service, mapping, response, startTime, "symbols");
@@ -79,7 +82,7 @@ function classifyRequest(service, mapping, strokes) {
 		url: backendIP + "/classify",
 		contentType: "application/json; charset=utf-8",
 		Accept: "application/json; charset=utf-8",
-		timeout: 5000, // in ms
+		timeout: classifyTimeoutDelay,
 		data: JSON.stringify(input),
 
 		success: function(response) {
@@ -130,7 +133,7 @@ function drawResultsTable(service, mapping, response, startTime, mode) {
 			let symbol = value["symbol_class"];
 			let unicode = value["unicode"] === "U+0" ? "" : value["unicode"];
 			let symbolPackage = "package" in value ? value["package"] : ""; // unused for now.
-			let scoreHTML = "";
+			let scoreHTML = ""; // scores are printed raw, their formatting are the backend's responsability.
 
 			if (mode === "classify") {
 				scoreHTML = "<td>" + value["score"] + "</td>";

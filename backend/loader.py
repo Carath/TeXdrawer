@@ -60,6 +60,13 @@ def getLatexToUnicodeMap():
 	return _latexToUnicodeMap
 
 
+def getSymbolUnicode(symbol):
+	latexToUnicodeMap = getLatexToUnicodeMap()
+	if symbol in latexToUnicodeMap:
+		return latexToUnicodeMap[symbol]
+	return 'U+0' # default
+
+
 def getSupportedServices():
 	return ['hwrt', 'detexify'] # hardcoded for now, later files in ../symbols/services/ could be listed.
 

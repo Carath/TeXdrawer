@@ -95,7 +95,7 @@ function _chooseWannabeSample() {
 // Fisher-Yates-Durstenfeld shuffle:
 function shuffle(array) {
 	for (let i = array.length - 1; i > 0; --i) {
-		let j = Math.floor(Math.random() * (i + 1));
+		let j = Math.floor(Math.random() * (i + 1)); // 0 <= j <= i
 		let temp = array[i];
 		array[i] = array[j];
 		array[j] = temp;

@@ -19,25 +19,9 @@ def benchmark(service, mapping, dataset, top_k=5, samplesThreshold=10, filterAns
 	recallMap, answersMap = ingestDataset(service, mapping, dataset, top_k, metadata)
 	if aggregateStats(service, top_k, samplesThreshold, metadata, recallMap, answersMap):
 		saveResults(service, mapping, top_k, samplesThreshold, metadata, recallMap, answersMap, filterAnswersData, suffix)
-	statsRecap = {
-		"service": service,
-		"mapping": mapping,
-		"samples threshold": samplesThreshold,
-		"top_k": top_k,
-		"classes total": len(metadata['serviceClassesSet']),
-		"classes found": len(metadata['foundServiceClasses']),
-		"classes kept": metadata['relevantClassesNumber'],
-		"accuracy": {
-			"samples": recallMap['<Accuracy>'][0],
-			"values": recallMap['<Accuracy>'][1:]
-		},
-		"macro recall": {
-			"samples": recallMap['<Macro>'][0],
-			"values": recallMap['<Macro>'][1:]
-		}
-	}
+	statsRecap = generateStatsRecap(service, mapping, top_k, samplesThreshold, metadata, recallMap)
 	print('\nStats recap:', statsRecap)
-	return statsRecap # to be used in the MLOps phase.
+	return statsRecap
 
 
 # Do a mining task on a given dataset. This does not require a service to be running.
@@ -45,30 +29,33 @@ def benchmark(service, mapping, dataset, top_k=5, samplesThreshold=10, filterAns
 # Also, checks how much the given dataset cover the service supported classes, after projection.
 # Returns metadata about found and missing classes:
 def datasetMining(service, mapping, dataset, suffix, verboseLevel=1):
-	# Obtaining classes from the dataset, and symbols frequency in each class:
-	foundClasses, freqResult = set(), {}
+	serviceClassesSet = mappings.getServiceProjectedSymbolsSet(service, mapping)
+	freqResult = { key : {'samples': 0, 'interClassFreq': {}} for key in serviceClassesSet }
+	foundClasses = set()
+
+	# Obtaining classes from the dataset, and symbols frequency in each class.
+	# N.B: an unsupported symbol whose projection is supported by the service must be listed in 'interClassFreq'.
 	for sample in dataset:
 		symbolClass = mappings.getProjectedSymbol(sample[0], mapping)
 		foundClasses.add(symbolClass)
-		if not symbolClass in freqResult:
-			freqResult[symbolClass] = {'samples': 0, 'interClassFreq': {}}
-		freqResult[symbolClass]['samples'] += 1
-		if not sample[0] in freqResult[symbolClass]['interClassFreq']:
-			freqResult[symbolClass]['interClassFreq'][sample[0]] = 0
-		freqResult[symbolClass]['interClassFreq'][sample[0]] += 1
+		if symbolClass in serviceClassesSet: # i.e projection is supported.
+			freqResult[symbolClass]['samples'] += 1
+			classFrequencies = freqResult[symbolClass]['interClassFreq']
+			if not sample[0] in classFrequencies:
+				classFrequencies[sample[0]] = 0
+			classFrequencies[sample[0]] += 1
 	for key in freqResult:
 		classFrequencies = freqResult[key]['interClassFreq']
 		for symbol in classFrequencies:
 			classFrequencies[symbol] = round(classFrequencies[symbol] / freqResult[key]['samples'], 3) # cannot divide by 0
-		itemsList = sorted(freqResult[key]['interClassFreq'].items(), key=printingOrder)
+		itemsList = sorted(classFrequencies.items(), key=printingOrder)
 		freqResult[key]['interClassFreq'] = OrderedDict(itemsList)
-	if mapping != 'none' and mapping in loader.getSupportedMappings():
+	if mapping in loader.getSupportedMappings():
 		jsonString = peculiarJsonString(freqResult, keysFilteringFunction=None, keysSortingFunction=lambda key : key)
 		frequenciesPath = loader.frequenciesDir / ('%s_%s%s.json' % (service, mapping, suffix)) # 'service' as dataset name here
 		loader.writeContent(frequenciesPath, jsonString)
 
 	# Comparing found classes with those supported by the service:
-	serviceClassesSet = mappings.getServiceProjectedSymbolsSet(service, mapping)
 	foundServiceClasses = sorted(foundClasses.intersection(serviceClassesSet))
 	missingClasses = sorted(serviceClassesSet.difference(foundClasses))
 	unknownClasses = sorted(foundClasses.difference(serviceClassesSet))
@@ -105,7 +92,7 @@ def ingestDataset(service, mapping, dataset, top_k, metadata):
 		if service == 'detexify':
 			strokes = formatter.formatStrokesTo('hwrt', strokes)
 		# print(key, strokes)
-		answers, status = server.classifyRequest(service, mapping, strokes)
+		answers, status = server.classifyRequest(service, mapping, strokes) # answers are projected here.
 		# print('answers:', answers)
 		if status != 200:
 			print('Classify request failed at rank %d' % rank)
@@ -134,7 +121,7 @@ def ingestDataset(service, mapping, dataset, top_k, metadata):
 # Careful, '<Accuracy>' and '<Macro>' must not be mapping keys!
 def aggregateStats(service, top_k, samplesThreshold, metadata, recallMap, answersMap):
 	relevantClassesSet = set([ key for key in recallMap.keys() if recallMap[key][0] >= samplesThreshold ])
-	relevantClassesNumber = metadata['relevantClassesNumber'] = len(relevantClassesSet)
+	metadata['relevantClassesSet'] = relevantClassesSet
 	relevantClassesSamplesNumber = sum([recallMap[key][0] for key in relevantClassesSet])
 	supportedSamplesNumber = sum([recallMap[key][0] for key in recallMap])
 	print('%d samples were ignored.' % (metadata['datasetSize'] - supportedSamplesNumber))
@@ -156,8 +143,8 @@ def aggregateStats(service, top_k, samplesThreshold, metadata, recallMap, answer
 				recallMap['<Macro>'][k] += recallMap[key][k]
 	for k in range(1, top_k+1):
 		recallMap['<Accuracy>'][k] /= supportedSamplesNumber
-		if relevantClassesNumber > 0:
-			recallMap['<Macro>'][k] /= relevantClassesNumber
+		if len(relevantClassesSet) > 0:
+			recallMap['<Macro>'][k] /= len(relevantClassesSet)
 	for key in answersMap:
 		sumSamples = sum(answersMap[key].values()) # values are >= 0.
 		itemsList = [ item for item in answersMap[key].items() if item[1] > 0 ]
@@ -175,7 +162,7 @@ def saveResults(service, mapping, top_k, samplesThreshold, metadata, recallMap, 
 	stringTable = tabulate(table, headers=headers, tablefmt="github", colalign=("left", *["right"] * (top_k+1)))
 	classesData = "Found %d / %d classes" % (len(metadata['foundServiceClasses']), len(metadata['serviceClassesSet']))
 	content = 'Service: %s, mapping: %s\n%s\nMacro score: %d classes with samples number >= %d\nRecall scores:\n\n%s\n' % (
-		service, mapping, classesData, metadata['relevantClassesNumber'], samplesThreshold, stringTable)
+		service, mapping, classesData, len(metadata['relevantClassesSet']), samplesThreshold, stringTable)
 	statsPath = loader.statsDir / ('%s_%s_top%d%s.txt' % (service, mapping, top_k, suffix))
 	loader.writeContent(statsPath, content)
 
@@ -188,6 +175,28 @@ def saveResults(service, mapping, top_k, samplesThreshold, metadata, recallMap, 
 	jsonString = peculiarJsonString(answersMap, keysFilteringFunction=filtering, keysSortingFunction=lambda key : key)
 	answersPath = loader.answersDir / ('%s_%s%s%s.json' % (service, mapping, '_filtered' if filterAnswersData else '', suffix))
 	loader.writeContent(answersPath, jsonString)
+
+
+# Stats recap to be used in the MLOps phase.
+def generateStatsRecap(service, mapping, top_k, samplesThreshold, metadata, recallMap):
+	return {
+		"service": service,
+		"mapping": mapping,
+		"samples_threshold": samplesThreshold,
+		"top_k": top_k,
+		"accuracy": {
+			"samples": recallMap['<Accuracy>'][0],
+			"values": recallMap['<Accuracy>'][1:]
+		},
+		"macro_recall": {
+			"samples": recallMap['<Macro>'][0],
+			"values": recallMap['<Macro>'][1:]
+		},
+		"classes_number": len(metadata['serviceClassesSet']),
+		"missing_classes_number": len(metadata['missingClasses']),
+		"relevant_classes_number": len(metadata['relevantClassesSet']),
+		# "supported_classes": sorted(metadata['serviceClassesSet'])
+	}
 
 
 # Get a string from a dict object, with each first order object being separated by a newline:

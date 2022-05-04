@@ -42,19 +42,21 @@ def formatRequest(service, strokes):
 
 
 def createGuess(dataset_id, raw_answer, score):
+	symbolUnicode = loader.getSymbolUnicode(raw_answer)
 	return {
 		'dataset_id': dataset_id,
 		'symbol_class': raw_answer,
-		'raw_answers': [[raw_answer, score]],
-		'unicode': 'U+0', # default
-		'package': '', # default
-		'score': score
+		'unicode': symbolUnicode,
+		'score': score,
+		'raw_answers': [{'symbol_class': raw_answer, 'unicode': symbolUnicode, 'score': score}],
+		'package': '' # default
 	}
 
 
 # Extracting data from the given service answer:
 def extractServiceAnswer(service, answer):
 	try:
+		# print('Raw %s service answer:' % service, answer)
 		formattedAnswer = []
 		if service == 'hwrt':
 			for symbol in answer:
@@ -85,22 +87,20 @@ def extractServiceAnswer(service, answer):
 
 
 # Regrouping answers according to the given mapping, scores update, and unicode fetching.
-# Optional args: 'bound' to limit bandwidth usage by bounding the number of returned classes,
+# Optional args: 'bound' to limit bandwidth usage by bounding the number of returned results,
 # and 'pretty' to format classes scores as strings using formatScore():
 def aggregateAnswers(service, mapping, answers, bound=0, pretty=False):
 	try:
-		latexToUnicodeMap = loader.getLatexToUnicodeMap()
 		aggregated = OrderedDict() # keeping the same order for scores!
 		for guess in answers:
 			symbol_class = mappings.getProjectedSymbol(guess['symbol_class'], mapping)
 			if not symbol_class in aggregated:
 				guess = guess.copy() # preventing side effects.
 				guess['symbol_class'] = symbol_class
-				if symbol_class in latexToUnicodeMap:
-					guess['unicode'] = latexToUnicodeMap[symbol_class]
+				guess['unicode'] = loader.getSymbolUnicode(symbol_class)
 				aggregated[symbol_class] = guess
 			else:
-				aggregated[symbol_class]['raw_answers'].append(guess['raw_answers'][0])
+				aggregated[symbol_class]['raw_answers'].append(guess['raw_answers'][0]) # theres only one raw answer here.
 				# Updating class score:
 				if service == 'hwrt':
 					aggregated[symbol_class]['score'] += guess['score']
@@ -110,6 +110,8 @@ def aggregateAnswers(service, mapping, answers, bound=0, pretty=False):
 					print('Unsupported service:', service)
 					return []
 		aggregated = list(aggregated.values())
+		if service == 'hwrt': # order may have changed after projection since scores are summed.
+			aggregated = sorted(aggregated, key=lambda guess : guess['score'], reverse=True)
 		if bound > 0:
 			aggregated = aggregated[:bound] # done after each classes score has been aggregated.
 		if pretty:
