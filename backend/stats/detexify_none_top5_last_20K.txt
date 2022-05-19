@@ -1,12 +1,12 @@
 Service: detexify, mapping: none
 Found 970 / 1077 classes
-Macro score: 471 classes with samples number >= 10
+Macro score: 103 classes with samples number >= 50
 Recall scores:
 
 | Class                     |   Samples |   TOP 1 |   TOP 2 |   TOP 3 |   TOP 4 |   TOP 5 |
 |---------------------------|-----------|---------|---------|---------|---------|---------|
 | <Accuracy>                |     20000 |  44.3 % |  64.7 % |  74.0 % |  79.5 % |  83.0 % |
-| <Macro>                   |     18050 |  39.1 % |  56.2 % |  64.2 % |  69.3 % |  72.6 % |
+| <Macro>                   |     10951 |  44.9 % |  67.5 % |  77.4 % |  83.3 % |  87.0 % |
 | \sum                      |       340 |  33.8 % |  60.0 % |  76.8 % |  85.3 % |  90.0 % |
 | \int                      |       313 |  35.8 % |  59.1 % |  81.5 % |  92.0 % |  94.6 % |
 | \alpha                    |       238 |  29.0 % |  50.8 % |  71.4 % |  86.6 % |  91.2 % |

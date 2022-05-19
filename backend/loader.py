@@ -10,6 +10,7 @@ datasetDir = Path('../datasets/')
 statsDir = Path('stats/')
 answersDir = Path('answers/')
 frequenciesDir = Path('frequencies/')
+recapDir = Path('recap/')
 
 symbolsListsDir = symbolsDir / 'services'
 mappingsDir = symbolsDir / 'mappings'
@@ -73,7 +74,7 @@ def getSupportedServices():
 
 def getSupportedMappings():
 	mappingFiles = os.listdir(mappingsDir)
-	mappingFiles = [ file.split('.json')[0] for file in mappingFiles if '.json' in file ]
+	mappingFiles = [ os.path.splitext(file)[0] for file in mappingFiles if '.json' in file ]
 	return ['none'] + [ file for file in mappingFiles if file != '' ]
 
 

@@ -22,16 +22,16 @@
 - add a search option for classes/symbols
 - enable to visualize some part of a dataset? By index or by classes?
 - Use Fabric.js for prettier rendering?
+- Save the previously used service and mapping in the context.
+- Add a selection mechanism for samples in the inspector.
 
 
 #### Backend
 
 - use argparse for scripts arguments?
 - compare Flask with [FastAPI](https://fastapi.tiangolo.com/)
-- use a unified dataset format across services + conversion scripts
+- use a unified dataset format across services and the frontend. Make conversion scripts
 - add some abstraction for things specific to each service
-- More mapping coherence check? Can two mappings always be composed?
-- Benchmark overhaul: bench on a given list of mapping instead of a single one, with factorization of service requests. If no list is given, then bench on all available mappings.
 
 
 #### MLOps
@@ -48,6 +48,7 @@ Inputs:
 Outputs:
 
 - model name (hash?)
+- dataset hash?
 - stats: benchmark on validation dataset(s) + mappings
 - model saved depending on benchmark's results: if better than previous best.
 - all input data stats must be saved too.

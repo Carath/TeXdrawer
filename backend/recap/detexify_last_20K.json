@@ -1,0 +1,82 @@
+{
+  "service": "detexify",
+  "top_k": 5,
+  "samples_threshold": 50,
+  "mappings": {
+    "none": {
+      "classes_number": 1077,
+      "missing_classes_number": 107,
+      "relevant_classes_number": 103,
+      "accuracy": {
+        "samples": 20000,
+        "scores": [
+          0.4433,
+          0.64655,
+          0.7399,
+          0.79515,
+          0.82995
+        ]
+      },
+      "macro_recall": {
+        "samples": 10951,
+        "scores": [
+          0.44867185,
+          0.67475936,
+          0.7738194,
+          0.83319254,
+          0.86990689
+        ]
+      }
+    },
+    "strict-0": {
+      "classes_number": 1044,
+      "missing_classes_number": 107,
+      "relevant_classes_number": 104,
+      "accuracy": {
+        "samples": 20000,
+        "scores": [
+          0.4884,
+          0.6828,
+          0.7671,
+          0.8134,
+          0.8439
+        ]
+      },
+      "macro_recall": {
+        "samples": 11626,
+        "scores": [
+          0.50482127,
+          0.7171674,
+          0.80606077,
+          0.85804092,
+          0.89098886
+        ]
+      }
+    },
+    "similar-0": {
+      "classes_number": 926,
+      "missing_classes_number": 106,
+      "relevant_classes_number": 110,
+      "accuracy": {
+        "samples": 20000,
+        "scores": [
+          0.5909,
+          0.76405,
+          0.82865,
+          0.85985,
+          0.87815
+        ]
+      },
+      "macro_recall": {
+        "samples": 13293,
+        "scores": [
+          0.61300579,
+          0.80527019,
+          0.87326354,
+          0.90667493,
+          0.9250247
+        ]
+      }
+    }
+  }
+}

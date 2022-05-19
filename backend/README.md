@@ -8,15 +8,17 @@ Run the Flask server with ``` python3 server.py ```
 
 ## Benchmarks
 
-To benchmark a supported service, run the command below with the service name as arg (here ``` hwrt ```).
+To benchmark a supported service on all available mappings, make sure it is running and run the command below with the service name as arg (here ``` hwrt ```):
 
 ``` python3 benchmark.py hwrt ```
 
-Furthermore, an optional symbol mapping can also be given (default to ``` none ```):
+Furthermore, one can also choose to only run this benchmark on some selected mappings, to do so their names must be passed as further args (here only ``` similar-0 ``` is specified):
 
 ``` python3 benchmark.py hwrt similar-0 ```
 
-Stats files will be saved in the ``` stats ``` directory, and data on correlated answers in ``` answers ```. Finally, data on symbols frequency in each dataset classes are stored in ``` frequencies ```.
+Note that the ``` none ``` mapping (i.e no mapping used) will always be added to the mapping list, for reference purposes. Additionally, the benchmark duration is not proportional to the number of mappings used, however adding mappings can make it slightly longer since more classes may need to be considered.
+
+Stats files will be saved in the ``` stats/ ``` directory, and data on correlated answers in ``` answers/ ```. Finally, data on symbols frequency in each projected classes will be stored in ``` frequencies/ ```.
 
 
 ## Requests
@@ -156,7 +158,7 @@ curl -X POST http://localhost:5000/worker \
 ```
 
 
-#### Detexify (version from *stack* branch):
+#### Detexify (version from the *stack* branch):
 
 - Check if detexify is running, and get its version:
 

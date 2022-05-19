@@ -1,18 +1,18 @@
 # Datasets
 
 
-#### hwrt/
+## hwrt
 
 - symbols.csv
-- test-data.csv (131M)
-- train-data.csv (1,2G)
+- test-data.csv (17074 samples, 131 MB)
+- train-data.csv (151159 samples, 1.2 GB)
 
 Link: <http://www.martin-thoma.de/write-math/data>
 
 
-#### detexify/
+## detexify
 
-- detexify.sql (1,0G)
+- detexify.sql (210454 samples, 1.0 GB)
 - symbols.txt
 
 Link: <https://github.com/kirel/detexify-data>

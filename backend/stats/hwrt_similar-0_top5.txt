@@ -1,12 +1,12 @@
 Service: hwrt, mapping: similar-0
 Found 293 / 302 classes
-Macro score: 255 classes with samples number >= 10
+Macro score: 104 classes with samples number >= 50
 Recall scores:
 
 | Class               |   Samples |   TOP 1 |   TOP 2 |   TOP 3 |   TOP 4 |   TOP 5 |
 |---------------------|-----------|---------|---------|---------|---------|---------|
 | <Accuracy>          |     17074 |  91.3 % |  95.2 % |  96.1 % |  96.5 % |  96.6 % |
-| <Macro>             |     16807 |  84.9 % |  91.2 % |  92.8 % |  93.4 % |  93.7 % |
+| <Macro>             |     13492 |  92.5 % |  96.1 % |  96.8 % |  97.0 % |  97.1 % |
 | \Sigma              |       532 |  96.6 % |  98.1 % |  98.3 % |  98.5 % |  98.5 % |
 | \alpha              |       413 |  96.6 % |  98.3 % |  98.5 % |  98.8 % |  98.8 % |
 | \varepsilon         |       388 |  97.4 % |  99.0 % |  99.2 % |  99.2 % |  99.2 % |

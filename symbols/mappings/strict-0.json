@@ -22,7 +22,7 @@
 "\\cap": ["\\cap", "\\bigcap"],
 "\\models": ["\\models", "\\vDash"],
 "\\checked": ["\\checked", "\\checkmark"],
-"\\lhd": ["\\lhd", "\\triangleleft", "\\vartriangleleft"],
+"\\triangleleft": ["\\triangleleft", "\\vartriangleleft", "\\lhd"],
 "\\oiint": ["\\oiint", "\\varoiint"],
 "\\mathbb{1}": ["\\mathbb{1}", "\\mathds{1}"],
 "\\mathbb{C}": ["\\mathbb{C}", "\\mathds{C}"],

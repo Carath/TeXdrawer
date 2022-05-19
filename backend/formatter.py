@@ -1,8 +1,19 @@
-import traceback, json
+import traceback, json, copy
 from collections import OrderedDict
 
 # Backend code:
 import loader, mappings
+
+
+# Get a string from a dict object, with each first order object being separated by a newline:
+def peculiarJsonString(aDict, keysFilteringFunction=None, keysSortingFunction=None, indent=''):
+	processedKeys = aDict.keys()
+	if keysFilteringFunction != None:
+		processedKeys = filter(keysFilteringFunction, processedKeys)
+	if keysSortingFunction != None:
+		processedKeys = sorted(processedKeys, key=keysSortingFunction)
+	entryList = [ indent + json.dumps(key) + ': ' + json.dumps(aDict[key], sort_keys=False) for key in processedKeys ]
+	return '{\n' + ',\n'.join(entryList) + '\n}'
 
 
 # Translates strokes between 2 supported formats:
@@ -81,8 +92,7 @@ def extractServiceAnswer(service, answer):
 			print('Unsupported service:', service)
 		return formattedAnswer
 	except:
-		print('Unknown error happened while extracting data from an answer.')
-		print(traceback.format_exc())
+		print('Unknown error happened while extracting data from an answer.\n\n' + traceback.format_exc())
 		return []
 
 
@@ -95,7 +105,7 @@ def aggregateAnswers(service, mapping, answers, bound=0, pretty=False):
 		for guess in answers:
 			symbol_class = mappings.getProjectedSymbol(guess['symbol_class'], mapping)
 			if not symbol_class in aggregated:
-				guess = guess.copy() # preventing side effects.
+				guess = copy.deepcopy(guess) # preventing side effects.
 				guess['symbol_class'] = symbol_class
 				guess['unicode'] = loader.getSymbolUnicode(symbol_class)
 				aggregated[symbol_class] = guess
@@ -119,8 +129,7 @@ def aggregateAnswers(service, mapping, answers, bound=0, pretty=False):
 				guess['score'] = formatScore(service, guess['score'])
 		return aggregated
 	except:
-		print('Unknown error happened while aggregating some answers.')
-		print(traceback.format_exc())
+		print('Unknown error happened while aggregating some answers.\n\n' + traceback.format_exc())
 		return []
 
 

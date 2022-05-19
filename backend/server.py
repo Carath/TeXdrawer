@@ -90,8 +90,7 @@ def extractRequestData(request):
 			print('Unsupported content-type in request data extraction:', contentType)
 			return None
 	except Exception as e:
-		print('Failed to extract a request data.')
-		print(traceback.format_exc())
+		print('Failed to extract a request data.\n\n' + traceback.format_exc())
 		return None
 
 ##################################################
