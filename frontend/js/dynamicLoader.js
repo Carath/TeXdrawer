@@ -23,7 +23,7 @@ function dynamicLoader(type, id, attributes={}, links, onSuccess=()=>{}, onFailu
 	}
 	document.body.appendChild(element);
 
-	element.onload = () => { // may fail with I.E
+	element.onload = () => { // may fail with Internet Explorer.
 		console.log(id + " element has loaded.");
 		onSuccess();
 	}

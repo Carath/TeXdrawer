@@ -1,21 +1,25 @@
 "use strict";
 
-function drawCellsChunk(samples) {
+var _selectedCells = {};
+
+function drawCellsChunk(samples, inspCtxt, dataName) {
+	// console.log("Inspector context: '" + inspCtxt + "'. Data name: '" + dataName + "'");
 	$("#cells-grid").empty();
 	let bound = Math.min(samples.length, startShownCells + maxDrawnSamples);
 	for (let i=startShownCells; i < bound; ++i) {
-		drawCell(i, cellSize, samples[i]);
+		drawCell(i, cellSize, samples[i], inspCtxt, dataName);
 	}
 	$("#samplesRangeIndicator").html(startShownCells+1 + "-" + bound + " / " + samples.length);
 }
 
-function drawCell(rank, size, sample) { // 'size' in ex
-	let dataset_id = "dataset_id" in sample ? sample.dataset_id : 0;
+function drawCell(rank, size, sample, inspCtxt, dataName) { // 'size' in ex
+	let dataset_id = "dataset_id" in sample ? sample.dataset_id : -1;
 	let symbol = "symbol" in sample ? sample.symbol : "";
 	let unicode = "unicode" in sample ? sample.unicode : "";
 	let strokes = "strokes" in sample ? sample.strokes : [];
 	let cellID = "cell-" + rank, symbolID = cellID + "-symbol", canvasID = cellID + "-canvas";
-	let content =
+
+	$("#cells-grid").append(
 		"<div class='cell-container' id='" + cellID + "'>" +
 			"<div class='cell-top'>" +
 				"<div class='cell-top-left cell'>id: " + dataset_id + "</div>" +
@@ -28,12 +32,30 @@ function drawCell(rank, size, sample) { // 'size' in ex
 					"<canvas class='cell-canvas' id='" + canvasID + "'></canvas>" +
 				"</div>" +
 			"</div>" +
-		"</div>";
+		"</div>"
+	);
 
-	$("#cells-grid").append(content);
+	if (! (inspCtxt in _selectedCells)) {
+		_selectedCells[inspCtxt] = {};
+	}
+	if (! (dataName in _selectedCells[inspCtxt])) {
+		_selectedCells[inspCtxt][dataName] = {};
+	}
+	if (dataset_id in _selectedCells[inspCtxt][dataName]) {
+		$("#" + cellID).addClass("selected");
+	}
 	$("#" + cellID).on("click", function() {
-		console.log(rank, sample);
+		if (dataset_id in _selectedCells[inspCtxt][dataName]) {
+			$(this).removeClass("selected");
+			delete _selectedCells[inspCtxt][dataName][dataset_id];
+		}
+		else if (dataset_id >= 0) {
+			$(this).addClass("selected");
+			_selectedCells[inspCtxt][dataName][dataset_id] = sample;
+		}
+		console.log("_selectedCells:", _selectedCells);
 	});
+
 	let cellCanvas = getFixedCanvas("#" + canvasID);
 	let resized = resizeStrokes(cellCanvas, strokes);
 	let colors = ["purple", "blue", "green", "gold", "darkorange", "red"];

@@ -26,7 +26,7 @@ Stats files will be saved in the ``` stats/ ``` directory, and data on correlate
 Below are listed examples of requests allowed by each services:
 
 
-#### TeXdrawer
+### TeXdrawer
 
 - Check if TeXdrawer is running, and get its version:
 
@@ -135,7 +135,7 @@ curl -X POST http://localhost:5050/classify \
 </details>
 
 
-#### hwrt
+### hwrt
 
 - Check if hwrt is running, and get its version:
 
@@ -158,7 +158,7 @@ curl -X POST http://localhost:5000/worker \
 ```
 
 
-#### Detexify (version from the *stack* branch):
+### Detexify (version from the *stack* branch):
 
 - Check if detexify is running, and get its version:
 

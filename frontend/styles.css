@@ -264,6 +264,7 @@ footer {
 	height: 36px;
 	margin: 4px 6px 4px 4px;
 	float: right;
+	font-size: 14px;
 }
 
 #clearButton {
@@ -281,6 +282,10 @@ footer {
 
 #symbolButton {
 	width: 50px;
+}
+
+#submit-file {
+	font-size: 14px;
 }
 
 #bottom-area {
@@ -378,6 +383,10 @@ footer {
 
 .cell-container:hover {
 	background-color: khaki;
+}
+
+.cell-container.selected {
+	background-color: LightSalmon;
 }
 
 .cell { /* to be placed before subcells definitions */

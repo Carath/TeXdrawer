@@ -11,6 +11,7 @@ statsDir = Path('stats/')
 answersDir = Path('answers/')
 frequenciesDir = Path('frequencies/')
 recapDir = Path('recap/')
+unrecognizedDir = Path('unrecognized/')
 
 symbolsListsDir = symbolsDir / 'services'
 mappingsDir = symbolsDir / 'mappings'
@@ -32,7 +33,8 @@ def getFileContent(path):
 		return content
 
 
-# Note: for .csv files, getFileLines() + splitting is 2 times faster than using csv.reader()!
+# Note: for .csv files, getFileLines() + splitting is 2 times faster
+# than using csv.reader(), if no type conversion is to be made.
 def getFileLines(path):
 	return getFileContent(path).splitlines()
 
@@ -128,33 +130,46 @@ def getSymbolName(symbolMap, key):
 		return '???'
 
 
-# Dataset partially loaded: strokes kept as string; use json.loads() to fully get them. Heavy parsing
-# will only be done during the benchmark, to enable reading quickly only parts of a dataset:
-def loadDataset(service, datasetPath):
+# A dataset will be a list of couples: (symbol name, strokes).
+# By default, a dataset will be partially loaded: strokes will be kept as strings. This is done
+# in order to do quick searches in a dataset without using lots of memory. To do a full loading,
+# either use fullLoading=True, or use json.loads() on each string-strokes of the result when needed.
+def loadDataset(service, datasetPath, fullLoading=False):
 	try:
 		print("\n-> Loading the dataset for service '%s' from %s" % (service, datasetPath))
-		symbolMap = getSymbolsDatasetMap(service)
-		lines = getFileLines(datasetPath)
-		dataset = [] # dataset will be a list of string couples: (symbol name, strokes)
-		if service == 'hwrt':
-			for line in lines[1:]:
-				splitted = line.split(';')
-				symbol = getSymbolName(symbolMap, splitted[0])
-				dataset.append((symbol, splitted[2]))
-		elif service == 'detexify':
-			for start in range(len(lines)):
-				if 'COPY samples' in lines[start]:
-					break
-			for rank in range(start+1, len(lines)):
-				if '\\.' in lines[rank]: # reached the end.
-					break
-				splitted = lines[rank].split('\t')
-				symbol = formatter.extractLatexCommand_detexify(splitted[1])
-				dataset.append((symbol, splitted[2]))
-		else:
-			print('Unsupported service:', service)
-		print('Loaded %d samples.' % len(dataset))
-		return dataset
+		dataset = []
+		with open(datasetPath, 'r') as file:
+			lines = iter(file.readline, '') # faster and uses less RAM than with getFileLines() or csv.reader()
+			if service == 'hwrt':
+				symbolMap = getSymbolsDatasetMap(service)
+				next(lines) # skipping the header
+				for line in lines:
+					if line == '\n': # skipping empty lines.
+						continue
+					splitted = line.split(';')
+					symbol = getSymbolName(symbolMap, splitted[0])
+					strokes = json.loads(splitted[2]) if fullLoading else splitted[2]
+					dataset.append((symbol, strokes))
+			elif service == 'detexify':
+				isData = False
+				for line in lines:
+					if '\\.' in line: # reached the end.
+						break
+					elif isData:
+						if line == '\n': # skipping empty lines.
+							continue
+						splitted = line.split('\t')
+						symbol = formatter.extractLatexCommand_detexify(splitted[1])
+						strokes = splitted[2]
+						if fullLoading:
+							strokes = formatter.formatStrokesTo('hwrt', json.loads(strokes))
+						dataset.append((symbol, strokes))
+					elif 'COPY samples' in line: # start of actual data.
+						isData = True
+			else:
+				print('Unsupported service:', service)
+			print('Loaded %d samples.' % len(dataset))
+			return dataset
 	except Exception:
 		print('\nFailure happened while trying to load a dataset:\n')
 		print(traceback.format_exc())
@@ -166,6 +181,4 @@ if __name__ == '__main__':
 	firstSymbol, strokesString = testDataset[0]
 	strokes = json.loads(strokesString)
 	firstStrokeString = json.dumps(strokes[0], indent='  ')
-	# N.B: remove indent=... to minify. Other useful options of json.dumps(): ensure_ascii=..., sort_keys=...
-
 	print('First symbol from hwrt test dataset: %s\nIts first stroke:\n\n%s' % (firstSymbol, firstStrokeString))

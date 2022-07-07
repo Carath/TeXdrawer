@@ -1,4 +1,6 @@
+# Directories:
 datasets/
+unrecognized/
 
 # Standard Python gitignore:
 __pycache__/

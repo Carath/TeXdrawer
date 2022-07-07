@@ -21,7 +21,10 @@ var inputSamples = [];
 var loadedSamples = [];
 var drawnSamples = [];
 var startShownCells = 0;
-var lastSamplesState = "";
+var currInspCtxt = "mock"; // For testing, will be initialized to "" eventually.
+// All Inspector contexts: "", "mock", "submitted", "file", "dataset".
+var currDataName = "default"; // Used to discriminate selections from different files or datasets.
+
 
 // Set the size of the canvas bitmap as its css size, and return it as DOM object:
 function getFixedCanvas(canvasSelector) {
@@ -89,7 +92,8 @@ window.onload = function() {
 
 	$("#submitButton").click(function(event) {
 		if (submitWannabeSample(currentWannabeSample)) {
-			lastSamplesState = "submitted";
+			currInspCtxt = "submitted";
+			currDataName = "default";
 			lockedWannabeSample = false;
 			nextDrawableSample();
 		}
@@ -105,7 +109,7 @@ window.onload = function() {
 			let chunkIndex = Math.max(0, Math.ceil(drawnSamples.length / maxDrawnSamples - 1));
 			startShownCells = maxDrawnSamples * chunkIndex;
 		}
-		drawCellsChunk(drawnSamples);
+		drawCellsChunk(drawnSamples, currInspCtxt, currDataName);
 	});
 
 	$("#forwardButton").click(function(event) {
@@ -113,7 +117,7 @@ window.onload = function() {
 		if (startShownCells >= drawnSamples.length) {
 			startShownCells = 0;
 		}
-		drawCellsChunk(drawnSamples);
+		drawCellsChunk(drawnSamples, currInspCtxt, currDataName);
 	});
 
 	$("#sidenav-about").click(function(event) {
@@ -164,8 +168,8 @@ window.onload = function() {
 			drawInputSymbol();
 		});
 
-		$("#symbol-input").on('keyup', function (e) {
-			if (e.key === 'Enter' || e.keyCode === 13) {
+		$("#symbol-input").on("keyup", function (e) {
+			if (e.key === "Enter" || e.keyCode === 13) {
 				drawInputSymbol();
 			}
 		});
@@ -189,21 +193,24 @@ window.onload = function() {
 		$("#classification-results").empty();
 		clearInputs(inputCanvas);
 
-		if (lastSamplesState === "submitted" && inputSamples.length > 0) {
+		if (currInspCtxt === "submitted" && inputSamples.length > 0) {
 			$("#samples-message").html("Submitted samples:");
 			drawnSamples = inputSamples;
-			loadedSamples = []; // freeing memory.
 			fileInput[0].value = "";
 		}
-		else if (lastSamplesState === "loaded" && loadedSamples.length > 0) {
+		else if (currInspCtxt === "file" && loadedSamples.length > 0) {
 			$("#samples-message").html("Loaded samples:");
 			drawnSamples = loadedSamples;
 		}
-		else {
+		else if (currInspCtxt === "mock") {
 			$("#samples-message").html("Mocked samples:");
 			drawnSamples = generateMockSamples(mockSamplesNumber);
 		}
+		else if (currInspCtxt === "dataset") {
+			alert("Insupported inspector context.");
+			drawnSamples = [];
+		}
 		startShownCells = 0;
-		drawCellsChunk(drawnSamples);
+		drawCellsChunk(drawnSamples, currInspCtxt, currDataName);
 	});
 }

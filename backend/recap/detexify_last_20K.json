@@ -54,27 +54,27 @@
       }
     },
     "similar-0": {
-      "classes_number": 926,
-      "missing_classes_number": 106,
+      "classes_number": 912,
+      "missing_classes_number": 100,
       "relevant_classes_number": 110,
       "accuracy": {
         "samples": 20000,
         "scores": [
-          0.5909,
-          0.76405,
-          0.82865,
-          0.85985,
-          0.87815
+          0.5933,
+          0.76645,
+          0.83,
+          0.86095,
+          0.8789
         ]
       },
       "macro_recall": {
-        "samples": 13293,
+        "samples": 13302,
         "scores": [
-          0.61300579,
-          0.80527019,
-          0.87326354,
-          0.90667493,
-          0.9250247
+          0.61959591,
+          0.81039405,
+          0.87566301,
+          0.9079804,
+          0.92554604
         ]
       }
     }

@@ -1,31 +1,67 @@
-import traceback, json, copy
+import traceback, json, copy, math
 from collections import OrderedDict
 
 # Backend code:
 import loader, mappings
 
 
-# Get a string from a dict object, with each first order object being separated by a newline:
-def peculiarJsonString(aDict, keysFilteringFunction=None, keysSortingFunction=None, indent=''):
-	processedKeys = aDict.keys()
+# Get a string from a JSON object, with each first order object being separated by a newline:
+def peculiarJsonString(jsonObj, keysFilteringFunction=None, keysSortingFunction=None, reverse=False, indent='', compact=False):
+	separators = (',', ':') if compact else None
+	processedKeys = jsonObj if type(jsonObj) == list else jsonObj.keys()
 	if keysFilteringFunction != None:
 		processedKeys = filter(keysFilteringFunction, processedKeys)
 	if keysSortingFunction != None:
-		processedKeys = sorted(processedKeys, key=keysSortingFunction)
-	entryList = [ indent + json.dumps(key) + ': ' + json.dumps(aDict[key], sort_keys=False) for key in processedKeys ]
+		if keysSortingFunction == 'key':
+			keysSortingFunction = lambda key : key
+		processedKeys = sorted(processedKeys, key=keysSortingFunction, reverse=reverse)
+	if type(jsonObj) == list:
+		entryList = [ indent + json.dumps(row, separators=separators) for row in processedKeys ]
+	else:
+		entryList = [ indent + json.dumps(key) + ': ' + json.dumps(jsonObj[key], separators=separators) for key in processedKeys ]
 	return '{\n' + ',\n'.join(entryList) + '\n}'
+
+
+# Strokes compact JSON representation: no spaces between objects.
+def compactStrokesString(strokes):
+	return json.dumps(strokes, separators=(',', ':'))
+
+
+# Shifting strokes time to start from 0, assuming
+# hwrt strokes format. Strokes are modified:
+def reshiftTime(strokesFormat, strokes):
+	if strokes == []:
+		return
+	elif strokes[0] == []:
+		print('Invalid stroke:', strokes[0])
+		return
+	key = 'time' if strokesFormat == 'hwrt' else 0
+	timeOffset = strokes[0][0][key]
+	for stroke in strokes:
+		for point in stroke:
+			point[key] -= timeOffset
+
+
+def getStrokesStats(strokesFormat, strokes):
+	(xKey, yKey) = ('x', 'y') if strokesFormat == 'hwrt' else (1, 2)
+	xmin, xmax, ymin, ymax = math.inf, -math.inf, math.inf, -math.inf
+	for stroke in strokes:
+		for point in stroke:
+			x, y = point[xKey], point[yKey]
+			xmin, xmax, ymin, ymax = min(xmin, x), max(xmax, x), min(ymin, y), max(ymax, y)
+	return (xmin, xmax, ymin, ymax)
 
 
 # Translates strokes between 2 supported formats:
 # [x, y, t] <-> {'x': x, 'y': y, 'time': t}
-def formatStrokesTo(dest_service, strokes):
+def formatStrokesTo(strokesFormat, strokes):
 	try:
-		if dest_service == 'hwrt':
+		if strokesFormat == 'hwrt':
 			formatPoint = lambda point : {'x' : point[0], 'y': point[1], 'time': point[2]}
-		elif dest_service == 'detexify':
+		elif strokesFormat == 'detexify':
 			formatPoint = lambda point : [point['x'], point['y'], point['time']] # N.B: t/time unused by detexify.
 		else:
-			print('Unsupported service:', dest_service)
+			print('Unsupported service:', strokesFormat)
 			return []
 		newStrokes = []
 		for stroke in strokes:
@@ -84,7 +120,7 @@ def extractServiceAnswer(service, answer):
 				answer = answer['results']
 			for symbol in answer:
 				formattedAnswer.append(createGuess(
-					dataset_id = 0,
+					dataset_id = -1,
 					raw_answer = extractLatexCommand_detexify(symbol['id']),
 					score = symbol['score']
 				))

@@ -76,15 +76,16 @@ function showDots() {
 // The 'webBrowser', 'frameWidth', and 'frameHeight' fields must be present in each sample,
 // since they may change between users, and a unified dataset format is desired when merging files.
 function createSample(dataset_id, wannabeSample, strokes) {
-	let sample = {};
-	sample.dataset_id = dataset_id;
-	sample.symbol = wannabeSample.symbol;
-	sample.unicode = wannabeSample.unicode;
-	sample.webBrowser = navigator.userAgent;
-	sample.frameWidth = inputCanvas.width; // used to save input precision, and for compatibility.
-	sample.frameHeight = inputCanvas.height; // same.
-	sample.totalDotsNumber = 0;
-	sample.strokes = strokes;
+	let sample = {
+		dataset_id: dataset_id,
+		symbol: wannabeSample.symbol,
+		unicode: wannabeSample.unicode,
+		webBrowser: navigator.userAgent,
+		frameWidth: inputCanvas.width, // used to save input precision, and for compatibility.
+		frameHeight: inputCanvas.height, // same.
+		totalDotsNumber: 0,
+		strokes: strokes
+	};
 	for (let i = 0; i < strokes.length; ++i) {
 		sample.totalDotsNumber += strokes[i].length;
 	}
@@ -106,19 +107,19 @@ function submitWannabeSample(wannabeSample) {
 }
 
 function createOutput(samples) {
-	let output = {};
-	output.version = datasetFormatVersion;
-	output.description = "Each sample contains some metadata, and a list of strokes. Each stroke is a list of dots,"
-	output.description += " of the form {x: 50, y: 60, time: 1620256003707}; where 0 <= x <= frameWidth,"
-	output.description += " 0 <= y <= frameHeight, and 'time' is the UNIX time in ms, potentially shifted.";
-	output.inputLib = "plain-js"; // library used in inputs.js
-	output.preprocessing = "resized";
-	output.frameMargin = frameMargin;
-	output.categories = datasetCategories;
-	output.classesNumber = wannabeSamplesList.length;
-	output.samplesNumber = samples.length; // to see the samples number without parsing the file.
-	output.samples = samples;
-	return output;
+	return {
+		version: datasetFormatVersion,
+		description: "Each sample contains some metadata, and a list of strokes. Each stroke is a list of dots,"
+			+ " of the form {x: 50, y: 60, time: 1620256003707}; where 0 <= x <= frameWidth,"
+			+ " 0 <= y <= frameHeight, and 'time' is the UNIX time in ms, potentially shifted.",
+		inputLib: "plain-js", // library used in inputs.js
+		preprocessing: "resized",
+		frameMargin: frameMargin,
+		categories: datasetCategories,
+		classesNumber: wannabeSamplesList.length,
+		samplesNumber: samples.length, // to see the samples number without parsing the file.
+		samples: samples
+	};
 }
 
 // Note: inputCanvas width and height are saved in the output format. This is done both to not
@@ -164,42 +165,49 @@ function timestamp() {
 }
 
 function loadFile(fileInput) {
-	if (! window.FileReader) {
-		alert("FileReader not supported by this browser.");
-		return;
-	}
-	let files = fileInput[0].files;
-	let reader = new FileReader();
-	if (files.length) {
-		let textFile = files[0];
-		reader.readAsText(textFile);
-		$(reader).on("load", processLoadedFile);
-	} else {
-		alert("Please upload a file before continuing.");
+	try {
+		if (! window.FileReader) {
+			alert("FileReader not supported by this browser.");
+			return;
+		}
+		let files = fileInput[0].files;
+		let reader = new FileReader();
+		if (files.length) {
+			let textFile = files[0];
+			reader.readAsText(textFile);
+			// reader.readAsArrayBuffer(textFile); // different API
+			$(reader).on("load", event => processLoadedFile(event, textFile.name));
+			$(reader).on("error", () => { alert("File loading failed."); });
+		} else {
+			alert("Please upload a file before continuing.");
+		}
+	} catch (error) {
+		alert("Unknown error in loadFile().");
 	}
 }
 
-function processLoadedFile(event) {
-	let fileContent = event.target.result;
-	if (fileContent && fileContent.length) {
-		// console.log(fileContent);
-		try {
+function processLoadedFile(event, filename) {
+	try {
+		let fileContent = event.target.result;
+		if (fileContent && fileContent.length) {
+			// console.log(fileContent);
 			let jsonObj = JSON.parse(fileContent);
 			// console.log(jsonObj);
 			if (validateLoadedFile(jsonObj)) {
 				$("#samples-message").html("Loaded samples:");
-				lastSamplesState = "loaded";
 				loadedSamples = jsonObj["samples"];
 				drawnSamples = loadedSamples;
 				startShownCells = 0;
-				drawCellsChunk(drawnSamples);
+				currInspCtxt = "file";
+				currDataName = filename;
+				drawCellsChunk(drawnSamples, currInspCtxt, currDataName);
 			}
 			else {
 				alert("Unsupported loaded file content.");
 			}
-		} catch (error) {
-			alert("Loaded file must be in JSON format.");
 		}
+	} catch (error) {
+		alert("Loaded file must be in JSON format.");
 	}
 }
 

@@ -26,7 +26,7 @@ def getMapping(mappingName):
 		_mappingsLoader[mappingName] = Mapping(mappingName, equivClasses, projectionMap)
 		print('Loaded mapping:', mappingName)
 	except:
-		print("Mapping '%s' not found, falling back to default." % mappingName)
+		print("Mapping '%s' not found or invalid, falling back to default." % mappingName)
 		_mappingsLoader[mappingName] = getMapping('none') # mappingName forced to default
 	return _mappingsLoader[mappingName]
 

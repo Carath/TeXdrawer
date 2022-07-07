@@ -1,7 +1,6 @@
 "use strict";
 
 const maxPrintedResults = 10;
-
 const infoTimeoutDelay = 500; // in ms
 const classifyTimeoutDelay = 5000; // in ms
 
@@ -10,6 +9,10 @@ const backendIP = "http://" + (location.host === "" ? "localhost:5050" : locatio
 
 // Fetch supported services and mappings from the backend:
 function servicesAndMappingsRequest() {
+	if ($("#serviceChoice").val() && $("#mappingChoice").val()) {
+		return; // services and mappings found, keeping the selection.
+	}
+
 	let startTime = performance.now();
 	$.ajax({
 		type: "GET",
@@ -137,7 +140,7 @@ function drawResultsTable(service, mapping, response, startTime, mode) {
 
 			if (mode === "classify") {
 				scoreHTML = "<td>" + value["score"] + "</td>";
-				let dataset_id = "dataset_id" in value ? value["dataset_id"] : 0;
+				let dataset_id = "dataset_id" in value ? value["dataset_id"] : -1;
 				let raw_answers = "raw_answers" in value ? value["raw_answers"] : []; // for traceability
 			}
 

@@ -1,4 +1,4 @@
-import sys, json, traceback
+import sys, json, traceback, math
 from collections import OrderedDict
 from tabulate import tabulate
 from tqdm import tqdm
@@ -17,7 +17,8 @@ formatPercent = lambda x : '%5.1f %%' % (100. * x)
 # - samplesThreshold: used for computing top-k macro scores, classes with less samples than this threshold will be ignored.
 # - filterAnswersData: weither answered classes should be filtered when generating correlated answers data.
 # - suffix: will be added to the generated files name.
-def benchmark(service, dataset, mappingsList=[], top_k=5, samplesThreshold=50, saving=True, filterAnswersData=False, suffix=''):
+def benchmark(service, dataset, mappingsList=[], top_k=5, samplesThreshold=50,
+	saving=True, saveUnrecognizedSamples=False, filterAnswersData=False, suffix=''):
 	try:
 		supportedMappings = loader.getSupportedMappings()
 		if len(mappingsList) == 0:
@@ -31,6 +32,7 @@ def benchmark(service, dataset, mappingsList=[], top_k=5, samplesThreshold=50, s
 			'top_k': top_k,
 			'samplesThreshold': samplesThreshold,
 			'datasetSize': len(dataset),
+			'strokesRange': [],
 			'mappings': { m : {} for m in mappingsList }
 		}
 		loader.getLatexToUnicodeMap() # pre-loading, for prettier console output with tqdm.
@@ -39,8 +41,8 @@ def benchmark(service, dataset, mappingsList=[], top_k=5, samplesThreshold=50, s
 		aggregateStats(stats)
 		generateStatsRecap(stats)
 		if saving:
-			saveResults(stats, filterAnswersData, suffix)
-		print('\nStats recap:\n', stats['recap'])
+			saveResults(stats, saveUnrecognizedSamples, filterAnswersData, suffix)
+		print('\nStats recap:\n', json.dumps(stats['recap']))
 		return stats['recap']
 	except:
 		print('\nBenchmark failed with error:\n\n' + traceback.format_exc())
@@ -107,17 +109,23 @@ def ingestDataset(stats, dataset):
 	for m in mStats:
 		projClassesSet = mStats[m]['projClassesSet']
 		mStats[m]['answers'] = { key : { key2 : 0 for key2 in projClassesSet } for key in projClassesSet }
-		mStats[m]['recalls'] = { key : [0] * (top_k+1) for key in projClassesSet }
+		mStats[m]['recalls'] = { key : [0] * (top_k+1) for key in projClassesSet } # class samples number and top_k counts
+		mStats[m]['unrecognized'] = {}
 		mStats[m]['answeredProjClassesSet'] = set()
+	strokesFormat = 'hwrt'
+	xmin, xmax, ymin, ymax = math.inf, -math.inf, math.inf, -math.inf
 	for rank in tqdm(range(len(dataset))):
 		vanillaKey, strokes = dataset[rank]
 		if vanillaKey not in symbolCandidatesSet:
 			# print('-> Ignored vanilla class:', vanillaKey)
 			continue # discarding classes whose projection isn't supported with any mapping.
-		strokes = json.loads(strokes)
+		if type(strokes) == str:
+			strokes = json.loads(strokes) # strokes full loading: str -> dict
 		if service == 'detexify':
-			strokes = formatter.formatStrokesTo('hwrt', strokes) # full loading.
+			strokes = formatter.formatStrokesTo(strokesFormat, strokes)
 		# print(vanillaKey, strokes)
+		_xmin, _xmax, _ymin, _ymax = formatter.getStrokesStats(strokesFormat, strokes)
+		xmin, xmax, ymin, ymax = min(xmin, _xmin), max(xmax, _xmax), min(ymin, _ymin), max(ymax, _ymax)
 		vanillaAnswers, status = server.classifyRequest(service, 'none', strokes) # requests without mapping!
 		# print('vanillaAnswers:', vanillaAnswers)
 		if status != 200:
@@ -128,7 +136,7 @@ def ingestDataset(stats, dataset):
 		for m in mStats:
 			# Saving all answered classes with mapping m, as a consistency check:
 			answers = formatter.aggregateAnswers(service, m, vanillaAnswers)
-			mStats[m]['answeredProjClassesSet'].update([ answers[i]['symbol_class'] for i in range(len(answers)) ])
+			mStats[m]['answeredProjClassesSet'].update([ answer['symbol_class'] for answer in answers ])
 			# Saving stats for supported classes:
 			key = mappings.getProjectedSymbol(vanillaKey, m)
 			if key not in mStats[m]['projClassesSet']:
@@ -136,13 +144,21 @@ def ingestDataset(stats, dataset):
 				continue # discarding classes whose projection isn't supported with m.
 			mStats[m]['recalls'][key][0] += 1 # first value: class samples number.
 			maxAnswers = min(top_k, len(answers))
+			isKeyAnswered = False
 			for i in range(maxAnswers):
 				answer = answers[i]['symbol_class']
 				if key == answer:
-					mStats[m]['recalls'][key][i+1] += 1
+					isKeyAnswered = True
+					mStats[m]['recalls'][key][i+1] += 1 # top_k counts
 				mStats[m]['answers'][key][answer] += top_k - i # Adding >= 0 weights to the answers ranking.
 				# This does not rely on service scores which may be noisy, and would also require a unified
 				# score format across services.
+			if not isKeyAnswered:
+				formatter.reshiftTime(strokesFormat, strokes)
+				mStats[m]['unrecognized'][rank] = [key, strokes]
+
+	stats['strokesRange'] = [xmin, xmax, ymin, ymax]
+	print('\nStrokes coordinates range (among supported symbols):', stats['strokesRange'], '\n')
 	for m in mStats:
 		invalidProjClasses = sorted(mStats[m]['answeredProjClassesSet'] - mStats[m]['projClassesSet'])
 		mStats[m]['invalidProjClasses'] = invalidProjClasses
@@ -213,17 +229,16 @@ def generateStatsRecap(stats):
 					'samples': mStats[m]['recalls']['<Macro>'][0],
 					'scores': [ round(x, 8) for x in mStats[m]['recalls']['<Macro>'][1:] ]
 				}
-			}
-			for m in mStats
+			} for m in mStats
 		}
 	}
 
 
 # Saving the benchmark results in separate files:
-def saveResults(stats, filterAnswersData, suffix):
+def saveResults(stats, saveUnrecognizedSamples, filterAnswersData, suffix):
 	service, top_k, samplesThreshold, mStats = stats['service'], stats['top_k'], stats['samplesThreshold'], stats['mappings']
 	for m in mStats:
-		recallMap, answersMap, frequencies = mStats[m]['recalls'], mStats[m]['answers'], mStats[m]['frequencies']
+		recallMap, answersMap = mStats[m]['recalls'], mStats[m]['answers']
 
 		# Saving recall scores:
 		headers = ['Class', 'Samples'] + [ 'TOP %d' % (i+1) for i in range(top_k) ]
@@ -237,19 +252,25 @@ def saveResults(stats, filterAnswersData, suffix):
 		loader.writeContent(statsPath, content)
 
 		# Saving data on correlated answers:
-		filtering = lambda key : True # no filtering
+		filtering = None # no filtering
 		if filterAnswersData:
 			filtering = lambda key : answersMap[key] != {} and key != next(iter(answersMap[key]))
 			# filtering = lambda key : not (answersMap[key] == {} or key in answersMap[key]) or answersMap[key][key] < 0.5
 			# filtering = lambda key : recallMap[key][0] >= max(1, samplesThreshold) and recallMap[key][1] < 0.5
-		jsonString = formatter.peculiarJsonString(answersMap, keysFilteringFunction=filtering, keysSortingFunction=lambda key : key)
+		jsonString = formatter.peculiarJsonString(answersMap, keysFilteringFunction=filtering, keysSortingFunction='key')
 		answersPath = loader.answersDir / ('%s_%s%s%s.json' % (service, m, '_filtered' if filterAnswersData else '', suffix))
 		loader.writeContent(answersPath, jsonString)
 
 		# Saving inter-class frequencies:
-		jsonString = formatter.peculiarJsonString(frequencies, keysSortingFunction=lambda key : key)
+		jsonString = formatter.peculiarJsonString(mStats[m]['frequencies'], keysSortingFunction='key')
 		frequenciesPath = loader.frequenciesDir / ('%s_%s%s.json' % (service, m, suffix)) # 'service' as dataset name here
 		loader.writeContent(frequenciesPath, jsonString)
+
+		# Saving totally unrecognized samples by the service:
+		if saveUnrecognizedSamples:
+			jsonString = formatter.peculiarJsonString(mStats[m]['unrecognized'], compact=True)
+			unrecognizedPath = loader.unrecognizedDir / ('%s_%s%s.json' % (service, m, suffix))
+			loader.writeContent(unrecognizedPath, jsonString)
 
 	# Saving stats recap:
 	jsonString = json.dumps(stats['recap'], indent='  ')
@@ -270,7 +291,7 @@ if __name__ == '__main__':
 		# hwrt: train: 151160 samples, test: 17074 (split 90% / 10%). 368 / 378 classes found.
 		# This takes ~ 3m 30s to run:
 		testDataset = loader.loadDataset(service, loader.testDatasetPath_hwrt)
-		benchmark(service, testDataset, mappingsList=mappingsList)
+		benchmark(service, testDataset, mappingsList=mappingsList, saveUnrecognizedSamples=True)
 	elif service == 'detexify':
 		# detexify: 210454 samples, training done on first 20K, testing on last 20K. 1077 classes overall.
 		# This takes ~ 35m to run:

@@ -20,7 +20,7 @@ This notably prevents issues one would expect to rise with OCR, due to disparity
 
 ## Installation
 
-#### TeXdrawer
+### TeXdrawer
 
 The dataset creation tool from TeXdrawer's frontend has no installation steps (beside getting the code). To try out some classification services or benchmark them, the backend must however be used. It requires [python 3.6+](https://www.python.org/downloads/) and [pip3](https://pypi.org/project/pip/) installed, and the command below to be run. Note that TeXdrawer has only been tested on Linux at this time.
 
@@ -30,13 +30,13 @@ pip3 install -r backend/requirements.txt
 
 For TeXdrawer to be able to test/benchmark other services, further installation steps are required:
 
-#### hwrt
+### hwrt
 
 ```
 pip3 install hwrt==0.2.1
 ```
 
-#### detexify
+### detexify
 
 The project backend needs to be cloned. However, the *master* branch seems to not work properly, so a slightly modified version of the *stack* branch is used. For increased stability, the [docker](https://docs.docker.com/engine/install) build is used, be sure to have it installed.
 
@@ -80,7 +80,7 @@ Note that detexify docker image roughlty weights 3.6 GB, be sure to have enough 
 
 ## Usage
 
-#### TeXdrawer
+### TeXdrawer
 
 To run the frontend without backend, simply open the ``` frontend/index.html ``` file with any (recent) web browser. To launch the backend, run:
 
@@ -92,7 +92,7 @@ python3 server.py
 The frontend is then reachable at ``` http://localhost:5050/app ```. Note that the frontend can work offline now, for files may either be loaded locally or fetched from the backend, if necessary.
 
 
-#### hwrt
+### hwrt
 
 This service supports 378 symbols (counting the ``` ::MULTISYMBOL:: ``` one), most of which are also supported by detexify. Most common symbols supported by hwrt but not by detexify are digits and the latin alphabet, along with ``` < ``` and ``` > ```.
 
@@ -103,25 +103,13 @@ hwrt serve
 ```
 
 
-#### detexify
+### detexify
 
 This service supports 1077 math symbols. To run it, use the command below. To make sure the service is running, check ``` http://localhost:3000 ```.
 
 ```sh
 sudo sh run.sh
 ```
-
-
-## Roadmap
-
-- Allow to generate balanced datasets of symbols, for chosen symbol types.
-- Enable to visualize such a dataset.
-- Benchmark the tested services, with as less bias as possible, on the following objectives:
-  - initial service goal
-  - service goal weighted by dataset balance
-  - custom goal (to be defined)
-- Build the best service possible for the desired task.
-- Extend to words or formulas. Support small rotations of symbols.
 
 
 ## Benchmarks
@@ -140,9 +128,17 @@ For both services, new samples need to be created in order to have a more robust
 - Some math symbols are not currently rendered by MathJax (typically, those from custom packages, but also rather common ones like ``` \AE ``` or ``` \pounds ```). Still, some efforts have been done to draw them, given a valid unicode value and using the drawSample() function, yet this may be imperfect depending on the web browser, e.g in Firefox with symbols such as ``` \llbracket ``` of unicode ``` U+27E6 ```. Furthermore, this is slow and cannot be used to draw large quantities of symbols. Not drawable symbols have to be skipped during dataset creation.
 
 
-## Links
+## Roadmap
 
-Services to benchmark (locally):
+- Allow to generate balanced datasets of symbols, for chosen symbol types.
+- Enable to visualize such a dataset, an search symbols inside.
+- Benchmark the tested services with as less bias as possible.
+- Build the best service for symbols classification on the desired task. Support small rotations of symbols.
+- Allow to generate datasets of formulas from symbols strokes.
+- Extend the recognition to words or formulas.
+
+
+## External links
 
 - hwrt:
   - [webpage](http://write-math.com/)
@@ -156,3 +152,9 @@ Services to benchmark (locally):
   - [frontend code](https://github.com/kirel/detexify)
   - [backend code](https://github.com/kirel/detexify-hs-backend)
   - [dataset](https://github.com/kirel/detexify-data)
+
+- Other resources:
+  - Imgage to markup model: [here](https://github.com/harvardnlp/im2markup)
+  - OCR dataset: 100K latex formulas + images: [here](https://www.kaggle.com/datasets/shahrukhkhan/im2latex100k) and [here](https://im2markup.yuntiandeng.com/data/)
+  - Another 100K: [here](https://www.kaggle.com/datasets/aidapearson/ocr-data)
+  - 11K dataset with strokes: [here](https://www.kaggle.com/datasets/rtatman/handwritten-mathematical-expressions)

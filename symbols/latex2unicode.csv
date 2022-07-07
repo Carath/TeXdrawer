@@ -173,6 +173,7 @@ Z	U+5A
 \Omega	U+3A9
 \Omicron	U+4F
 \Otimes	U+2A37
+\P	U+B6
 \Phi	U+3A6
 \Pi	U+3A0
 \Planckconst	U+210E
@@ -1262,6 +1263,7 @@ Z	U+5A
 \mathfrak{x}	U+1D535
 \mathfrak{y}	U+1D536
 \mathfrak{z}	U+1D537
+\mathparagraph	U+B6
 \mathring	U+30A
 \mathscr{A}	U+1D49C
 \mathscr{B}	U+212C
@@ -2318,6 +2320,7 @@ Z	U+5A
 \tau	U+3C4
 \taurus	U+2649
 \tcohm	U+2126
+\textparagraph	U+B6
 \textquotedblleft	U+22
 \therefore	U+2234
 \thermod	U+29E7
