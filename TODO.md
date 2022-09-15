@@ -60,6 +60,8 @@
 
 ### Backend
 
+- Docker integration of the website and TeXdrawer service.
+- add flask-statistics to the server?
 - use argparse for scripts arguments?
 - compare Flask with [FastAPI](https://fastapi.tiangolo.com/)
 - use a unified dataset format across services and the frontend. Make conversion scripts
@@ -90,12 +92,11 @@ Outputs:
 ### Miscellaneous
 
 - Note: getSymbolsDatasetMap() will be deprecated eventually.
-- convert latex2unicode from csv to json (?)
 - frontend: default context "currInspCtxt" to "" => no drawing
 - frontend: send web browser data (navigator.userAgent) in request.js ? Or is it already given?
 - backend: dataset merger?
 - New dataset:
-  - csv format. Header: id;symbol;strokesNumber;totalPoints;webBrowser;strokes
+  - csv format. Header: id;symbol;strokesNumber;totalPoints;userAgent;strokes
   - shuffle train and test
   - compute checksums
   - rescale strokes to fit well in a universal box (currently for hwrt: [-0.5, 2585, -1, 1096])
@@ -106,11 +107,9 @@ Outputs:
     - strokes content, format. Time shift, max dim box, resolution
     - licence ODbL
     - sources: detexify, hwrt. New samples? ratio? Cleaning?
-    - discuss 'webBrowser' utility, and why not user_id (privacy, not pertinent...)
+    - discuss 'userAgent' utility, and why not user_id (privacy, not pertinent...)
 - frontend output files and backend "unrecognized" files: to the unified dataset format! (=> rescaling if needed)
 - inspector: rescale strokes if needed!
 - backend: formatter.reshiftTime(strokes) not to be done in the benchmark eventually.
 - dataset loading: use tqdm too?
 - dataset loading: bound?
-- frontend: http://localhost:5050/javascript-libs/jquery-3.6.0.min.js => js/ css/ (with a root?)
-  -> update serveJavascriptLibsList(), serveJavascriptLib(). Also add css dir in front?

@@ -40,16 +40,16 @@ curl http://localhost:5050/
 http://localhost:5050/app
 ```
 
-- Get the list of javascript libraries used by the frontend and hosted by the backend:
+- Get the list of files and directories from the 'libs-frontend' directory:
 
 ```sh
-curl http://localhost:5050/javascript-libs-list
+curl http://localhost:5050/libs-frontend-directory
 ```
 
-- Get the desired javascript library used by the frontend and hosted by the backend (here jQuery v3.6.0):
+- Get any file (here jQuery v3.6.0) from the 'libs-frontend' directory, given its relative path. Works in sub directories too:
 
 ```sh
-curl http://localhost:5050/javascript-libs/jquery-3.6.0.min.js
+curl http://localhost:5050/libs-frontend-file/jquery-3.6.0.min.js
 ```
 
 - Get a map to convert latex commands to unicode values.

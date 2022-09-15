@@ -73,14 +73,14 @@ function showDots() {
 	dotsShown = !dotsShown;
 }
 
-// The 'webBrowser', 'frameWidth', and 'frameHeight' fields must be present in each sample,
+// The 'userAgent', 'frameWidth', and 'frameHeight' fields must be present in each sample,
 // since they may change between users, and a unified dataset format is desired when merging files.
 function createSample(dataset_id, wannabeSample, strokes) {
 	let sample = {
 		dataset_id: dataset_id,
 		symbol: wannabeSample.symbol,
 		unicode: wannabeSample.unicode,
-		webBrowser: navigator.userAgent,
+		userAgent: navigator.userAgent,
 		frameWidth: inputCanvas.width, // used to save input precision, and for compatibility.
 		frameHeight: inputCanvas.height, // same.
 		totalDotsNumber: 0,

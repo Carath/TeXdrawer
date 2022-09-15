@@ -5,6 +5,7 @@ const infoTimeoutDelay = 500; // in ms
 const classifyTimeoutDelay = 5000; // in ms
 
 const backendIP = "http://" + (location.host === "" ? "localhost:5050" : location.host);
+const backupServerIP = backendIP; // could be on another server to improve load balance.
 // console.log("Backend IP:", backendIP);
 
 // Fetch supported services and mappings from the backend:

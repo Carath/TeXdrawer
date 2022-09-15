@@ -35,22 +35,27 @@ function dynamicLoader(type, id, attributes={}, links, onSuccess=()=>{}, onFailu
 	}
 }
 
-// Loading javascript libraries:
+// Loading resources e.g javascript or css libraries. This works both when opening the index.html
+// file with a web browser (offline mode), and when the website is hosted on a remote server.
+// First an attempt is made to fetch those files locally, which must work offline but must not
+// send files from the server in the remote case, as it is better to use a CDN (second link) in
+// that case. Thus, those files should not be placed in the frontend/ directory.
+// Finally if all else failed, a last link is provided to fetch the files from a backup server.
 
 (function () {
 	dynamicLoader("script", "polyfill", {type: "text/javascript", defer: ""}, [
-			"libs/polyfill.js",
+			"../libs-frontend/polyfill.js",
 			"https://polyfill.io/v3/polyfill.min.js?features=es6",
-			backendIP + "/javascript-libs/polyfill.js"
+			backupServerIP + "/libs-frontend-file/polyfill.js"
 		]
 	);
 })();
 
 (function () {
 	dynamicLoader("script", "jQuery", {type: "text/javascript", defer: ""}, [
-			"libs/jquery-3.6.0.min.js",
+			"../libs-frontend/jquery-3.6.0.min.js",
 			"https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js",
-			backendIP + "/javascript-libs/jquery-3.6.0.min.js"
+			backupServerIP + "/libs-frontend-file/jquery-3.6.0.min.js"
 		]
 	);
 })();
@@ -63,11 +68,11 @@ function dynamicLoader(type, id, attributes={}, links, onSuccess=()=>{}, onFailu
 			}
 		};
 	}
+	// svg version of MathJax, for checking typesetting success:
 	dynamicLoader("script", "MathJax", {type: "text/javascript", defer: ""}, [
-			// svg version of MathJax, for checking typesetting success.
-			"libs/mathjax-3.2.0-tex-svg-full.min.js",
+			"../libs-frontend/mathjax-3.2.0-tex-svg-full.min.js",
 			"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-svg-full.min.js",
-			backendIP + "/javascript-libs/mathjax-3.2.0-tex-svg-full.min.js"
+			backupServerIP + "/libs-frontend-file/mathjax-3.2.0-tex-svg-full.min.js"
 		]
 	);
 })();

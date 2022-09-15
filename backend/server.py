@@ -7,10 +7,13 @@ from pathlib import Path
 # Backend code:
 import loader, formatter, mappings
 
+frontendPath = Path('../frontend/')
+libsFrontendPath = Path('../libs-frontend/')
+
 ##################################################
 # REST API generic functions:
 
-app = Flask(__name__, static_folder=str(Path('../frontend')), static_url_path='')
+app = Flask(__name__, static_folder=str(frontendPath), static_url_path='')
 CORS(app) # enables CORS for all routes.
 
 
@@ -41,9 +44,10 @@ def getRoutes():
 	''' Returns a json containing all the server routes. '''
 	routes = {}
 	for r in app.url_map._rules:
-		routes[r.rule] = {}
-		routes[r.rule]['functionName'] = r.endpoint
-		routes[r.rule]['methods'] = list(r.methods)
+		routes[r.rule] = {
+			'functionName': r.endpoint,
+			'methods': list(r.methods)
+		}
 	return jsonify(routes)
 
 
@@ -53,8 +57,7 @@ def getRoutes():
 def redirectionTest():
 	''' Redirects a request. Unlike using redirectCrossOrigin(), this cannot solve CORS issues. '''
 	url = 'https://polyfill.io/v3/polyfill.min.js' # this site enables cross-origin requests.
-	# HTTP status 307 to avoid POST calls to be changed to GET:
-	return redirect(url, code=307)
+	return redirect(url, code=307) # HTTP status 307 to avoid POST calls to be changed to GET.
 
 
 def redirectCrossOrigin(url, request):
@@ -96,22 +99,25 @@ def extractRequestData(request):
 ##################################################
 # TeXdrawer specific functions:
 
-@app.route('/javascript-libs-list', methods=['GET'])
-def serveJavascriptLibsList():
-	''' Returns the list of javascript libraries used by the frontend and hosted by the backend. '''
+@app.route('/libs-frontend-directory', methods=['GET'])
+@app.route('/libs-frontend-directory/<path:dirPath>', methods=['GET'])
+def serveFrontendLibsDir(dirPath='.'):
+	''' Returns the list of files and directories from any directory in 'libs-frontend', given its relative path. '''
 	try:
-		return jsonify(os.listdir(Path('../frontend/libs/')))
+		assert '..' not in dirPath, 'Path must not contain double dots!' # just to be sure.
+		return jsonify(os.listdir(libsFrontendPath / dirPath))
 	except Exception as e:
-		return handleError('Unknown error in serveJavascriptLibsList().', 500)
+		return handleError("Error from serveFrontendLibsDir(): directory '%s' not found." % dirPath, 404)
 
 
-@app.route('/javascript-libs/<lib>', methods=['GET'])
-def serveJavascriptLib(lib):
-	''' Returns the desired javascript library used by the frontend and hosted by the backend. '''
+@app.route('/libs-frontend-file/<path:filePath>', methods=['GET'])
+def serveFrontendLibsFile(filePath):
+	''' Returns any file from the 'libs-frontend' directory, given its relative path. Works in sub directories too. '''
 	try:
-		return send_file(str(Path('../frontend/libs/') / lib))
+		assert '..' not in filePath, 'Path must not contain double dots!' # just to be sure.
+		return send_file(str(libsFrontendPath / filePath))
 	except Exception as e:
-		return handleError("Error from serveJavascriptLib(): Javascript library '%s' not found." % lib, 404)
+		return handleError("Error from serveFrontendLibsFile(): file '%s' not found." % filePath, 404)
 
 
 @app.route('/latex-to-unicode', methods=['GET'])
