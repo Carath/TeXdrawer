@@ -333,11 +333,13 @@ footer {
 }
 
 #samplesRangeIndicator {
+	width: 75px;
 	margin-left: 5px;
 	margin-right: 5px;
 	margin-top: 14px;
 	font-family: Arial;
 	font-size: 15px;
+	text-align: center;
 }
 
 #forwardButton {

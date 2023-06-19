@@ -1,6 +1,6 @@
 "use strict";
 
-// This can be used to load javascript libraries, images, ...
+// Plain javascript function for loading js / css libraries, images, ...
 // Several links may be given, which can either be URLs or file paths,
 // and will be tried in the given order until the resource is loaded or all links failed.
 function dynamicLoader(type, id, attributes={}, links, onSuccess=()=>{}, onFailure=()=>{}) {
@@ -68,7 +68,8 @@ function dynamicLoader(type, id, attributes={}, links, onSuccess=()=>{}, onFailu
 			}
 		};
 	}
-	// svg version of MathJax, for checking typesetting success:
+	// Svg version of MathJax, for checking typesetting success.
+	// Note: version 3.2.2 causes issues e.g with U+20AC.
 	dynamicLoader("script", "MathJax", {type: "text/javascript", defer: ""}, [
 			"../libs-frontend/mathjax-3.2.0-tex-svg-full.min.js",
 			"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-svg-full.min.js",

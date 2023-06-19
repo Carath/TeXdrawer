@@ -56,11 +56,13 @@
 - Inspector: allow to export a selection. Also for submitted/file context, allow to remove selected samples.
 - Add a button to clear a selection (with confirmation).
 - Remember the user to export the selection (if not empty) when reimporting a file or a new dataset? (may not be necessary)
+- be able to learn from user in production (=> base model + tuned model)
 
 
 ### Backend
 
 - Docker integration of the website and TeXdrawer service.
+- maybe give a virtual env solution too (using pipgrip --lock -r requirements.txt).
 - add flask-statistics to the server?
 - use argparse for scripts arguments?
 - compare Flask with [FastAPI](https://fastapi.tiangolo.com/)
@@ -88,6 +90,8 @@ Outputs:
 - model saved depending on benchmark's results: if better than previous best.
 - all input data stats must be saved too.
 
+Use [MLflow](https://mlflow.org/) ?
+
 
 ### Miscellaneous
 
@@ -113,3 +117,95 @@ Outputs:
 - backend: formatter.reshiftTime(strokes) not to be done in the benchmark eventually.
 - dataset loading: use tqdm too?
 - dataset loading: bound?
+
+
+### Data
+
+Training and inference:
+
+- dot data amplification
+- balanced split interclass.
+- balance class numbers too for train? either move samples to test, or amplify more rare classes...
+- resampling inside strokes. Remove sursamples segments, and remove stroke-hole too! Do so to improve the dataset too?
+- 2D FFT? Might actually be good on those samples... Or 1D FFT on strokes?
+- small rotations in batch during inference? Vote among top 3 classes/activations?
+- use a negative class
+
+
+Datasets:
+
+- global class count number per dataset? Not just train...
+- stroke hash? Check em before accepting em as new samples, to avoid redundancies.
+- talk about normalization (centered, margin), resolution...
+
+
+Classes to improve on:
+
+\pi                 |       159 |  61.6 % |  93.7 % !!!!!!!
+\otimes             |       109 |  86.2 % |  91.7 %
+\chi                |       107 |  83.2 % |  87.9 %
+\rho                |        91 |  86.8 % |  92.3 %
+\zeta               |        87 |  86.2 % |  92.0 %
+\mathscr{L}         |        81 |  87.7 % |  91.4 %
+\aleph              |        77 |  87.0 % |  89.6 %
+.                   |        76 |  84.2 % |  89.5 %
+\mathcal{L}         |        75 |  69.3 % |  84.0 %
+\theta              |        66 |  69.7 % |  84.8 % !!
+\coprod             |        64 |  87.5 % |  90.6 %
+\Gamma              |        63 |  84.1 % |  95.2 %
+\psi                |        57 |  50.9 % |  96.5 % !!!
+\Theta              |        47 |  76.6 % |  87.2 %
+\Psi                |        46 |  71.7 % |  93.5 %
+\nu                 |        39 |  79.5 % |  87.2 %
+
+
+Symbols to be *potentially* remove from hwrt (some are to be changed with another mapping representation, some are not wanted - to be confirmed):
+
+::MULTISYMBOL:: [negative]
+\AA
+\AE
+\Bowtie
+\L
+\MVAt
+\O
+\Smiley
+\aa
+\ae
+\astrosun
+\checked
+\clubsuit
+\copyright
+\dag
+\diameter
+\female
+\fint
+\fullmoon
+\guillemotleft
+\heartsuit
+\iddots
+\leftmoon
+\lightning
+\llbracket
+\male
+\mapsfrom
+\mars
+\mathds{1} ... \mathds{Z}
+\mathsection
+\o
+\oiint
+\parr
+\pentagram
+\pounds
+\rrbracket
+\shortrightarrow
+\ss
+\sun
+\varoiint
+\venus
+\with
+
+Symbols to be added?
+- compare with detexify
+- classes in similar not reacheable from hwrt by projection ?
+- all mathbb
+- all visible ASCII and greek symbols? Add cyrilic?

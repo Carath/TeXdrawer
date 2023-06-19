@@ -18,7 +18,8 @@ CORS(app) # enables CORS for all routes.
 
 
 def handleError(errorMessage, statusCode):
-	''' Prints in the server logs the error message, and returns it as response. '''
+	''' Prints in the server logs the error message, and returns it '''
+	''' as a text response with an HTTP error status. '''
 	errorMessage += '\n\n' + traceback.format_exc()
 	print(errorMessage)
 	return Response(errorMessage, content_type='text/plain; charset=UTF-8', status=statusCode)
@@ -26,7 +27,7 @@ def handleError(errorMessage, statusCode):
 
 @app.route('/')
 @app.route('/hello')
-def helloWorld():
+def hello():
 	''' To check if the server is reachable: '''
 	return jsonify({'TeXdrawer version': '1.0.0'}) # shorter than json.dumps() + Response()
 
@@ -41,7 +42,7 @@ def serveWebpage():
 @app.route('/routes', methods=['GET'])
 @app.route('/sitemap', methods=['GET'])
 def getRoutes():
-	''' Returns a json containing all the server routes. '''
+	''' Returns a json object containing all the server routes. '''
 	routes = {}
 	for r in app.url_map._rules:
 		routes[r.rule] = {

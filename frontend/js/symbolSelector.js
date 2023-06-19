@@ -13,14 +13,19 @@ function loadWannabeSamples(wannabeSamples, blacklist) {
 		if (blacklist.indexOf(category) !== -1) {
 			continue;
 		}
-		datasetCategories.push(category);
+		if (wannabeSamples[category].length > 0) {
+			datasetCategories.push(category);
+		}
 		for (let i=0; i < wannabeSamples[category].length; ++i) {
 			let sample = wannabeSamples[category][i];
 			let symbol = "symbol" in sample ? sample.symbol : "";
 			let unicode = "unicode" in sample ? sample.unicode : "";
-			if (symbol === "") {
+			if (symbol === "" && unicode === "") {
 				console.log("Missing symbol in wannabe sample: " + sample);
 				continue;
+			}
+			if (symbol === "") {
+				symbol = unicode;
 			}
 			if (symbol in wannabeSamplesMap && wannabeSamplesMap[symbol] !== unicode) {
 				console.log("Warning: several unicodes given to the same symbol " + symbol +

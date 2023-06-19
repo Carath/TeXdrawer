@@ -69,7 +69,7 @@ function resizeSVGelement(selector, size) {
 // Does not try to resize the sample when 'size' (in px) is <= 0.
 function drawSample(selector, sample, size) {
 	let success = false;
-	if ("symbol" in sample && sample.symbol !== "") {
+	if ("symbol" in sample && sample.symbol !== "" && !("unicode" in sample && sample.symbol === sample.unicode)) {
 		typeset(selector, "$" + sample.symbol + "$");
 		success = typesettingSuccess(selector);
 	}

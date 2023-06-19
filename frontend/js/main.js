@@ -12,6 +12,7 @@ const shownSymbolSize = 50.; // in px
 const maxDrawnSamples = 20;
 const mockSamplesNumber = 30;
 
+var unsavedData = false;
 var inputCanvas = null;
 var dotsShown = false;
 var datasetCategories = [];
@@ -25,6 +26,9 @@ var currInspCtxt = "mock"; // For testing, will be initialized to "" eventually.
 // All Inspector contexts: "", "mock", "submitted", "file", "dataset".
 var currDataName = "default"; // Used to discriminate selections from different files or datasets.
 
+// This message may be overriden by the browser upon quitting:
+const confirmationMessage = "Some unsaved samples will be lost unless exported, are you sure you want to proceed?";
+
 
 // Set the size of the canvas bitmap as its css size, and return it as DOM object:
 function getFixedCanvas(canvasSelector) {
@@ -35,6 +39,13 @@ function getFixedCanvas(canvasSelector) {
 }
 
 window.onload = function() {
+
+	window.addEventListener("beforeunload", function(event) { // upon quitting
+		if (!unsavedData)
+			return;
+		(event || window.event).returnValue = confirmationMessage;
+		return confirmationMessage;
+	});
 
 	loadWannabeSamples(symbolsDatasetCreation, categoriesBlacklist);
 
@@ -68,7 +79,15 @@ window.onload = function() {
 
 	const fileInput = $("#submit-file");
 	fileInput[0].value = "";
+
+	fileInput.click(function(event) {
+		if (unsavedData && ! confirm(confirmationMessage)) {
+			event.preventDefault(); // preventing to load a file.
+		}
+	});
+
 	fileInput.change(function(event) {
+		unsavedData = false;
 		loadFile(fileInput);
 	});
 
@@ -95,11 +114,13 @@ window.onload = function() {
 			currInspCtxt = "submitted";
 			currDataName = "default";
 			lockedWannabeSample = false;
+			unsavedData = true;
 			nextDrawableSample();
 		}
 	});
 
 	$("#exportButton").click(function(event) {
+		unsavedData = false;
 		saveSamples();
 	});
 
@@ -214,3 +235,7 @@ window.onload = function() {
 		drawCellsChunk(drawnSamples, currInspCtxt, currDataName);
 	});
 }
+
+// Desirable feature: enable to modify / delete samples from the #Inspect menu.
+// If such action is done and inputSamples.length > 0 then unsavedData must
+// be set to true, and the export button should be visible in said menu.
