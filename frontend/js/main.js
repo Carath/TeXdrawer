@@ -22,8 +22,8 @@ var inputSamples = [];
 var loadedSamples = [];
 var drawnSamples = [];
 var startShownCells = 0;
-var currInspCtxt = "mock"; // For testing, will be initialized to "" eventually.
-// All Inspector contexts: "", "mock", "submitted", "file", "dataset".
+var currInspCtxt = "Mock"; // For testing, will be initialized to "" eventually.
+// All Inspector contexts: "Mock", "Submitted", "Loaded", "Dataset".
 var currDataName = "default"; // Used to discriminate selections from different files or datasets.
 
 // This message may be overriden by the browser upon quitting:
@@ -82,7 +82,7 @@ window.onload = function() {
 
 	fileInput.click(function(event) {
 		if (unsavedData && ! confirm(confirmationMessage)) {
-			event.preventDefault(); // preventing to load a file.
+			event.preventDefault(); // preventing to load a file when input data isn't saved.
 		}
 	});
 
@@ -111,7 +111,7 @@ window.onload = function() {
 
 	$("#submitButton").click(function(event) {
 		if (submitWannabeSample(currentWannabeSample)) {
-			currInspCtxt = "submitted";
+			currInspCtxt = "Submitted";
 			currDataName = "default";
 			lockedWannabeSample = false;
 			unsavedData = true;
@@ -120,8 +120,13 @@ window.onload = function() {
 	});
 
 	$("#exportButton").click(function(event) {
-		unsavedData = false;
-		saveSamples();
+		if (currInspCtxt === "Submitted" || currInspCtxt === "Loaded") {
+			unsavedData = false;
+			saveSamples();
+		}
+		else {
+			alert("This data cannot be exported.");
+		}
 	});
 
 	$("#backwardButton").click(function(event) {
@@ -214,28 +219,26 @@ window.onload = function() {
 		$("#classification-results").empty();
 		clearInputs(inputCanvas);
 
-		if (currInspCtxt === "submitted" && inputSamples.length > 0) {
-			$("#samples-message").html("Submitted samples:");
+		if (currInspCtxt === "Submitted" && inputSamples.length > 0) {
 			drawnSamples = inputSamples;
 			fileInput[0].value = "";
 		}
-		else if (currInspCtxt === "file" && loadedSamples.length > 0) {
-			$("#samples-message").html("Loaded samples:");
+		else if (currInspCtxt === "Loaded" && loadedSamples.length > 0) {
 			drawnSamples = loadedSamples;
 		}
-		else if (currInspCtxt === "mock") {
-			$("#samples-message").html("Mocked samples:");
+		else if (currInspCtxt === "Mock") {
 			drawnSamples = generateMockSamples(mockSamplesNumber);
 		}
-		else if (currInspCtxt === "dataset") {
-			alert("Insupported inspector context.");
+		else if (currInspCtxt === "Dataset") {
+			alert("'dataset' inspector context not supported yet.");
+			drawnSamples = [];
+		}
+		else {
+			alert("Insupported inspector context: " + currInspCtxt);
 			drawnSamples = [];
 		}
 		startShownCells = 0;
 		drawCellsChunk(drawnSamples, currInspCtxt, currDataName);
+		updateSamplesMessage();
 	});
 }
-
-// Desirable feature: enable to modify / delete samples from the #Inspect menu.
-// If such action is done and inputSamples.length > 0 then unsavedData must
-// be set to true, and the export button should be visible in said menu.

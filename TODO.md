@@ -53,9 +53,6 @@
 - add a search option for classes/symbols
 - enable to visualize some part of a dataset? By index or by classes?
 - Use Fabric.js for prettier rendering?
-- Inspector: allow to export a selection. Also for submitted/file context, allow to remove selected samples.
-- Add a button to clear a selection (with confirmation).
-- Remember the user to export the selection (if not empty) when reimporting a file or a new dataset? (may not be necessary)
 - be able to learn from user in production (=> base model + tuned model)
 
 

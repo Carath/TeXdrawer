@@ -102,7 +102,7 @@ function submitWannabeSample(wannabeSample) {
 	inputSamples.push(sample);
 	clearInputs(inputCanvas);
 	$('#savedSamplesCount').html("Saved samples count: <strong>" + inputSamples.length +
-		"</strong><br>Click on Inspect to see them.");
+		"</strong><br>Click on Inspect to see and export them.");
 	return true;
 }
 
@@ -126,17 +126,20 @@ function createOutput(samples) {
 // hardcode the maximum precision of the input, and to be able to retrieve said precision
 // in case it changes with each user. On the other hand, this implies that inputs must be resized
 // (and centered) to fit well in the canvas.
+// Also, 'drawnSamples' is used instead of 'inputSamples' to enable saving a modified file content.
 function saveSamples() {
-	if (inputSamples.length === 0) {
+	const selected = _selectedCells[currInspCtxt][currDataName];
+	const filteredSamples = drawnSamples.filter((sample) => !(sample.dataset_id in selected));
+	if (filteredSamples.length === 0) {
 		alert("Nothing to export.");
 		return;
 	}
-	let output = createOutput(inputSamples);
+	let output = createOutput(filteredSamples);
 	let jsonOutput = JSON.stringify(output);
 	// console.log("jsonOutput:", jsonOutput);
 	let filename = "output-" + timestamp() + ".json";
 	download(jsonOutput, filename, "text/plain");
-	// Cleanup, without emptying 'inputSamples':
+	// Cleanup, without emptying 'drawnSamples':
 	clearInputs(inputCanvas);
 }
 
@@ -198,7 +201,7 @@ function processLoadedFile(event, filename) {
 				loadedSamples = jsonObj["samples"];
 				drawnSamples = loadedSamples;
 				startShownCells = 0;
-				currInspCtxt = "file";
+				currInspCtxt = "Loaded";
 				currDataName = filename;
 				drawCellsChunk(drawnSamples, currInspCtxt, currDataName);
 			}
