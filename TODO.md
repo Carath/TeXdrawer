@@ -62,12 +62,15 @@
 ### Backend
 
 - Docker integration of the website and TeXdrawer service.
-- maybe give a virtual env solution too (using pipgrip --lock -r requirements.txt).
+- give a virtual env solution too (using pipgrip --lock -r requirements.txt).
+- add typing, verify with mypy?
 - add flask-statistics to the server?
 - use argparse for scripts arguments?
 - compare Flask with [FastAPI](https://fastapi.tiangolo.com/)
 - use a unified dataset format across services and the frontend. Make conversion scripts
 - add some abstraction for things specific to each service
+- More stats for the benchmark: F1 score, AUC, ROC, R2, MAPE, confusion matrix... per mapping.
+- Cache the services forecasts?
 
 
 ### MLOps
@@ -141,6 +144,7 @@ Datasets:
 
 Classes to improve on:
 
+```
 \pi                 |       159 |  61.6 % |  93.7 % !!!!!!!
 \otimes             |       109 |  86.2 % |  91.7 %
 \chi                |       107 |  83.2 % |  87.9 %
@@ -157,10 +161,12 @@ Classes to improve on:
 \Theta              |        47 |  76.6 % |  87.2 %
 \Psi                |        46 |  71.7 % |  93.5 %
 \nu                 |        39 |  79.5 % |  87.2 %
+```
 
 
 Symbols to be *potentially* remove from hwrt (some are to be changed with another mapping representation, some are not wanted - to be confirmed):
 
+```
 ::MULTISYMBOL:: [negative]
 \AA
 \AE
@@ -203,9 +209,26 @@ Symbols to be *potentially* remove from hwrt (some are to be changed with anothe
 \varoiint
 \venus
 \with
+```
 
 Symbols to be added?
 - compare with detexify
 - classes in similar not reacheable from hwrt by projection ?
 - all mathbb
 - all visible ASCII and greek symbols? Add cyrilic?
+- missing hwrt symbol: ncong ?
+
+
+New dataset goal:
+- Universal, lighter, and easier to read format
+- Hosted on Kaggle with a correct licence
+- Unnecessary classes removed, and interesting ones added
+- Added samples for classes in dire need, and more samples in general
+- Fixed incorrect labels (?)
+- Added stroke metadata
+- Cleaned noisy samples huge timesteps / dots number / strokes number (?)
+- Normalized data
+- shuffled
+
+
+ADD ending "\n" in the following file: symbols/latex2unicode.csv

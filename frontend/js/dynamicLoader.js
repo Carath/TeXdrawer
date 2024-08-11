@@ -17,9 +17,8 @@ function dynamicLoader(type, id, attributes={}, links, onSuccess=()=>{}, onFailu
 	let element = document.createElement(type);
 	element.setAttribute("id", id);
 	element.setAttribute("src", links[0]);
-	let keys = Object.keys(attributes);
-	for (let i=0; i < keys.length; ++i) {
-		element.setAttribute(keys[i], attributes[keys[i]]);
+	for (const key in attributes) {
+		element.setAttribute(key, attributes[key]);
 	}
 	document.body.appendChild(element);
 
@@ -41,15 +40,6 @@ function dynamicLoader(type, id, attributes={}, links, onSuccess=()=>{}, onFailu
 // send files from the server in the remote case, as it is better to use a CDN (second link) in
 // that case. Thus, those files should not be placed in the frontend/ directory.
 // Finally if all else failed, a last link is provided to fetch the files from a backup server.
-
-(function () {
-	dynamicLoader("script", "polyfill", {type: "text/javascript", defer: ""}, [
-			"../libs-frontend/polyfill.js",
-			"https://polyfill.io/v3/polyfill.min.js?features=es6",
-			backupServerIP + "/libs-frontend-file/polyfill.js"
-		]
-	);
-})();
 
 (function () {
 	dynamicLoader("script", "jQuery", {type: "text/javascript", defer: ""}, [
